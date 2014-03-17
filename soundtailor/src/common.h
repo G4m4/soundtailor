@@ -48,16 +48,24 @@ template<typename Type> void IGNORE(const Type&) {}
   #define ASSERT(_condition_) ASSUME(_condition_)
 #endif
 
-/// @brief Attribute for structures alignment
+/// @brief "Sample" type - actually, this is the data computed at each "tick";
+/// If using vectorization it may longer than 1 audio sample
 #if (_USE_SSE)
-  #if (_COMPILER_MSVC)
-    #define ALIGN __declspec(align(16))
-  #else
-    #define ALIGN __attribute__((aligned(16)))
-  #endif
+  typedef __m128 Sample;
 #else
-  #define ALIGN
+  typedef float Sample;
 #endif  // (_USE_SSE)
+
+/// @brief Type for Sample parameter "read only":
+/// It should be passed by value since it allows to keep it into a register,
+/// instead of passing its address and loading it.
+typedef const Sample SampleRead;
+
+/// @brief "Sample" type size in bytes
+static const unsigned int SampleSizeBytes(sizeof(Sample));
+/// @brief "Sample" type size compared to audio samples
+/// (e.g., if Sample == float, SampleSize = 1)
+static const unsigned int SampleSize(sizeof(Sample) / sizeof(float));
 
 }  // namespace soundtailor
 
