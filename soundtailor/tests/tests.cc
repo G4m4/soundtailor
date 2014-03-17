@@ -1,5 +1,5 @@
-/// @file tests/main.cc
-/// @brief Tests main entry point
+/// @file tests.cc
+/// @brief Tests common source file
 /// @author gm
 /// @copyright gm 2014
 ///
@@ -18,10 +18,9 @@
 /// You should have received a copy of the GNU General Public License
 /// along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "gtest/gtest.h"
+#include "soundtailor/tests/tests.h"
 
-/// @brief Main function, of course.
-int main(int argc, char **argv) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+NormFrequencyDistribution::NormFrequencyDistribution(void)
+  : uniform_real_distribution(kMinFundamentalNorm, kMaxFundamentalNorm) {
+  // Nothing to do here for now
 }

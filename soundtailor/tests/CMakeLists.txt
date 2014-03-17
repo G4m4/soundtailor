@@ -26,14 +26,19 @@ source_group("generators"
 
 # Source files
 set(SOUNDTAILOR_TESTS_SRC
+    tests.cc
     main.cc
     ${SOUNDTAILOR_TESTS_FILTERS_SRC}
     ${SOUNDTAILOR_TESTS_GENERATORS_SRC}
+)
+set(SOUNDTAILOR_TESTS_HDR
+    tests.h
 )
 
 # Target
 add_executable(soundtailor_tests
   ${SOUNDTAILOR_TESTS_SRC}
+  ${SOUNDTAILOR_TESTS_HDR}
 )
 
 set_target_mt(soundtailor_tests)
