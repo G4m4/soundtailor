@@ -11,9 +11,14 @@ include_directories(
 )
 
 # Include all subdirectories tests source files
+add_subdirectory(filters)
 add_subdirectory(generators)
 
 # Group sources
+source_group("filters"
+  FILES
+  ${SOUNDTAILOR_TESTS_FILTERS_SRC}
+)
 source_group("generators"
   FILES
   ${SOUNDTAILOR_TESTS_GENERATORS_SRC}
@@ -22,6 +27,7 @@ source_group("generators"
 # Source files
 set(SOUNDTAILOR_TESTS_SRC
     main.cc
+    ${SOUNDTAILOR_TESTS_FILTERS_SRC}
     ${SOUNDTAILOR_TESTS_GENERATORS_SRC}
 )
 
