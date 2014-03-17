@@ -26,8 +26,8 @@ set(SOUNDTAILOR_SRC
   ${SOUNDTAILOR_GENERATORS_SRC}
 )
 set(SOUNDTAILOR_HDR
-  configuration.h
   common.h
+  configuration.h
   ${SOUNDTAILOR_FILTERS_HDR}
   ${SOUNDTAILOR_GENERATORS_HDR}
 )
