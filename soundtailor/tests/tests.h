@@ -286,4 +286,7 @@ int ComputeZeroCrossing(TypeGenerator& generator, const unsigned int length) {
   return out;
 }
 
+/// @brief Compute the frequency of a given piano key (A4 = 440Hz)
+float NoteToFrequency(const unsigned int key_number);
+
 #endif  // SOUNDTAILOR_TESTS_TESTS_H_
