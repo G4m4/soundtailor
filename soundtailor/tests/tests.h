@@ -145,7 +145,14 @@ static const float kSamplingRate(96000.0f);
 /// @brief Arbitrary lowest allowed fundamental
 static const float kMinFundamentalNorm(10.0f / kSamplingRate);
 /// @brief Arbitrary highest allowed fundamental
-static const float kMaxFundamentalNorm(1000.0f / kSamplingRate);
+// TODO(gm): make this higher
+static const float kMaxFundamentalNorm(2000.0f / kSamplingRate);
+
+/// @brief Arbitrary lowest allowed key note (= A0)
+static const unsigned int kMinKeyNote(21);
+/// @brief Arbitrary highest allowed key note (= A6)
+// TODO(gm): make this higher
+static const unsigned int kMaxKeyNote(93);
 
 /// @brief Arbitrary lowest allowed duration
 static const unsigned int kMinTime(0);
