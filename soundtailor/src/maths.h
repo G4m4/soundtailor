@@ -25,17 +25,6 @@
 // std::min, std::max
 #include <algorithm>
 
-// Has to be included BEFORE SSE intrinsics related headers,
-// in order to know if these headers actually have to be included
-#include "soundtailor/src/configuration.h"
-
-#if (_USE_SSE)
-extern "C" {
-#include <emmintrin.h>
-#include <mmintrin.h>
-}
-#endif  // (_USE_SSE)
-
 #include "soundtailor/src/common.h"
 
 namespace soundtailor {

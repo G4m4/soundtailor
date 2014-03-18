@@ -23,7 +23,16 @@
 
 #include <cassert>
 
+// Has to be included BEFORE SSE intrinsics related headers,
+// in order to know if these headers actually have to be included
 #include "soundtailor/src/configuration.h"
+
+#if (_USE_SSE)
+extern "C" {
+#include <emmintrin.h>
+#include <mmintrin.h>
+}
+#endif  // (_USE_SSE)
 
 namespace soundtailor {
 
@@ -49,7 +58,7 @@ template<typename Type> void IGNORE(const Type&) {}
 #endif
 
 /// @brief "Sample" type - actually, this is the data computed at each "tick";
-/// If using vectorization it may longer than 1 audio sample
+/// If using vectorization it may be longer than 1 audio sample
 #if (_USE_SSE)
   typedef __m128 Sample;
 #else
