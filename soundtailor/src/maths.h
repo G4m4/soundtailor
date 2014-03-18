@@ -40,6 +40,9 @@ extern "C" {
 
 namespace soundtailor {
 
+/// @brief Standard value for Pi
+static const double Pi(3.14159265358979);
+
 /// @brief Fill a whole Sample with the given value
 ///
 /// @param[in]  value   Value to be copied through the whole Sample
