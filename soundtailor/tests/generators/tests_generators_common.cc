@@ -93,7 +93,9 @@ TEST(Generators, PhaseAccumulatorRange) {
     PhaseAccumulator generator;
     generator.SetFrequency(kFrequency);
 
-    for (unsigned int i(0); i < kDataTestSetSize; i += soundtailor::SampleSize) {
+    for (unsigned int i(0);
+         i < kDataTestSetSize;
+         i += soundtailor::SampleSize) {
       const Sample sample(Fill(kFreqDistribution(kRandomGenerator)));
       EXPECT_TRUE(GreaterEqual(1.0f, sample));
       EXPECT_TRUE(LessEqual(-1.0f, sample));
