@@ -118,6 +118,7 @@ typedef union {
 /// @brief Extract one element from a Sample (compile-time version)
 ///
 /// @param[in]  input   Sample to be read
+// TODO(gm): faster _mm_store_ss specialization
 template<unsigned i>
 float GetByIndex(SampleRead input) {
 #if (_USE_SSE)
