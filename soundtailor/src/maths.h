@@ -101,6 +101,21 @@ static inline Sample FillOnLength(const float base) {
   return Fill(base * soundtailor::SampleSize);
 }
 
+/// @brief Fill a whole Sample with the given (scalar) generator
+///
+/// @param[in]  generator   Generator to fill the Sample with
+template <typename TypeGenerator>
+static inline Sample FillWithFloatGenerator(TypeGenerator& generator) {
+#if (_USE_SSE)
+  return Fill(generator(),
+              generator(),
+              generator(),
+              generator());
+#else
+  return Fill(generator());
+#endif  // (_USE_SSE)
+}
+
 /// @brief Helper union for vectorized type to scalar array conversion
 typedef union {
   Sample sample_v;  ///< Vectorized type

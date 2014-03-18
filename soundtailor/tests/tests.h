@@ -39,6 +39,7 @@ using soundtailor::IGNORE;
 using soundtailor::Sample;
 using soundtailor::SampleRead;
 using soundtailor::Fill;
+using soundtailor::FillWithFloatGenerator;
 using soundtailor::GetByIndex;
 using soundtailor::Add;
 using soundtailor::AddHorizontal;
