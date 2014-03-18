@@ -147,6 +147,11 @@ static const float kMinFundamentalNorm(10.0f / kSamplingRate);
 /// @brief Arbitrary highest allowed fundamental
 static const float kMaxFundamentalNorm(1000.0f / kSamplingRate);
 
+/// @brief Arbitrary lowest allowed duration
+static const unsigned int kMinTime(0);
+/// @brief Arbitrary highest allowed duration
+static const unsigned int kMaxTime(static_cast<unsigned int>(kSamplingRate));
+
 // Smaller performance test sets in debug
 #if (_BUILD_CONFIGURATION_DEBUG)
 static const unsigned int kFilterDataPerfSetSize(16 * 1024);
