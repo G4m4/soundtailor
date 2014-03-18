@@ -13,6 +13,7 @@ include_directories(
 # Include all subdirectories tests source files
 add_subdirectory(filters)
 add_subdirectory(generators)
+add_subdirectory(modulators)
 
 # Group sources
 source_group("filters"
@@ -23,6 +24,10 @@ source_group("generators"
   FILES
   ${SOUNDTAILOR_TESTS_GENERATORS_SRC}
 )
+source_group("modulators"
+  FILES
+  ${SOUNDTAILOR_TESTS_MODULATORS_SRC}
+)
 
 # Source files
 set(SOUNDTAILOR_TESTS_SRC
@@ -30,6 +35,7 @@ set(SOUNDTAILOR_TESTS_SRC
     main.cc
     ${SOUNDTAILOR_TESTS_FILTERS_SRC}
     ${SOUNDTAILOR_TESTS_GENERATORS_SRC}
+    ${SOUNDTAILOR_TESTS_MODULATORS_SRC}
 )
 set(SOUNDTAILOR_TESTS_HDR
     tests.h
