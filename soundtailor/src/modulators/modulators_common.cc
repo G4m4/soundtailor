@@ -1,4 +1,4 @@
-/// @filename modulators_common.cc
+/// @file modulators_common.cc
 /// @brief SoundTailor common stuff for all modulators - implementation
 /// @author gm
 /// @copyright gm 2014

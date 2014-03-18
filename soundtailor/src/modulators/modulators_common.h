@@ -1,4 +1,4 @@
-/// @filename modulators_common.h
+/// @file modulators_common.h
 /// @brief SoundTailor common stuff for all modulators
 /// @author gm
 /// @copyright gm 2014

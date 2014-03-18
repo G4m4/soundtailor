@@ -1,4 +1,4 @@
-/// @filename envelopgenerator_base.h
+/// @file envelopgenerator_base.h
 /// @brief SoundTailor envelop generators common interface declaration
 ///
 /// Base interface and common methods for all envelop generators
