@@ -164,10 +164,15 @@ static const unsigned int kMaxTime(static_cast<unsigned int>(kSamplingRate));
 #if (_BUILD_CONFIGURATION_DEBUG)
 static const unsigned int kFilterDataPerfSetSize(16 * 1024);
 static const unsigned int kGeneratorDataPerfSetSize(16 * 1024);
+static const unsigned int kModulatorPerfIterations(kIterations);
 #else  // (_BUILD_CONFIGURATION_DEBUG)
 static const unsigned int kFilterDataPerfSetSize(16 * 1024 * 256);
 static const unsigned int kGeneratorDataPerfSetSize(16 * 1024 * 256);
+static const unsigned int kModulatorPerfIterations(kIterations * 16);
 #endif  // (_BUILD_CONFIGURATION_DEBUG)
+
+// Except for modulators
+static const unsigned int kModulatorDataPerfSetSize(kMaxTime * 4);
 
 /// @brief Uniform distribution of normalized frequencies
 /// in ] 0.0f ; kMaxFundamentalNorm [
