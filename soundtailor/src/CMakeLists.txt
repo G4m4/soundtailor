@@ -7,6 +7,7 @@ include_directories(
 # Retrieve source files from subdirectories
 add_subdirectory(filters)
 add_subdirectory(generators)
+add_subdirectory(modulators)
 
 # Group sources
 source_group("filters"
@@ -19,11 +20,17 @@ source_group("generators"
   ${SOUNDTAILOR_GENERATORS_SRC}
   ${SOUNDTAILOR_GENERATORS_HDR}
 )
+source_group("modulators"
+  FILES
+  ${SOUNDTAILOR_MODULATORS_SRC}
+  ${SOUNDTAILOR_MODULATORS_HDR}
+)
 
 # Sources
 set(SOUNDTAILOR_SRC
   ${SOUNDTAILOR_FILTERS_SRC}
   ${SOUNDTAILOR_GENERATORS_SRC}
+  ${SOUNDTAILOR_MODULATORS_SRC}
 )
 set(SOUNDTAILOR_HDR
   common.h
@@ -31,6 +38,7 @@ set(SOUNDTAILOR_HDR
   maths.h
   ${SOUNDTAILOR_FILTERS_HDR}
   ${SOUNDTAILOR_GENERATORS_HDR}
+  ${SOUNDTAILOR_MODULATORS_HDR}
 )
 
 # Target
