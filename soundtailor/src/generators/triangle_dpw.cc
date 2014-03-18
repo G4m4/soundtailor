@@ -18,8 +18,6 @@
 /// You should have received a copy of the GNU General Public License
 /// along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <cmath>
-
 #include "soundtailor/src/generators/triangle_dpw.h"
 #include "soundtailor/src/maths.h"
 
