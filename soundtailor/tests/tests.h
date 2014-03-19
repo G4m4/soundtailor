@@ -33,6 +33,7 @@
 #include "soundtailor/src/configuration.h"
 #include "soundtailor/src/maths.h"
 
+using soundtailor::ASSERT;
 using soundtailor::IGNORE;
 
 // Using declarations for soundtailor maths stuff

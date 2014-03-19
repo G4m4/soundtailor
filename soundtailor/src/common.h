@@ -42,19 +42,19 @@ template<typename Type> void IGNORE(const Type&) {}
 /// @brief Assume that the following condition is always true
 /// (on some compilers, allows optimization)
 #if(_COMPILER_MSVC)
-  #define ASSUME(_condition_) _assume((_condition_));
+  static inline void ASSUME(const bool condition) {_assume(condition);}
 #elif(_COMPILER_GCC)
-  #define ASSUME(_condition_) if (!(_condition_)) __builtin_unreachable();
+  static inline void ASSUME(const bool condition) {if (!(condition)) __builtin_unreachable();}
 #else
   #define ASSUME(_condition_)
 #endif  // _COMPILER_ ?
 
-/// @brief Asserts _condition_ == true
+/// @brief Asserts condition == true
 #if(_BUILD_CONFIGURATION_DEBUG)
-  #define ASSERT(_condition_) assert(_condition_)
+  static inline void ASSERT(const bool condition) {assert(condition);}
 #else
   // Maps to "assume" in release configuration for better optimization
-  #define ASSERT(_condition_) ASSUME(_condition_)
+  static inline void ASSERT(const bool condition) {ASSUME(condition);}
 #endif
 
 /// @brief "Sample" type - actually, this is the data computed at each "tick";
