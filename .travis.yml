@@ -6,7 +6,6 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install valgrind
   - sudo apt-get install g++
-  - sudo apt-get install clang-3.4
   - sudo apt-get install cmake
 before_script:
   - git submodule init
