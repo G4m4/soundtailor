@@ -95,8 +95,12 @@ class Differentiator(object):
     '''
     Implements a 1st-order differentiator the scalar way
     '''
-    def __init__(self):
-        self._last = 0.0
+    def __init__(self, last = 0.0):
+        self._last = last
+
+    def SetHistory(self, last):
+        self._last = last
+
     def ProcessSample(self, sample):
         before_diff = sample
         after_diff = sample - self._last

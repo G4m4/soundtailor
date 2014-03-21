@@ -26,6 +26,8 @@ Note that all of this mimics C++ code for testing/prototyping purpose.
 Hence it may not really seems "pythonic" and not intended to be in any way.
 '''
 
+import math
+
 from generators_common import GeneratorInterface, Differentiator, PhaseAccumulator
 from generator_triangledpw import TriangleDPW
 
@@ -58,9 +60,11 @@ if __name__ == "__main__":
     import numpy
     import pylab
 
-    freq = 3000.0
+    import utilities
+
+    freq = 440.0
     sampling_freq = 48000
-    length = 512
+    length = sampling_freq
 
     generator = SawtoothDPW(sampling_freq)
     generator.SetFrequency(freq)
@@ -68,12 +72,40 @@ if __name__ == "__main__":
     for idx, _ in enumerate(generated_data):
         generated_data[idx] = generator.ProcessSample()
 
+    # Change phase
+    generated_data = numpy.zeros(length)
+    internal_diff_data = numpy.zeros(length)
+    internal_saw_data = numpy.zeros(length)
+
+    generator_left = SawtoothDPW(sampling_freq)
+    generator_left.SetFrequency(freq)
+    for idx in range(length / 2):
+        generated_data[idx] = generator_left.ProcessSample()
+        internal_saw_data[idx] = generator_left._sawtooth_gen._current
+        internal_diff_data[idx] = generator_left._differentiator._last
+
+    generator_right = SawtoothDPW(sampling_freq)
+    generator_right.SetFrequency(freq)
+    generator_right.SetPhase(generated_data[length / 2 - 1])
+    for idx in range(length / 2, length):
+        generated_data[idx] = generator_right.ProcessSample()
+        internal_saw_data[idx] = generator_right._sawtooth_gen._current
+        internal_diff_data[idx] = generator_right._differentiator._last
+
     differentiator = Differentiator()
     diff_data = numpy.zeros(len(generated_data))
     for idx, sample in enumerate(generated_data):
         diff_data[idx] = differentiator.ProcessSample(sample)
 
-    pylab.plot(generated_data)
-    pylab.plot(diff_data)
+    view_beginning = 0
+    view_length = 512
+
+    pylab.stem(generated_data[view_beginning:view_beginning + view_length])
+    pylab.plot(diff_data[view_beginning:view_beginning + view_length], label = "diff")
+    pylab.plot(internal_saw_data[view_beginning:view_beginning + view_length], label = "internal_saw")
+    pylab.plot(internal_diff_data[view_beginning:view_beginning + view_length], label = "internal_diff")
+
+    pylab.legend()
     pylab.show()
-    
+
+    utilities.WriteWav(generated_data, "sawtooth_gen", sampling_freq)

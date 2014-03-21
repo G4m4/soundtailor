@@ -26,6 +26,7 @@ Note that all of this mimics C++ code for testing/prototyping purpose.
 Hence it may not really seems "pythonic" and not intended to be in any way.
 '''
 
+import math
 from generators_common import GeneratorInterface, Differentiator, PhaseAccumulator
 
 class TriangleDPW(GeneratorInterface):
@@ -72,8 +73,8 @@ if __name__ == "__main__":
     import utilities
 
     sampling_freq = 96000
-    freq = 0.000153496352 * sampling_freq
-    length = 104237
+    freq = 1000.0
+    length = 512
 
     generator = TriangleDPW(sampling_freq)
     generator.SetFrequency(freq)
@@ -81,13 +82,45 @@ if __name__ == "__main__":
     for idx, _ in enumerate(generated_data):
         generated_data[idx] = generator.ProcessSample()
 
+#     print(utilities.ZeroCrossings(generated_data))
+#     pylab.plot(generated_data)
+#     pylab.plot(diff_data)
+#     pylab.show()
+
+    # Change phase
+    generated_data = numpy.zeros(length)
+    ref_data = numpy.zeros(length)
+
+    generator_ref = TriangleDPW(sampling_freq)
+    generator_ref.SetFrequency(freq)
+    for idx in range(length):
+        ref_data[idx] = generator_ref.ProcessSample()
+
+    generator_left = TriangleDPW(sampling_freq)
+    generator_left.SetFrequency(freq)
+    for idx in range(length / 2):
+        generated_data[idx] = generator_left.ProcessSample()
+
+    generator_left = TriangleDPW(sampling_freq)
+    generator_left.SetFrequency(freq)
+    for idx in range(length / 2):
+        generated_data[idx] = generator_left.ProcessSample()
+
+    generator_right = TriangleDPW(sampling_freq)
+    generator_right.SetFrequency(freq)
+    generator_right.SetPhase(generated_data[length / 2 - 1])
+    for idx in range(length / 2, length):
+        generated_data[idx] = generator_right.ProcessSample()
+
     differentiator = Differentiator()
     diff_data = numpy.zeros(len(generated_data))
     for idx, sample in enumerate(generated_data):
         diff_data[idx] = differentiator.ProcessSample(sample)
 
-    print(utilities.ZeroCrossings(generated_data))
-    pylab.plot(generated_data)
-    pylab.plot(diff_data)
+    print(utilities.PrintMetadata(utilities.GetMetadata(generated_data - ref_data)))
+
+    pylab.plot(generated_data, label = "generated")
+    pylab.plot(diff_data, label = "diff")
+
+    pylab.legend()
     pylab.show()
-    
