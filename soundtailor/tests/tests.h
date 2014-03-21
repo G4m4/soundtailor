@@ -123,8 +123,8 @@ static const float kMinFundamentalNorm(10.0f / kSamplingRate);
 // TODO(gm): make this higher
 static const float kMaxFundamentalNorm(2000.0f / kSamplingRate);
 
-/// @brief Arbitrary lowest allowed key note (= A0)
-static const unsigned int kMinKeyNote(21);
+/// @brief Arbitrary lowest allowed key note (= C0)
+static const unsigned int kMinKeyNote(0);
 /// @brief Arbitrary highest allowed key note (= A6)
 // TODO(gm): make this higher
 static const unsigned int kMaxKeyNote(93);
