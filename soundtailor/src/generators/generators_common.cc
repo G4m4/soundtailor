@@ -67,7 +67,7 @@ Differentiator::Differentiator(const float last)
 }
 
 Sample Differentiator::operator()(SampleRead sample) {
-  const float before_diff(GetByIndex<3>(sample));
+  const float before_diff(GetLast(sample));
   const Sample prev(RotateOnRight(sample,
                                   last_));
   const Sample after_diff(Sub(sample, prev));

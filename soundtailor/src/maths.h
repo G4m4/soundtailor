@@ -147,6 +147,13 @@ static inline float GetByIndex(SampleRead input, const unsigned i) {
   return converter.sample[i];
 }
 
+/// @brief Extract last element from a Sample
+///
+/// @param[in]  input   Sample to be read
+static inline float GetLast(SampleRead input) {
+  return GetByIndex<3>(input);
+}
+
 /// @brief Add "left" to "right"
 static inline Sample Add(SampleRead left, SampleRead right) {
 #if (_USE_SSE)
