@@ -42,7 +42,9 @@ class TriangleDPW(GeneratorInterface):
         self._update = False
 
     def SetPhase(self, phase):
-        self._sawtooth_gen.SetPhase(phase)
+        self._ProcessParameters()
+        while(self.ProcessSample() != phase):
+            pass
 
     def SetFrequency(self, frequency):
         self._frequency = frequency
