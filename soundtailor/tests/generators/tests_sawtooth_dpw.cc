@@ -146,6 +146,50 @@ TEST(Generators, SawtoothDPWNotes) {
   }
 }
 
+/// @brief Generate half a signal with a generator, use another generator
+/// for the other half by forcing the second generator phase.
+/// No difference should be perceptible with single-generator data
+TEST(Generators, SawtoothDPWPhaseControl) {
+  for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
+    IGNORE(iterations);
+    const float kFrequency(kFreqDistribution(kRandomGenerator));
+
+    // Arbitrary data length, preferably a small one to reduce test duration
+    const unsigned int kDataLength(2048);
+
+    // Generating data
+    SawtoothDPW generator_ref;
+    SawtoothDPW generator_left;
+    SawtoothDPW generator_right;
+    generator_ref.SetFrequency(kFrequency);
+    generator_left.SetFrequency(kFrequency);
+    generator_right.SetFrequency(kFrequency);
+
+    const float kEpsilon(1e-6f);
+
+    // Creating an history
+    Sample sample(Fill(0.0f));
+    for (unsigned int i(0);
+         i < kDataLength / 2;
+         i += soundtailor::SampleSize) {
+      sample = generator_left();
+      const Sample ref(generator_ref());
+      EXPECT_TRUE(IsNear(sample, ref, kEpsilon));
+    }
+    // Forcing right generator phase
+    generator_right.SetPhase(GetLast(sample));
+
+    // Now using right generator
+    for (unsigned int i(kDataLength / 2);
+         i < kDataLength;
+         i += soundtailor::SampleSize) {
+      sample = generator_right();
+      const Sample ref(generator_ref());
+      EXPECT_TRUE(IsNear(sample, ref, kEpsilon));
+    }
+  }  // iterations?
+}
+
 /// @brief Generates a signal (performance tests)
 TEST(Generators, SawtoothDPWPerf) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
