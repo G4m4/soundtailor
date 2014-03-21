@@ -49,9 +49,11 @@ void TriangleDPW::SetPhase(const float phase) {
   // Phase is supposed to be in [-1.0 ; 1.0], hence the assert
   ASSERT(phase <= 1.0f);
   ASSERT(phase >= -1.0f);
-  // If we are not sure, we can use the following:
-  // phase_ = Wrap(phase);
-  sawtooth_gen_.SetPhase(phase);
+  // This is an arbitrary value below which samples are considered equal
+  // TODO(gm): a clean definition for this
+  const float kEpsilon(1e-6f);
+  // TODO(gm): a clean, analytic resolution of this
+  while (!IsAnyNear(Fill(phase), this->operator()(), kEpsilon));
 }
 
 void TriangleDPW::SetFrequency(const float frequency) {

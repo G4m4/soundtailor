@@ -45,7 +45,10 @@ void PhaseAccumulator::SetPhase(const float phase) {
   ASSERT(phase >= -1.0f);
   // If we are not sure, we can use the following:
   // phase_ = Wrap(phase);
-  phase_ = FillIncremental(phase, GetByIndex<0>(increment_));
+  const float actual_increment(GetByIndex<0>(increment_)
+                               / static_cast<float>(soundtailor::SampleSize));
+  phase_ = FillIncremental(phase + actual_increment,
+                           actual_increment);
 }
 
 void PhaseAccumulator::SetFrequency(const float frequency) {
