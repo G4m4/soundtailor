@@ -361,8 +361,6 @@ static inline bool IsMaskNull(SampleRead input) {
   return input == 0.0f;
 #endif
 }
-// From this point, intrinsics are no longer used,
-// these are only composition of above functions
 
 /// @brief Helper binary function:
 /// true if each input element is >= than the matching threshold element
@@ -375,13 +373,28 @@ static inline bool GreaterEqual(SampleRead threshold, SampleRead input) {
 #endif
 }
 
+/// @brief Helper binary function:
+/// true if any input element is >= than the matching threshold element
+static inline bool GreaterEqualAny(SampleRead threshold, SampleRead input) {
+#if (_USE_SSE)
+  const Sample test_result(_mm_cmpge_ps(threshold, input));
+  return !IsMaskNull(test_result);
+#else
+  return threshold >= input;
+#endif
+}
+
+
+// From this point, intrinsics are no longer used,
+// these are only composition of above functions
+
+
 /// @brief Helper function: limit input into [min ; max]
 static inline Sample Clamp(SampleRead input,
                            const SampleRead min,
                            const SampleRead max) {
   return Min(Max(input, min), max);
 }
-
 
 /// @brief Multiply a Sample by a scalar constant
 ///
@@ -406,6 +419,41 @@ static inline bool GreaterEqual(const float threshold, SampleRead input) {
   return GreaterEqual(Fill(threshold), input);
 }
 
+/// @brief Helper binary function:
+/// true if any input elements are >= than the given threshold
+static inline bool GreaterEqualAny(const float threshold, SampleRead input) {
+  return GreaterEqualAny(Fill(threshold), input);
+}
+
+/// @brief Helper binary function:
+/// true if both input are closer than the given threshold
+///
+/// @param[in]  left   First Sample
+/// @param[in]  right   Second Sample
+/// @param[in]  threshold   Threshold below which samples are considered close
+static inline bool IsNear(SampleRead left,
+                          SampleRead right,
+                          const float threshold) {
+#if (_USE_SSE)
+  const Sample abs_diff(Abs(Sub(left, right)));
+  return GreaterEqual(threshold, abs_diff);
+#endif
+}
+
+/// @brief Helper binary function:
+/// true if any input elements are closer than the given threshold
+///
+/// @param[in]  left   First Sample
+/// @param[in]  right   Second Sample
+/// @param[in]  threshold   Threshold below which samples are considered close
+static inline bool IsAnyNear(SampleRead left,
+                             SampleRead right,
+                             const float threshold) {
+#if (_USE_SSE)
+  const Sample abs_diff(Abs(Sub(left, right)));
+  return GreaterEqualAny(threshold, abs_diff);
+#endif
+}
 }  // namespace soundtailor
 
 #endif  // SOUNDTAILOR_SRC_MATHS_H_
