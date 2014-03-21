@@ -223,3 +223,16 @@ TEST(Generators, DifferentiatedSawtooth) {
     }
   }
 }
+
+/// @brief Differentiate random values (performance test)
+TEST(Generators, DifferentiatorPerf) {
+  Differentiator differentiator;
+  for (unsigned int i(0);
+       i < kFilterDataPerfSetSize;
+       i += soundtailor::SampleSize) {
+    const Sample input(Fill(kNormDistribution(kRandomGenerator)));
+    const Sample diff(differentiator(input));
+    // No actual test!
+    EXPECT_TRUE(LessThan(-2.0f, diff));
+  }
+}
