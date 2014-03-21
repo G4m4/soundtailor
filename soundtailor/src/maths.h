@@ -340,10 +340,40 @@ static inline Sample IncrementAndWrap(SampleRead input, SampleRead increment) {
 #endif  // (_USE_SSE)
 }
 
+/// @brief Helper binary function: return true if all input elements are true
+///
+/// @param[in]  input   Input to be checked
+static inline bool IsMaskFull(SampleRead input) {
+#if (_USE_SSE)
+  return 15 == _mm_movemask_ps(input);
+#else
+  return input == 1.0f;
+#endif
+}
 
+/// @brief Helper binary function: return true if all input elements are null
+///
+/// @param[in]  input   Input to be checked
+static inline bool IsMaskNull(SampleRead input) {
+#if (_USE_SSE)
+  return 0 == _mm_movemask_ps(input);
+#else
+  return input == 0.0f;
+#endif
+}
 // From this point, intrinsics are no longer used,
 // these are only composition of above functions
 
+/// @brief Helper binary function:
+/// true if each input element is >= than the matching threshold element
+static inline bool GreaterEqual(SampleRead threshold, SampleRead input) {
+#if (_USE_SSE)
+  const Sample test_result(_mm_cmpge_ps(threshold, input));
+  return IsMaskFull(test_result);
+#else
+  return threshold >= input;
+#endif
+}
 
 /// @brief Helper function: limit input into [min ; max]
 static inline Sample Clamp(SampleRead input,
@@ -368,6 +398,12 @@ static inline Sample Abs(SampleRead input) {
 #else
   return std::fabs(input);
 #endif  // (_USE_SSE)
+}
+
+/// @brief Helper binary function:
+/// true if all input elements are >= than the given threshold
+static inline bool GreaterEqual(const float threshold, SampleRead input) {
+  return GreaterEqual(Fill(threshold), input);
 }
 
 }  // namespace soundtailor

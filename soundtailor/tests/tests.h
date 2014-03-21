@@ -53,24 +53,11 @@ using soundtailor::Sgn;
 using soundtailor::SgnNoZero;
 using soundtailor::Store;
 using soundtailor::Round;
+using soundtailor::IsMaskFull;
+using soundtailor::IsMaskNull;
+using soundtailor::GreaterEqual;
 
 // Tests-specific maths (comparison operators) stuff
-
-static inline bool IsMaskNull(SampleRead value) {
-#if (_USE_SSE)
-  return 0 == _mm_movemask_ps(value);
-#else
-  return value == 0.0f;
-#endif
-}
-
-static inline bool IsMaskFull(SampleRead value) {
-#if (_USE_SSE)
-  return 15 == _mm_movemask_ps(value);
-#else
-  return value == 1.0f;
-#endif
-}
 
 static inline bool GreaterThan(const float threshold, SampleRead value) {
 #if (_USE_SSE)
@@ -80,22 +67,6 @@ static inline bool GreaterThan(const float threshold, SampleRead value) {
   return threshold > value;
 #endif
 }
-
-static inline bool GreaterEqual(const float threshold, SampleRead value) {
-#if (_USE_SSE)
-  const Sample test_result(_mm_cmpge_ps(Fill(threshold), value));
-  return IsMaskFull(test_result);
-#else
-  return threshold >= value;
-#endif
-}
-
-#if (_USE_SSE)
-static inline bool GreaterEqual(SampleRead threshold, SampleRead value) {
-  const Sample test_result(_mm_cmpge_ps(threshold, value));
-  return IsMaskFull(test_result);
-}
-#endif
 
 static inline bool LessThan(const float threshold, SampleRead value) {
 #if (_USE_SSE)
