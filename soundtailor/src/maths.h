@@ -419,7 +419,7 @@ static inline Sample Abs(SampleRead input) {
 static inline bool GreaterEqual(const float threshold, SampleRead input) {
   return GreaterEqual(Fill(threshold), input);
 }
-#endif (_USE_SSE)
+#endif  // (_USE_SSE)
 
 /// @brief Helper binary function:
 /// true if any input elements are >= than the given threshold
@@ -427,7 +427,7 @@ static inline bool GreaterEqual(const float threshold, SampleRead input) {
 static inline bool GreaterEqualAny(const float threshold, SampleRead input) {
   return GreaterEqualAny(Fill(threshold), input);
 }
-#endif (_USE_SSE)
+#endif  // (_USE_SSE)
 
 /// @brief Helper binary function:
 /// true if both input are closer than the given threshold

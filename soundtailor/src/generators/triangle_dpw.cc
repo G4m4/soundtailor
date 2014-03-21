@@ -53,7 +53,9 @@ void TriangleDPW::SetPhase(const float phase) {
   // TODO(gm): a clean definition for this
   const float kEpsilon(1e-6f);
   // TODO(gm): a clean, analytic resolution of this
-  while (!IsAnyNear(Fill(phase), this->operator()(), kEpsilon));
+  while (!IsAnyNear(Fill(phase), this->operator()(), kEpsilon)) {
+    continue;
+  }
 }
 
 void TriangleDPW::SetFrequency(const float frequency) {
