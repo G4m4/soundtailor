@@ -415,15 +415,19 @@ static inline Sample Abs(SampleRead input) {
 
 /// @brief Helper binary function:
 /// true if all input elements are >= than the given threshold
+#if (_USE_SSE)
 static inline bool GreaterEqual(const float threshold, SampleRead input) {
   return GreaterEqual(Fill(threshold), input);
 }
+#endif (_USE_SSE)
 
 /// @brief Helper binary function:
 /// true if any input elements are >= than the given threshold
+#if (_USE_SSE)
 static inline bool GreaterEqualAny(const float threshold, SampleRead input) {
   return GreaterEqualAny(Fill(threshold), input);
 }
+#endif (_USE_SSE)
 
 /// @brief Helper binary function:
 /// true if both input are closer than the given threshold
@@ -434,10 +438,8 @@ static inline bool GreaterEqualAny(const float threshold, SampleRead input) {
 static inline bool IsNear(SampleRead left,
                           SampleRead right,
                           const float threshold) {
-#if (_USE_SSE)
   const Sample abs_diff(Abs(Sub(left, right)));
   return GreaterEqual(threshold, abs_diff);
-#endif
 }
 
 /// @brief Helper binary function:
@@ -449,11 +451,10 @@ static inline bool IsNear(SampleRead left,
 static inline bool IsAnyNear(SampleRead left,
                              SampleRead right,
                              const float threshold) {
-#if (_USE_SSE)
   const Sample abs_diff(Abs(Sub(left, right)));
   return GreaterEqualAny(threshold, abs_diff);
-#endif
 }
+
 }  // namespace soundtailor
 
 #endif  // SOUNDTAILOR_SRC_MATHS_H_
