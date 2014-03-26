@@ -38,6 +38,11 @@ class SawtoothDPW(TriangleDPW):
     def __init__(self, sampling_rate):
         super(SawtoothDPW, self).__init__(sampling_rate)
 
+    def SetPhase(self, phase):
+        self._ProcessParameters()
+        self._sawtooth_gen.SetPhase(phase)
+        self.ProcessSample()
+
     def ProcessSample(self):
         self._ProcessParameters()
         current = self._sawtooth_gen.ProcessSample()
