@@ -75,22 +75,13 @@ if __name__ == "__main__":
     import utilities
 
     sampling_freq = 96000
-    freq = 1000.0
-    length = 512
-
-    generator = TriangleDPW(sampling_freq)
-    generator.SetFrequency(freq)
-    generated_data = numpy.zeros(length)
-    for idx, _ in enumerate(generated_data):
-        generated_data[idx] = generator.ProcessSample()
-
-#     print(utilities.ZeroCrossings(generated_data))
-#     pylab.plot(generated_data)
-#     pylab.plot(diff_data)
-#     pylab.show()
+    freq = 2500.0
+    length = 256
 
     # Change phase
     generated_data = numpy.zeros(length)
+    internal_saw_data = numpy.zeros(length)
+    internal_diff_data = numpy.zeros(length)
     ref_data = numpy.zeros(length)
 
     generator_ref = TriangleDPW(sampling_freq)
@@ -103,16 +94,16 @@ if __name__ == "__main__":
     for idx in range(length / 2):
         generated_data[idx] = generator_left.ProcessSample()
 
-    generator_left = TriangleDPW(sampling_freq)
-    generator_left.SetFrequency(freq)
-    for idx in range(length / 2):
-        generated_data[idx] = generator_left.ProcessSample()
+        internal_saw_data[idx] = generator_left._sawtooth_gen._current
+        internal_diff_data[idx] = generator_left._differentiator._last
 
     generator_right = TriangleDPW(sampling_freq)
     generator_right.SetFrequency(freq)
     generator_right.SetPhase(generated_data[length / 2 - 1])
     for idx in range(length / 2, length):
         generated_data[idx] = generator_right.ProcessSample()
+        internal_saw_data[idx] = generator_right._sawtooth_gen._current
+        internal_diff_data[idx] = generator_right._differentiator._last
 
     differentiator = Differentiator()
     diff_data = numpy.zeros(len(generated_data))
@@ -122,7 +113,11 @@ if __name__ == "__main__":
     print(utilities.PrintMetadata(utilities.GetMetadata(generated_data - ref_data)))
 
     pylab.plot(generated_data, label = "generated")
+    pylab.plot(internal_saw_data, label = "internal_saw")
+    pylab.plot(internal_diff_data, label = "internal_diff")
     pylab.plot(diff_data, label = "diff")
 
     pylab.legend()
     pylab.show()
+
+    utilities.WriteWav(generated_data, "triangle_gen", sampling_freq)

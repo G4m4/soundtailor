@@ -62,9 +62,9 @@ if __name__ == "__main__":
 
     import utilities
 
-    freq = 440.0
+    freq = 1000.0
     sampling_freq = 48000
-    length = sampling_freq
+    length = 256
 
     generator = SawtoothDPW(sampling_freq)
     generator.SetFrequency(freq)
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     view_beginning = 0
     view_length = 512
 
-    pylab.stem(generated_data[view_beginning:view_beginning + view_length])
+    pylab.plot(generated_data[view_beginning:view_beginning + view_length], label = "generated")
     pylab.plot(diff_data[view_beginning:view_beginning + view_length], label = "diff")
     pylab.plot(internal_saw_data[view_beginning:view_beginning + view_length], label = "internal_saw")
     pylab.plot(internal_diff_data[view_beginning:view_beginning + view_length], label = "internal_diff")
