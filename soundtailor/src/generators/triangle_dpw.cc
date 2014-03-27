@@ -29,11 +29,12 @@ namespace generators {
 
 TriangleDPW::TriangleDPW(const float phase)
     : Generator_Base(phase),
-      sawtooth_gen_(phase),
+      sawtooth_gen_(),
       differentiator_(),
       normalization_factor_(0.0f) {
   ASSERT(phase <= 1.0f);
   ASSERT(phase >= -1.0f);
+  SetPhase(phase);
 }
 
 Sample TriangleDPW::operator()(void) {

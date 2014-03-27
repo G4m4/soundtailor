@@ -28,6 +28,7 @@ SawtoothDPW::SawtoothDPW(const float phase)
     : TriangleDPW(phase) {
   ASSERT(phase <= 1.0f);
   ASSERT(phase >= -1.0f);
+  SetPhase(phase);
 }
 
 Sample SawtoothDPW::operator()(void) {

@@ -40,10 +40,11 @@ class TriangleDPW(GeneratorInterface):
         self._normalization_factor = 0.0
         self._frequency = 0.0
         self._update = False
+        self.SetPhase(0.0)
 
     def SetPhase(self, phase):
         self._ProcessParameters()
-        value = -phase / 2.0 + 0.5
+        value = phase * -0.5 + 0.5
         self._sawtooth_gen.SetPhase(value)
         self.ProcessSample()
 

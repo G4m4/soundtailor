@@ -37,6 +37,7 @@ class SawtoothDPW(TriangleDPW):
     '''
     def __init__(self, sampling_rate):
         super(SawtoothDPW, self).__init__(sampling_rate)
+        self.SetPhase(0.0)
 
     def SetPhase(self, phase):
         self._ProcessParameters()
