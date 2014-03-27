@@ -47,6 +47,14 @@ float SawtoothDPW::ProcessScalar(void) {
   return normalization_factor_ * differentiator_.ProcessScalar(squared);
 }
 
+void SawtoothDPW::SetPhase(const float phase) {
+  ASSERT(phase <= 1.0f);
+  ASSERT(phase >= -1.0f);
+  sawtooth_gen_.SetPhase(phase);
+  // 1-sample advance required here
+  ProcessScalar();
+}
+
 void SawtoothDPW::SetFrequency(const float frequency) {
   ASSERT(frequency >= 0.0f);
   ASSERT(frequency <= 0.5f);

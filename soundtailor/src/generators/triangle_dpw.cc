@@ -18,6 +18,9 @@
 /// You should have received a copy of the GNU General Public License
 /// along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 
+// std::fabs
+#include <cmath>
+
 #include "soundtailor/src/generators/triangle_dpw.h"
 #include "soundtailor/src/maths.h"
 
@@ -55,16 +58,14 @@ float TriangleDPW::ProcessScalar(void) {
 }
 
 void TriangleDPW::SetPhase(const float phase) {
-  // Phase is supposed to be in [-1.0 ; 1.0], hence the assert
   ASSERT(phase <= 1.0f);
   ASSERT(phase >= -1.0f);
-  // This is an arbitrary value below which samples are considered equal
-  // TODO(gm): a clean definition for this
-  const float kEpsilon(1e-6f);
-  // TODO(gm): a clean, analytic resolution of this
-  while (!IsAnyNear(Fill(phase), this->operator()(), kEpsilon)) {
-    continue;
-  }
+  // there might be a phase derivative issue (e.g. an increasing phase
+  // changed for a decreasing one) but the signal is still continuous
+  const float actual_phase = phase * -0.5f + 0.5f;
+  sawtooth_gen_.SetPhase(actual_phase);
+  // 1-sample advance required here
+  ProcessScalar();
 }
 
 void TriangleDPW::SetFrequency(const float frequency) {

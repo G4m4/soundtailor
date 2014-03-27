@@ -34,6 +34,7 @@ class SawtoothDPW : public TriangleDPW {
   explicit SawtoothDPW(const float phase = 0.0f);
   virtual Sample operator()(void);
   virtual float ProcessScalar(void);
+  virtual void SetPhase(const float phase);
   virtual void SetFrequency(const float frequency);
 };
 
