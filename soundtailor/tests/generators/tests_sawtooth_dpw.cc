@@ -148,44 +148,53 @@ TEST(Generators, SawtoothDPWNotes) {
 
 /// @brief Generate half a signal with a generator, use another generator
 /// for the other half by forcing the second generator phase.
-/// No difference should be perceptible with single-generator data
+/// No difference should be perceptible at the transition
 TEST(Generators, SawtoothDPWPhaseControl) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
     IGNORE(iterations);
     const float kFrequency(kFreqDistribution(kRandomGenerator));
 
-    // Arbitrary data length, preferably a small one to reduce test duration
-    const unsigned int kDataLength(2048);
+    // The history must be a non-integer number of periods:
+    // this prevent having the transition falls on the period beginning/ending
+    const float kSignalDataPeriod(1.3f);
+    const unsigned int kHistoryLength(static_cast<unsigned int>(
+                                        std::floor((0.5f / kFrequency)
+                                                * kSignalDataPeriod)));
 
     // Generating data
-    SawtoothDPW generator_ref;
     SawtoothDPW generator_left;
     SawtoothDPW generator_right;
-    generator_ref.SetFrequency(kFrequency);
     generator_left.SetFrequency(kFrequency);
     generator_right.SetFrequency(kFrequency);
 
-    const float kEpsilon(1e-6f);
+    // A small epsilon is added for differentiation imprecisions
+    const float kMaxDelta(4.0f * kFrequency + 5e-5f);
 
     // Creating an history
     Sample sample(Fill(0.0f));
     for (unsigned int i(0);
-         i < kDataLength / 2;
+         i < kHistoryLength;
          i += soundtailor::SampleSize) {
       sample = generator_left();
-      const Sample ref(generator_ref());
-      EXPECT_TRUE(IsNear(sample, ref, kEpsilon));
+    }
+    // The transition may fall anywhere!
+    unsigned int kTransitionIndex(kHistoryLength % soundtailor::SampleSize);
+    if (kTransitionIndex != 0) {
+      kTransitionIndex -= 1;
     }
     // Forcing right generator phase
-    generator_right.SetPhase(GetLast(sample));
-
-    // Now using right generator
-    for (unsigned int i(kDataLength / 2);
-         i < kDataLength;
+    const float current_phase(GetByIndex(sample, kTransitionIndex));
+    generator_right.SetPhase(current_phase);
+    IsContinuous<SawtoothDPW> is_continuous(generator_right,
+                                            kMaxDelta,
+                                            current_phase);
+    // Check the next 4 Samples for continuity:
+    // only the transition is interesting here
+    for (unsigned int i(kHistoryLength);
+         i < kHistoryLength + 4;
          i += soundtailor::SampleSize) {
-      sample = generator_right();
-      const Sample ref(generator_ref());
-      EXPECT_TRUE(IsNear(sample, ref, kEpsilon));
+           bool test (is_continuous());
+      EXPECT_TRUE(test);
     }
   }  // iterations?
 }
