@@ -114,15 +114,23 @@ if __name__ == "__main__":
     import numpy
     import pylab
 
-    freq = 352.0
+    freq = 0.00179174564 * 48000
     sampling_freq = 48000
-    length = 512
+    length = 1024
 
-    sawtooth_gen = PhaseAccumulator(sampling_freq)
-    sawtooth_gen.SetFrequency(freq)
+    # Change phase
     generated_data = numpy.zeros(length)
-    for idx, _ in enumerate(generated_data):
-        generated_data[idx] = sawtooth_gen.ProcessSample()
+
+    generator_left = PhaseAccumulator(sampling_freq)
+    generator_left.SetFrequency(freq)
+    for idx in range(length / 2):
+        generated_data[idx] = generator_left.ProcessSample()
+
+    generator_right = PhaseAccumulator(sampling_freq)
+    generator_right.SetFrequency(freq)
+    generator_right.SetPhase(generated_data[length / 2 - 1])
+    for idx in range(length / 2, length):
+        generated_data[idx] = generator_right.ProcessSample()
 
     differentiator = Differentiator()
     diff_data = numpy.zeros(len(generated_data))
