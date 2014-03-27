@@ -225,6 +225,27 @@ static inline Sample RotateOnRight(SampleRead input,
 #endif  // (_USE_SSE)
 }
 
+/// @brief Shift to left all elements of the input by 1,
+/// and shift in the given value
+///
+/// E.g. given (x_{n}, x_{n + 1}, x_{n + 2}, x_{n + 3})
+/// return (x_{n + 1}, x_{n + 2}, x_{n + 3}, value)
+///
+/// @param[in]  input   Sample to be shifted
+/// @param[in]  value   value to be shifted in
+static inline Sample RotateOnLeft(SampleRead input,
+                                   const float value) {
+  // TODO(gm): clarify left/right stuff since sse vectors order is not trivial
+#if (_USE_SSE)
+  const Sample rotated(_mm_castsi128_ps(
+                       _mm_srli_si128(_mm_castps_si128(input), 4)));
+  return Add(Fill(value, 0.0f, 0.0f, 0.0f), rotated);
+#else
+  IGNORE(input);
+  return value;
+#endif  // (_USE_SSE)
+}
+
 /// @brief Return the sign of each element of the Sample
 ///
 /// Sgn(0.0) return 0.0
