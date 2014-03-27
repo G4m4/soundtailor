@@ -57,6 +57,7 @@ using soundtailor::IsMaskFull;
 using soundtailor::IsMaskNull;
 using soundtailor::GreaterEqual;
 using soundtailor::IsNear;
+using soundtailor::RotateOnRight;
 
 // Tests-specific maths (comparison operators) stuff
 
