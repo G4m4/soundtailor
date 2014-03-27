@@ -125,7 +125,7 @@ TEST(Generators, SawtoothDPWZeroCrossings) {
 }
 
 /// @brief Generates a signal at each frequency corresponding
-/// to key notes from C1 to C8, check for expected zero crossing
+/// to key notes in the available range, check for expected zero crossing
 TEST(Generators, SawtoothDPWNotes) {
   for (unsigned int key_note(kMinKeyNote);
        key_note < kMaxKeyNote;
