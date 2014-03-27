@@ -148,6 +148,13 @@ static inline float GetByIndex(SampleRead input, const unsigned i) {
   return converter.sample[i];
 }
 
+/// @brief Extract first element from a Sample
+///
+/// @param[in]  input   Sample to be read
+static inline float GetFirst(SampleRead input) {
+  return GetByIndex<0>(input);
+}
+
 /// @brief Extract last element from a Sample
 ///
 /// @param[in]  input   Sample to be read
