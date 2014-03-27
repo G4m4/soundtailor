@@ -434,6 +434,18 @@ static inline Sample MulConst(const float constant, SampleRead input) {
   return Mul(Fill(constant), input);
 }
 
+/// @brief Normalize the input based on actual Sample length
+///
+/// @param[in]  input    Value to be normalized
+static inline Sample Normalize(SampleRead input) {
+#if (_USE_SSE)
+  // Note: division deliberately avoided
+  return MulConst(0.25f, input);
+#else
+  return input;
+#endif  // (_USE_SSE)
+}
+
 /// @brief Return the absolute value of each element of the Sample
 static inline Sample Abs(SampleRead input) {
 #if (_USE_SSE)
