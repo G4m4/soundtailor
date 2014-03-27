@@ -227,7 +227,7 @@ TEST(Generators, SawtoothDPWPerf) {
       const Sample kCurrent(generator());
       sample_idx += soundtailor::SampleSize;
       // No actual test!
-      EXPECT_TRUE(LessEqual(-1.0f, kCurrent));
+      EXPECT_TRUE(LessEqual(-2.0f, kCurrent));
     }
   }
 }

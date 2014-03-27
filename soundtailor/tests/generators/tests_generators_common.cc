@@ -200,7 +200,7 @@ TEST(Generators, PhaseAccumulatorPerf) {
       const Sample kCurrent(Fill(kFreqDistribution(kRandomGenerator)));
       sample_idx += soundtailor::SampleSize;
       // No actual test!
-      EXPECT_TRUE(LessEqual(-1.0f, kCurrent));
+      EXPECT_TRUE(LessEqual(-2.0f, kCurrent));
     }
   }
 }
