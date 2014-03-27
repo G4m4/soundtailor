@@ -142,6 +142,7 @@ float GetByIndex(SampleRead input) {
 /// @param[in]  input   Sample to be read
 /// @param[in]  i   Index of the element to retrieve
 static inline float GetByIndex(SampleRead input, const unsigned i) {
+  ASSERT(i < soundtailor::SampleSize);
   ConverterFloatScalarVector converter;
   converter.sample_v = input;
   return converter.sample[i];
