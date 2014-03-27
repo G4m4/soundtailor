@@ -43,6 +43,7 @@ using soundtailor::Fill;
 using soundtailor::FillWithFloatGenerator;
 using soundtailor::GetByIndex;
 using soundtailor::GetLast;
+using soundtailor::GetFirst;
 using soundtailor::Add;
 using soundtailor::AddHorizontal;
 using soundtailor::Sub;
