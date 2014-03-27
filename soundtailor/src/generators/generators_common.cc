@@ -40,6 +40,13 @@ Sample PhaseAccumulator::operator()(void) {
   return out;
 }
 
+float PhaseAccumulator::ProcessScalar(void) {
+  // Beware: not efficient, only to be used when a 1-sample delay is required
+  const float out(GetByIndex<0>(phase_));
+  phase_ = IncrementAndWrap(phase_, Normalize(increment_));
+  return out;
+}
+
 void PhaseAccumulator::SetPhase(const float phase) {
   ASSERT(phase <= 1.0f);
   ASSERT(phase >= -1.0f);
@@ -74,6 +81,14 @@ Sample Differentiator::operator()(SampleRead sample) {
   const Sample prev(RotateOnRight(sample,
                                   last_));
   const Sample after_diff(Sub(sample, prev));
+  last_ = before_diff;
+  return after_diff;
+}
+
+float Differentiator::ProcessScalar(float sample) {
+  const float before_diff(sample);
+  const float prev(last_);
+  const float after_diff(sample - prev);
   last_ = before_diff;
   return after_diff;
 }

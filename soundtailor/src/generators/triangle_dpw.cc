@@ -45,6 +45,15 @@ Sample TriangleDPW::operator()(void) {
   return MulConst(normalization_factor_, diff);
 }
 
+float TriangleDPW::ProcessScalar(void) {
+  // Beware: not efficient, only to be used when a 1-sample delay is required
+  const float current(sawtooth_gen_.ProcessScalar());
+  const float current_abs(std::fabs(current));
+  const float squared(current * current_abs);
+  const float minus(current - squared);
+  return normalization_factor_ * differentiator_.ProcessScalar(minus);
+}
+
 void TriangleDPW::SetPhase(const float phase) {
   // Phase is supposed to be in [-1.0 ; 1.0], hence the assert
   ASSERT(phase <= 1.0f);

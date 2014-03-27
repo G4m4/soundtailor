@@ -36,6 +36,7 @@ class TriangleDPW : public Generator_Base {
     // Nothing to do here for now
   }
   virtual Sample operator()(void);
+  virtual float ProcessScalar(void);
   virtual void SetPhase(const float phase);
   virtual void SetFrequency(const float frequency);
   virtual float Phase(void) const;

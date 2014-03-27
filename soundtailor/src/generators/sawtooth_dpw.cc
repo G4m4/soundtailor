@@ -40,6 +40,13 @@ Sample SawtoothDPW::operator()(void) {
   return MulConst(normalization_factor_, diff);
 }
 
+float SawtoothDPW::ProcessScalar(void) {
+  // Beware: not efficient, only to be used when a 1-sample delay is required
+  const float current(sawtooth_gen_.ProcessScalar());
+  const float squared(current * current);
+  return normalization_factor_ * differentiator_.ProcessScalar(squared);
+}
+
 void SawtoothDPW::SetFrequency(const float frequency) {
   ASSERT(frequency >= 0.0f);
   ASSERT(frequency <= 0.5f);
