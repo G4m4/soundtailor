@@ -199,6 +199,20 @@ TEST(Generators, SawtoothDPWPhaseControl) {
   }  // iterations?
 }
 
+/// @brief Check that the first generated sample is always a zero
+TEST(Generators, SawtoothDPWBeginsAtZero) {
+  for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
+    IGNORE(iterations);
+    const float kFrequency(kFreqDistribution(kRandomGenerator));
+
+    // Generating data
+    SawtoothDPW generator;
+    generator.SetFrequency(kFrequency);
+    const float first_sample(GetFirst(generator()));
+    EXPECT_EQ(0.0f, first_sample);
+  }  // iterations?
+}
+
 /// @brief Generates a signal (performance tests)
 TEST(Generators, SawtoothDPWPerf) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {

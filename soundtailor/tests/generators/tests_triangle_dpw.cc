@@ -198,6 +198,20 @@ TEST(Generators, TriangleDPWPhaseControl) {
   }  // iterations?
 }
 
+/// @brief Check that the first generated sample is always a zero
+TEST(Generators, TriangleDPWBeginsAtZero) {
+  for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
+    IGNORE(iterations);
+    const float kFrequency(kFreqDistribution(kRandomGenerator));
+
+    // Generating data
+    TriangleDPW generator;
+    generator.SetFrequency(kFrequency);
+    const float first_sample(GetFirst(generator()));
+    EXPECT_EQ(0.0f, first_sample);
+  }  // iterations?
+}
+
 /// @brief Generates a signal (performance tests)
 TEST(Generators, TriangleDPWPerf) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
