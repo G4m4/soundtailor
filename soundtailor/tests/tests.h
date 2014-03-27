@@ -277,4 +277,44 @@ int ComputeZeroCrossing(TypeGenerator& generator, const unsigned int length) {
 /// @brief Compute the frequency of a given piano key (A4 = 440Hz)
 float NoteToFrequency(const unsigned int key_number);
 
+/// @brief Helper structure for checking a signal continuity
+template <typename TypeGenerator>
+struct IsContinuous {
+  /// @brief Default constructor
+  ///
+  /// @param[in]  generator   Signal generator to be tested
+  /// @param[in]  threshold   Max difference between two consecutive samples
+  /// @param[in]  previous   First sample initialization
+  explicit IsContinuous(TypeGenerator& generator,
+                        const float threshold,
+                        const float previous)
+      : generator_(generator),
+        threshold_(threshold),
+        previous_(previous) {
+    ASSERT(threshold >= 0.0f);
+  }
+
+  /// @brief Check next sample continuity
+  bool operator()(void) {
+    const Sample current(generator_());
+    const float before_diff(GetLast(current));
+    const Sample prev(RotateOnRight(current,
+                                    previous_));
+    const Sample after_diff(Sub(current, prev));
+    previous_ = before_diff;
+    if (LessThan(threshold_, Abs(after_diff))) {
+      return false;
+    }
+    return true;
+  }
+
+ private:
+  // No assignment operator for this class
+  IsContinuous& operator=(const IsContinuous& right);
+
+  TypeGenerator& generator_;
+  float threshold_;
+  float previous_;
+};
+
 #endif  // SOUNDTAILOR_TESTS_TESTS_H_
