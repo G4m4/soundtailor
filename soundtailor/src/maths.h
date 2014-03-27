@@ -204,7 +204,7 @@ static inline Sample Mul(SampleRead left, SampleRead right) {
 #endif  // (_USE_SSE)
 }
 
-/// @brief Shift to left all elements of the input by 1,
+/// @brief Shift to right all elements of the input by 1,
 /// and shift in the given value
 ///
 /// E.g. given (x_{n}, x_{n + 1}, x_{n + 2}, x_{n + 3})
@@ -214,10 +214,11 @@ static inline Sample Mul(SampleRead left, SampleRead right) {
 /// @param[in]  value   value to be shifted in
 static inline Sample RotateOnRight(SampleRead input,
                                    const float value) {
+  // TODO(gm): clarify left/right stuff since sse vectors order is not trivial
 #if (_USE_SSE)
   const Sample rotated(_mm_castsi128_ps(
                        _mm_slli_si128(_mm_castps_si128(input), 4)));
-  return Add(_mm_set_ss(value), rotated);
+  return Add(Fill(0.0f, 0.0f, 0.0f, value), rotated);
 #else
   IGNORE(input);
   return value;
@@ -328,7 +329,7 @@ static inline Sample Round(SampleRead input) {
 ///
 /// @param[in]  input         Input to be wrapped - supposed not to be < 1.0
 /// @param[in]  increment     Increment to add to the input
-///@return the incremented output in [-1.0 ; 1.0[
+/// @return the incremented output in [-1.0 ; 1.0[
 static inline Sample IncrementAndWrap(SampleRead input, SampleRead increment) {
   // TODO(gm): check if a common code path can be found
 #if (_USE_SSE)
