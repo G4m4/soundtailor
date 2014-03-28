@@ -35,7 +35,7 @@ TriangleDPW::TriangleDPW(const float phase)
   ASSERT(phase <= 1.0f);
   ASSERT(phase >= -1.0f);
   SetPhase(phase);
-  ProcessScalar();
+  ProcessParameters();
 }
 
 Sample TriangleDPW::operator()(void) {
@@ -48,15 +48,6 @@ Sample TriangleDPW::operator()(void) {
   // Differentiation & Normalization
   const Sample diff(differentiator_(minus));
   return MulConst(normalization_factor_, diff);
-}
-
-float TriangleDPW::ProcessScalar(void) {
-  // Beware: not efficient, only to be used when a 1-sample delay is required
-  const float current(sawtooth_gen_.ProcessScalar());
-  const float current_abs(std::fabs(current));
-  const float squared(current * current_abs);
-  const float minus(current - squared);
-  return normalization_factor_ * differentiator_.ProcessScalar(minus);
 }
 
 void TriangleDPW::SetPhase(const float phase) {
@@ -76,6 +67,12 @@ void TriangleDPW::SetFrequency(const float frequency) {
   normalization_factor_ = 1.0f / (2.0f * frequency);
 }
 
+float TriangleDPW::ProcessParameters(void) {
+  const float current(sawtooth_gen_.ProcessParameters());
+  const float current_abs(std::fabs(current));
+  const float squared(current * current_abs);
+  const float minus(current - squared);
+  return normalization_factor_ * differentiator_.ProcessParameters(minus);
 }
 
 }  // namespace generators

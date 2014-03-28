@@ -33,9 +33,9 @@ class PhaseAccumulator : public Generator_Base {
  public:
   explicit PhaseAccumulator(const float phase = 0.0f);
   virtual Sample operator()(void);
-  virtual float ProcessScalar(void);
   virtual void SetPhase(const float phase);
   virtual void SetFrequency(const float frequency);
+  virtual float ProcessParameters(void);
 
  protected:
   Sample phase_;  ///< Instantaneous phase of the generator
@@ -50,7 +50,7 @@ class Differentiator {
  public:
   explicit Differentiator(const float last = 0.0f);
   Sample operator()(SampleRead sample);
-  float ProcessScalar(float sample);
+  float ProcessParameters(float sample);
 
  private:
   float last_;  ///< Last synthesized sample value

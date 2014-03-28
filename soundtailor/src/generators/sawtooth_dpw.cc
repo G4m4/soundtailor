@@ -29,7 +29,7 @@ SawtoothDPW::SawtoothDPW(const float phase)
   ASSERT(phase <= 1.0f);
   ASSERT(phase >= -1.0f);
   SetPhase(phase);
-  ProcessScalar();
+  ProcessParameters();
 }
 
 Sample SawtoothDPW::operator()(void) {
@@ -40,13 +40,6 @@ Sample SawtoothDPW::operator()(void) {
   // Differentiation & Normalization
   const Sample diff(differentiator_(squared));
   return MulConst(normalization_factor_, diff);
-}
-
-float SawtoothDPW::ProcessScalar(void) {
-  // Beware: not efficient, only to be used when a 1-sample delay is required
-  const float current(sawtooth_gen_.ProcessScalar());
-  const float squared(current * current);
-  return normalization_factor_ * differentiator_.ProcessScalar(squared);
 }
 
 void SawtoothDPW::SetPhase(const float phase) {
@@ -61,6 +54,12 @@ void SawtoothDPW::SetFrequency(const float frequency) {
 
   sawtooth_gen_.SetFrequency(frequency);
   normalization_factor_ = 1.0f / (4.0f * frequency);
+}
+
+float SawtoothDPW::ProcessParameters(void) {
+  const float current(sawtooth_gen_.ProcessParameters());
+  const float squared(current * current);
+  return normalization_factor_ * differentiator_.ProcessParameters(squared);
 }
 
 }  // namespace generators

@@ -188,7 +188,7 @@ TEST(Generators, SawtoothDPWPhaseControl) {
     // whatever the parameterization order
     generator_right.SetFrequency(kFrequency);
     // This is required in order to clear the generator history
-    generator_right.ProcessScalar();
+    generator_right.ProcessParameters();
     IsContinuous<SawtoothDPW> is_continuous(generator_right,
                                             kMaxDelta,
                                             current_phase);

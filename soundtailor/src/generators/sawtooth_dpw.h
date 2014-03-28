@@ -33,12 +33,9 @@ class SawtoothDPW : public TriangleDPW {
  public:
   explicit SawtoothDPW(const float phase = 0.0f);
   virtual Sample operator()(void);
-  // TODO(gm): Find a better name for this
-  virtual float ProcessScalar(void);
-  // 1-sample advance required after calling this function!
-  // The frequency also needs to be set
   virtual void SetPhase(const float phase);
   virtual void SetFrequency(const float frequency);
+  virtual float ProcessParameters(void);
 };
 
 }  // namespace generators

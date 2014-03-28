@@ -76,6 +76,15 @@ class Generator_Base {
   /// @param[in]  frequency   Frequency to set the generator to
   virtual void SetFrequency(const float frequency) = 0;
 
+  /// @brief Make the generator take new parameters into account
+  ///
+  /// This is mandatory after a call to SetPhase(), SetFrequency(), or both
+  ///
+  /// Not having this method automated is chosen in order to keep those
+  /// generators very lightweight
+  ///
+  /// @return generated sample
+  virtual float ProcessParameters(void) = 0;
 };
 
 }  // namespace generators
