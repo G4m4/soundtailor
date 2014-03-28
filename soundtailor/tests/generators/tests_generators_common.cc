@@ -155,9 +155,19 @@ TEST(Generators, PhaseAccumulatorPhaseControl) {
          i += soundtailor::SampleSize) {
       sample = generator_left();
     }
+    // The transition may fall anywhere!
+    unsigned int kTransitionIndex(kHistoryLength % soundtailor::SampleSize);
+    if (kTransitionIndex != 0) {
+      kTransitionIndex -= 1;
+    }
     // Forcing right generator phase
-    const float current_phase(GetLast(sample));
+    const float current_phase(GetByIndex(sample, kTransitionIndex));
     generator_right.SetPhase(current_phase);
+    // Set phase AFTER frequency allows to check if the transition is OK,
+    // whatever the parameterization order
+    generator_right.SetFrequency(kFrequency);
+    // This is required in order to clear the generator history
+    generator_right.ProcessParameters();
     IsContinuous<PhaseAccumulator> is_continuous(generator_right,
                                                  kMaxDelta,
                                                  current_phase);
