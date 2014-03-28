@@ -51,10 +51,10 @@ template<typename Type> void IGNORE(const Type&) {}
 
 /// @brief Asserts condition == true
 #if(_BUILD_CONFIGURATION_DEBUG)
-  static inline void ASSERT(const bool condition) {assert(condition);}
+  #define SOUNDTAILOR_ASSERT(_condition_) (assert((_condition_)))
 #else
   // Maps to "assume" in release configuration for better optimization
-  static inline void ASSERT(const bool condition) {ASSUME(condition);}
+  #define SOUNDTAILOR_ASSERT(_condition_) {::soundtailor::ASSUME((_condition_));}
 #endif
 
 /// @brief "Sample" type - actually, this is the data computed at each "tick";

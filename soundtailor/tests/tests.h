@@ -33,7 +33,6 @@
 #include "soundtailor/src/configuration.h"
 #include "soundtailor/src/maths.h"
 
-using soundtailor::ASSERT;
 using soundtailor::IGNORE;
 
 // Using declarations for soundtailor maths stuff
@@ -287,7 +286,7 @@ struct IsContinuous {
   IsContinuous(const float threshold, const float previous)
       : threshold_(threshold),
         previous_(previous) {
-    ASSERT(threshold >= 0.0f);
+    SOUNDTAILOR_ASSERT(threshold >= 0.0f);
   }
 
   /// @brief Check next sample continuity

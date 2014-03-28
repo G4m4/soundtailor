@@ -32,8 +32,8 @@ TriangleDPW::TriangleDPW(const float phase)
       sawtooth_gen_(),
       differentiator_(),
       normalization_factor_(0.0f) {
-  ASSERT(phase <= 1.0f);
-  ASSERT(phase >= -1.0f);
+  SOUNDTAILOR_ASSERT(phase <= 1.0f);
+  SOUNDTAILOR_ASSERT(phase >= -1.0f);
   SetPhase(phase);
   ProcessParameters();
 }
@@ -51,8 +51,8 @@ Sample TriangleDPW::operator()(void) {
 }
 
 void TriangleDPW::SetPhase(const float phase) {
-  ASSERT(phase <= 1.0f);
-  ASSERT(phase >= -1.0f);
+  SOUNDTAILOR_ASSERT(phase <= 1.0f);
+  SOUNDTAILOR_ASSERT(phase >= -1.0f);
   // there might be a phase derivative issue (e.g. an increasing phase
   // changed for a decreasing one) but the signal is still continuous
   const float actual_phase = phase * -0.5f + 0.5f;
@@ -60,8 +60,8 @@ void TriangleDPW::SetPhase(const float phase) {
 }
 
 void TriangleDPW::SetFrequency(const float frequency) {
-  ASSERT(frequency >= 0.0f);
-  ASSERT(frequency <= 0.5f);
+  SOUNDTAILOR_ASSERT(frequency >= 0.0f);
+  SOUNDTAILOR_ASSERT(frequency <= 0.5f);
 
   sawtooth_gen_.SetFrequency(frequency);
   normalization_factor_ = 1.0f / (2.0f * frequency);

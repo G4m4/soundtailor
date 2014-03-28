@@ -26,8 +26,8 @@ namespace generators {
 
 SawtoothDPW::SawtoothDPW(const float phase)
     : TriangleDPW(phase) {
-  ASSERT(phase <= 1.0f);
-  ASSERT(phase >= -1.0f);
+  SOUNDTAILOR_ASSERT(phase <= 1.0f);
+  SOUNDTAILOR_ASSERT(phase >= -1.0f);
   SetPhase(phase);
   ProcessParameters();
 }
@@ -43,14 +43,14 @@ Sample SawtoothDPW::operator()(void) {
 }
 
 void SawtoothDPW::SetPhase(const float phase) {
-  ASSERT(phase <= 1.0f);
-  ASSERT(phase >= -1.0f);
+  SOUNDTAILOR_ASSERT(phase <= 1.0f);
+  SOUNDTAILOR_ASSERT(phase >= -1.0f);
   sawtooth_gen_.SetPhase(phase);
 }
 
 void SawtoothDPW::SetFrequency(const float frequency) {
-  ASSERT(frequency >= 0.0f);
-  ASSERT(frequency <= 0.5f);
+  SOUNDTAILOR_ASSERT(frequency >= 0.0f);
+  SOUNDTAILOR_ASSERT(frequency <= 0.5f);
 
   sawtooth_gen_.SetFrequency(frequency);
   normalization_factor_ = 1.0f / (4.0f * frequency);

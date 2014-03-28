@@ -99,7 +99,7 @@ float Adsd::operator()(void) {
     }
     default: {
       // Should never happen
-      ASSERT(false);
+      SOUNDTAILOR_ASSERT(false);
     }
   }  // switch(current_section_)
 

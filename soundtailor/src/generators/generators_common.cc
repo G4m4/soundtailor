@@ -30,8 +30,8 @@ PhaseAccumulator::PhaseAccumulator(const float phase)
     : Generator_Base(phase),
       phase_(Fill(phase)),
       increment_(Fill(0.0f)) {
-  ASSERT(phase <= 1.0f);
-  ASSERT(phase >= -1.0f);
+  SOUNDTAILOR_ASSERT(phase <= 1.0f);
+  SOUNDTAILOR_ASSERT(phase >= -1.0f);
 }
 
 Sample PhaseAccumulator::operator()(void) {
@@ -41,16 +41,16 @@ Sample PhaseAccumulator::operator()(void) {
 }
 
 void PhaseAccumulator::SetPhase(const float phase) {
-  ASSERT(phase <= 1.0f);
-  ASSERT(phase >= -1.0f);
+  SOUNDTAILOR_ASSERT(phase <= 1.0f);
+  SOUNDTAILOR_ASSERT(phase >= -1.0f);
   // If we are not sure, we can use the following:
   // phase_ = Wrap(phase);
   phase_ = FillIncremental(phase, GetByIndex<0>(MulConst(0.25f, increment_)));
 }
 
 void PhaseAccumulator::SetFrequency(const float frequency) {
-  ASSERT(frequency >= 0.0f);
-  ASSERT(frequency <= 0.5f);
+  SOUNDTAILOR_ASSERT(frequency >= 0.0f);
+  SOUNDTAILOR_ASSERT(frequency <= 0.5f);
 
   const float base_increment(2.0f * frequency);
   increment_ = FillOnLength(base_increment);
