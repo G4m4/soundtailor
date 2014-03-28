@@ -279,7 +279,6 @@ int ComputeZeroCrossing(TypeGenerator& generator, const unsigned int length) {
 float NoteToFrequency(const unsigned int key_number);
 
 /// @brief Helper structure for checking a signal continuity
-template <typename TypeGenerator>
 struct IsContinuous {
   /// @brief Default constructor
   ///

@@ -189,8 +189,7 @@ TEST(Generators, TriangleDPWPhaseControl) {
     generator_right.SetFrequency(kFrequency);
     // This is required in order to clear the generator history
     generator_right.ProcessParameters();
-    IsContinuous<TriangleDPW> is_continuous(kMaxDelta,
-                                            current_phase);
+    IsContinuous is_continuous(kMaxDelta, current_phase);
     // Check the next 4 Samples for continuity:
     // only the transition is interesting here
     for (unsigned int i(kHistoryLength);
