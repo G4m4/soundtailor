@@ -127,8 +127,8 @@ if __name__ == "__main__":
         generated_data[idx] = generator_left.ProcessSample()
 
     generator_right = PhaseAccumulator(sampling_freq)
-    generator_right.SetFrequency(freq)
     generator_right.SetPhase(generated_data[length / 2 - 1])
+    generator_right.SetFrequency(freq)
     for idx in range(length / 2, length):
         generated_data[idx] = generator_right.ProcessSample()
 

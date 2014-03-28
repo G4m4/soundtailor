@@ -38,11 +38,10 @@ class SawtoothDPW(TriangleDPW):
     def __init__(self, sampling_rate):
         super(SawtoothDPW, self).__init__(sampling_rate)
         self.SetPhase(0.0)
+        self.ProcessSample()
 
     def SetPhase(self, phase):
-        self._ProcessParameters()
         self._sawtooth_gen.SetPhase(phase)
-        self.ProcessSample()
 
     def ProcessSample(self):
         self._ProcessParameters()
@@ -91,8 +90,9 @@ if __name__ == "__main__":
         internal_diff_data[idx] = generator_left._differentiator._last
 
     generator_right = SawtoothDPW(sampling_freq)
-    generator_right.SetFrequency(freq)
     generator_right.SetPhase(generated_data[length / 2 - 1])
+    generator_right.SetFrequency(freq)
+    generator_right.ProcessSample()
     for idx in range(length / 2, length):
         generated_data[idx] = generator_right.ProcessSample()
         internal_saw_data[idx] = generator_right._sawtooth_gen._current

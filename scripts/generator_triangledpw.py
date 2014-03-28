@@ -41,12 +41,11 @@ class TriangleDPW(GeneratorInterface):
         self._frequency = 0.0
         self._update = False
         self.SetPhase(0.0)
+        self.ProcessSample()
 
     def SetPhase(self, phase):
-        self._ProcessParameters()
         value = phase * -0.5 + 0.5
         self._sawtooth_gen.SetPhase(value)
-        self.ProcessSample()
 
     def SetFrequency(self, frequency):
         self._frequency = frequency
@@ -66,7 +65,7 @@ class TriangleDPW(GeneratorInterface):
         if self._update:
             self._normalization_factor = self._sampling_rate \
                                             / (2.0 * self._frequency)
-            self._update_ = False
+            self._update = False
 
 if __name__ == "__main__":
     '''
@@ -99,8 +98,9 @@ if __name__ == "__main__":
         internal_diff_data[idx] = generator_left._differentiator._last
 
     generator_right = TriangleDPW(sampling_freq)
-    generator_right.SetFrequency(freq)
     generator_right.SetPhase(generated_data[length / 2 - 1])
+    generator_right.SetFrequency(freq)
+    generator_right.ProcessSample()
     for idx in range(length / 2, length):
         generated_data[idx] = generator_right.ProcessSample()
         internal_saw_data[idx] = generator_right._sawtooth_gen._current
