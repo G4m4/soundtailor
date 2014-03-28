@@ -76,8 +76,6 @@ class Generator_Base {
   /// @param[in]  frequency   Frequency to set the generator to
   virtual void SetFrequency(const float frequency) = 0;
 
-  /// @brief Generator current phase getter
-  virtual float Phase(void) const = 0;
 };
 
 }  // namespace generators

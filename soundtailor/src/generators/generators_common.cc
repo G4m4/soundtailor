@@ -61,11 +61,9 @@ void PhaseAccumulator::SetFrequency(const float frequency) {
 
   const float base_increment(2.0f * frequency);
   increment_ = FillOnLength(base_increment);
-  phase_ = FillIncremental(Phase(), base_increment);
+  phase_ = FillIncremental(GetByIndex<0>(phase_), base_increment);
 }
 
-float PhaseAccumulator::Phase(void) const {
-  return GetByIndex<0>(phase_);
 }
 
 Differentiator::Differentiator(const float last)

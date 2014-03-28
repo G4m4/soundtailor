@@ -76,8 +76,6 @@ void TriangleDPW::SetFrequency(const float frequency) {
   normalization_factor_ = 1.0f / (2.0f * frequency);
 }
 
-float TriangleDPW::Phase(void) const {
-  return sawtooth_gen_.Phase();
 }
 
 }  // namespace generators

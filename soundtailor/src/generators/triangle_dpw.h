@@ -42,7 +42,6 @@ class TriangleDPW : public Generator_Base {
   // The frequency also needs to be set
   virtual void SetPhase(const float phase);
   virtual void SetFrequency(const float frequency);
-  virtual float Phase(void) const;
 
  protected:
   PhaseAccumulator sawtooth_gen_;  //< Internal basic sawtooth signal generator
