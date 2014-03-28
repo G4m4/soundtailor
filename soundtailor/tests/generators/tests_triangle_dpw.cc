@@ -189,15 +189,14 @@ TEST(Generators, TriangleDPWPhaseControl) {
     generator_right.SetFrequency(kFrequency);
     // This is required in order to clear the generator history
     generator_right.ProcessParameters();
-    IsContinuous<TriangleDPW> is_continuous(generator_right,
-                                            kMaxDelta,
+    IsContinuous<TriangleDPW> is_continuous(kMaxDelta,
                                             current_phase);
     // Check the next 4 Samples for continuity:
     // only the transition is interesting here
     for (unsigned int i(kHistoryLength);
          i < kHistoryLength + 4;
          i += soundtailor::SampleSize) {
-      EXPECT_TRUE(is_continuous());
+      EXPECT_TRUE(is_continuous(generator_right()));
     }
   }  // iterations?
 }

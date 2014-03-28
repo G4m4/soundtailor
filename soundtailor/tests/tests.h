@@ -283,25 +283,22 @@ template <typename TypeGenerator>
 struct IsContinuous {
   /// @brief Default constructor
   ///
-  /// @param[in]  generator   Signal generator to be tested
   /// @param[in]  threshold   Max difference between two consecutive samples
   /// @param[in]  previous   First sample initialization
-  explicit IsContinuous(TypeGenerator& generator,
-                        const float threshold,
-                        const float previous)
-      : generator_(generator),
-        threshold_(threshold),
+  IsContinuous(const float threshold, const float previous)
+      : threshold_(threshold),
         previous_(previous) {
     ASSERT(threshold >= 0.0f);
   }
 
   /// @brief Check next sample continuity
-  bool operator()(void) {
-    const Sample current(generator_());
-    const float before_diff(GetLast(current));
-    const Sample prev(RotateOnRight(current,
+  ///
+  /// @param[in]  input   Sample to be tested
+  bool operator()(SampleRead input) {
+    const float before_diff(GetLast(input));
+    const Sample prev(RotateOnRight(input,
                                     previous_));
-    const Sample after_diff(Sub(current, prev));
+    const Sample after_diff(Sub(input, prev));
     previous_ = before_diff;
     if (LessThan(threshold_, Abs(after_diff))) {
       return false;
@@ -309,11 +306,6 @@ struct IsContinuous {
     return true;
   }
 
- private:
-  // No assignment operator for this class
-  IsContinuous& operator=(const IsContinuous& right);
-
-  TypeGenerator& generator_;
   float threshold_;
   float previous_;
 };

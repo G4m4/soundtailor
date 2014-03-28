@@ -168,16 +168,14 @@ TEST(Generators, PhaseAccumulatorPhaseControl) {
     generator_right.SetFrequency(kFrequency);
     // This is required in order to clear the generator history
     generator_right.ProcessParameters();
-    IsContinuous<PhaseAccumulator> is_continuous(generator_right,
-                                                 kMaxDelta,
+    IsContinuous<PhaseAccumulator> is_continuous(kMaxDelta,
                                                  current_phase);
     // Check the next 4 Samples for continuity:
     // only the transition is interesting here
     for (unsigned int i(kHistoryLength);
          i < kHistoryLength + 4;
          i += soundtailor::SampleSize) {
-           bool test(is_continuous());
-      EXPECT_TRUE(test);
+      EXPECT_TRUE(is_continuous(generator_right()));
     }
   }  // iterations?
 }
