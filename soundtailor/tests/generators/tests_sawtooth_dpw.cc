@@ -165,7 +165,6 @@ TEST(Generators, SawtoothDPWPhaseControl) {
     SawtoothDPW generator_left;
     SawtoothDPW generator_right;
     generator_left.SetFrequency(kFrequency);
-    generator_right.SetFrequency(kFrequency);
 
     // A small epsilon is added for differentiation imprecisions
     const float kMaxDelta(4.0f * kFrequency + 5e-5f);
@@ -185,6 +184,11 @@ TEST(Generators, SawtoothDPWPhaseControl) {
     // Forcing right generator phase
     const float current_phase(GetByIndex(sample, kTransitionIndex));
     generator_right.SetPhase(current_phase);
+    // Set phase AFTER frequency allows to check if the transition is OK,
+    // whatever the parameterization order
+    generator_right.SetFrequency(kFrequency);
+    // This is required in order to clear the generator history
+    generator_right.ProcessScalar();
     IsContinuous<SawtoothDPW> is_continuous(generator_right,
                                             kMaxDelta,
                                             current_phase);
@@ -193,8 +197,7 @@ TEST(Generators, SawtoothDPWPhaseControl) {
     for (unsigned int i(kHistoryLength);
          i < kHistoryLength + 4;
          i += soundtailor::SampleSize) {
-           bool test (is_continuous());
-      EXPECT_TRUE(test);
+      EXPECT_TRUE(is_continuous());
     }
   }  // iterations?
 }
