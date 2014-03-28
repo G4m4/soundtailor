@@ -29,6 +29,7 @@ SawtoothDPW::SawtoothDPW(const float phase)
   ASSERT(phase <= 1.0f);
   ASSERT(phase >= -1.0f);
   SetPhase(phase);
+  ProcessScalar();
 }
 
 Sample SawtoothDPW::operator()(void) {
@@ -52,8 +53,6 @@ void SawtoothDPW::SetPhase(const float phase) {
   ASSERT(phase <= 1.0f);
   ASSERT(phase >= -1.0f);
   sawtooth_gen_.SetPhase(phase);
-  // 1-sample advance required here
-  ProcessScalar();
 }
 
 void SawtoothDPW::SetFrequency(const float frequency) {

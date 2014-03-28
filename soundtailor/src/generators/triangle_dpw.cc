@@ -35,6 +35,7 @@ TriangleDPW::TriangleDPW(const float phase)
   ASSERT(phase <= 1.0f);
   ASSERT(phase >= -1.0f);
   SetPhase(phase);
+  ProcessScalar();
 }
 
 Sample TriangleDPW::operator()(void) {
@@ -65,8 +66,6 @@ void TriangleDPW::SetPhase(const float phase) {
   // changed for a decreasing one) but the signal is still continuous
   const float actual_phase = phase * -0.5f + 0.5f;
   sawtooth_gen_.SetPhase(actual_phase);
-  // 1-sample advance required here
-  ProcessScalar();
 }
 
 void TriangleDPW::SetFrequency(const float frequency) {
