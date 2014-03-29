@@ -139,7 +139,7 @@ static const unsigned int kMaxTime(static_cast<unsigned int>(kSamplingRate));
 #if (_BUILD_CONFIGURATION_DEBUG)
 static const unsigned int kFilterDataPerfSetSize(16 * 1024);
 static const unsigned int kGeneratorDataPerfSetSize(16 * 1024);
-static const unsigned int kModulatorPerfIterations(kIterations);
+static const unsigned int kModulatorPerfIterations(1);
 #else  // (_BUILD_CONFIGURATION_DEBUG)
 static const unsigned int kFilterDataPerfSetSize(16 * 1024 * 256);
 static const unsigned int kGeneratorDataPerfSetSize(16 * 1024 * 256);
