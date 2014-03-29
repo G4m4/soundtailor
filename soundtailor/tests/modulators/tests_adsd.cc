@@ -120,7 +120,7 @@ TEST(Modulators, AdsdTimings) {
     unsigned int kTriggerOnLength(kAttack + kDecay + kSustain);
     unsigned int kTotalLength(kTriggerOnLength + kDecay + kTail);
     // A tiny delay occurs due to differentiation and trigger unevenness
-    unsigned int kEpsilon(6);
+    unsigned int kEpsilon(2);
     unsigned int zero_crossing_idx(
       zero_crossing.GetNextZeroCrossing(kTriggerOnLength));
     while (zero_crossing_idx < kTriggerOnLength) {
@@ -132,10 +132,10 @@ TEST(Modulators, AdsdTimings) {
       zero_crossing_idx = zero_crossing.GetNextZeroCrossing(kTotalLength);
       zero_crossing_indexes.push_back(zero_crossing_idx);
     }
-    EXPECT_NEAR(kAttack, zero_crossing_indexes[1], kEpsilon);
-    EXPECT_NEAR(kAttack + kDecay, zero_crossing_indexes[2], kEpsilon);
-    EXPECT_NEAR(kTriggerOnLength, zero_crossing_indexes[3], kEpsilon);
-    EXPECT_NEAR(kTriggerOnLength + kDecay, zero_crossing_indexes[4], kEpsilon);
+    EXPECT_NEAR(kAttack, zero_crossing_indexes[0], kEpsilon);
+    EXPECT_NEAR(kAttack + kDecay, zero_crossing_indexes[1], kEpsilon);
+    EXPECT_NEAR(kTriggerOnLength, zero_crossing_indexes[2], kEpsilon);
+    EXPECT_NEAR(kTriggerOnLength + kDecay, zero_crossing_indexes[3], kEpsilon);
   }  // iterations?
 }
 
@@ -162,7 +162,7 @@ TEST(Modulators, AdsdLongTimings) {
   unsigned int kTriggerOnLength(kAttack + kDecay + kSustain);
   unsigned int kTotalLength(kTriggerOnLength + kDecay + kTail);
   // A tiny delay occurs due to differentiation and trigger unevenness
-  unsigned int kEpsilon(4);
+  unsigned int kEpsilon(2);
   unsigned int zero_crossing_idx(
     zero_crossing.GetNextZeroCrossing(kTriggerOnLength));
   while (zero_crossing_idx < kTriggerOnLength) {
@@ -174,10 +174,10 @@ TEST(Modulators, AdsdLongTimings) {
     zero_crossing_idx = zero_crossing.GetNextZeroCrossing(kTotalLength);
     zero_crossing_indexes.push_back(zero_crossing_idx);
   }
-  EXPECT_NEAR(kAttack, zero_crossing_indexes[1], kEpsilon);
-  EXPECT_NEAR(kAttack + kDecay, zero_crossing_indexes[2], kEpsilon);
-  EXPECT_NEAR(kTriggerOnLength, zero_crossing_indexes[3], kEpsilon);
-  EXPECT_NEAR(kTriggerOnLength + kDecay, zero_crossing_indexes[4], kEpsilon);
+  EXPECT_NEAR(kAttack, zero_crossing_indexes[0], kEpsilon);
+  EXPECT_NEAR(kAttack + kDecay, zero_crossing_indexes[1], kEpsilon);
+  EXPECT_NEAR(kTriggerOnLength, zero_crossing_indexes[2], kEpsilon);
+  EXPECT_NEAR(kTriggerOnLength + kDecay, zero_crossing_indexes[3], kEpsilon);
 }
 
 /// @brief Generates an envelop with one or both timing parameters null

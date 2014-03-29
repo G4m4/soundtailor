@@ -204,11 +204,10 @@ float ComputePower(TypeGenerator& generator, const unsigned int length) {
 /// @brief Helper structure for retrieving zero crossings informations
 template <typename TypeGenerator>
 struct ZeroCrossing {
-  explicit ZeroCrossing(TypeGenerator& generator)
+  explicit ZeroCrossing(TypeGenerator& generator,
+                        const float previous_sgn = 1.0f)
       : generator_(generator),
-        // TODO(gm): this may introduces an additional zero crossing,
-        // it must be initialized to the first input value
-        previous_sgn_(0.0f),
+        previous_sgn_(previous_sgn),
         cursor_(0) {
     // Nothing to do here
   }
@@ -258,13 +257,17 @@ struct ZeroCrossing {
 
 /// @brief Compute zero crossings of a signal generator for the given length
 ///
-/// @param[in]    generator      Generator to compute value from
-/// @param[in]    length         Sample length
+/// @param[in]  generator   Generator to compute value from
+/// @param[in]  length    Sample length
+/// @param[in]  initial_sgn   Initial generator sign, useful for generators
+///                           beginning at 0 and decreasing (Triangle DPW...)
 ///
 /// @return zero crossings occurence for such length
 template <typename TypeGenerator>
-int ComputeZeroCrossing(TypeGenerator& generator, const unsigned int length) {
-  ZeroCrossing<TypeGenerator> zero_crossing(generator);
+int ComputeZeroCrossing(TypeGenerator& generator,
+                        const unsigned int length,
+                        const float initial_sgn = 1.0f) {
+  ZeroCrossing<TypeGenerator> zero_crossing(generator, initial_sgn);
   int out(0);
   unsigned int zero_crossing_idx(zero_crossing.GetNextZeroCrossing(length));
   while (zero_crossing_idx < length) {
