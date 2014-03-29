@@ -58,7 +58,8 @@ class ADSD(EnvelopGeneratorInterface):
         self._cursor = 0
         self._section = 0
         rise = self.kMaxAmplitude
-        self._current_increment = self._ComputeIncrement(rise, attack)
+        run = self._attack
+        self._current_increment = self._ComputeIncrement(rise, run)
 
     def TriggerOff(self):
         self._section = 3
