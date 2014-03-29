@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 '''
 @file utilities.py
-@brief Various utilities for OpenMini related Python scripts
+@brief Various utilities for SoundTailor related Python scripts
 @author gm
-@copyright gm 2013
+@copyright gm 2014
 
-This file is part of OpenMini
+This file is part of SoundTailor
 
-OpenMini is free software: you can redistribute it and/or modify
+SoundTailor is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-OpenMini is distributed in the hope that it will be useful,
+SoundTailor is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with OpenMini.  If not, see <http://www.gnu.org/licenses/>.
+along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 '''
