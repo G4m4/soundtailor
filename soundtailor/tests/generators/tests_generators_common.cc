@@ -47,9 +47,6 @@ TEST(Generators, PhaseAccumulatorMean) {
     const float kEpsilon(1e-1f);
     const float kActual(ComputeMean(generator, kDataLength));
 
-    std::cout << "Frequency: " << kFrequency
-              << "    Mean:" << kActual << std::endl;
-
     EXPECT_NEAR(kExpected, kActual, kEpsilon);
   }  // iterations?
 }
@@ -75,9 +72,6 @@ TEST(Generators, PhaseAccumulatorPower) {
     // Very low epsilon with this algorithm!
     const float kEpsilon(6e-3f);
     const float kActual(ComputePower(generator, kDataLength));
-
-    std::cout << "Frequency: " << kFrequency
-              << "    Power:" << kActual << std::endl;
 
     EXPECT_NEAR(kExpected, kActual, kEpsilon);
   }  // iterations?
