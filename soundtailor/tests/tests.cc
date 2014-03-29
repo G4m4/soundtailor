@@ -29,3 +29,8 @@ float NoteToFrequency(const unsigned int key_number) {
   const float exponent((static_cast<float>(key_number) - 69.0f) / 12.0f);
   return std::pow(2.0f, exponent) * 440.0f;
 }
+
+unsigned int ComputeDataLength(const float frequency,
+                               const float period_count) {
+  return static_cast<unsigned int>(std::floor(0.5f * period_count / frequency));
+}

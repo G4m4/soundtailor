@@ -59,9 +59,8 @@ TEST(Generators, TriangleDPWPower) {
     const float kFrequency(kFreqDistribution(kRandomGenerator));
 
     // We are generating complete periods to prevent false positive
-    const unsigned int kDataLength(static_cast<unsigned int>(
-                                     std::floor((0.5f / kFrequency)
-                                                * kSignalDataPeriodsCount)));
+    const unsigned int kDataLength(ComputeDataLength(kFrequency,
+                                                     kSignalDataPeriodsCount));
 
     // Generating data
     TriangleDPW generator;
@@ -103,16 +102,16 @@ TEST(Generators, TriangleDPWZeroCrossings) {
     IGNORE(iterations);
 
     const float kFrequency(kFreqDistribution(kRandomGenerator));
-
-    const unsigned int kDataLength(static_cast<unsigned int>(
-                                     std::floor((0.5f / kFrequency)
-                                                * kSignalDataPeriodsCount)));
+    // Adding half a period makes the test more robusts to few samples shifts
+    const unsigned int kDataLength(ComputeDataLength(
+                                     kFrequency,
+                                     kSignalDataPeriodsCount + 0.5f));
     TriangleDPW generator;
     generator.SetFrequency(kFrequency);
 
-    // Due to rounding one or even two zero crossings may be lost/added
-    const int kEpsilon(2);
-    const int kActual(ComputeZeroCrossing(generator, kDataLength));
+    const float kEpsilon(1.0f);
+    const float kActual(static_cast<float>(ComputeZeroCrossing(generator,
+                                                               kDataLength)));
 
     EXPECT_NEAR(kSignalDataPeriodsCount, kActual, kEpsilon);
   }
@@ -125,10 +124,10 @@ TEST(Generators, TriangleDPWNotes) {
        key_note < kMaxKeyNote;
        ++key_note) {
     const float kFrequency(NoteToFrequency(key_note));
-    const unsigned int kDataLength(
-       static_cast<unsigned int>(std::floor((0.5f / kFrequency)
-                                            * kSignalDataPeriodsCount
-                                            * kSamplingRate)));
+
+    const unsigned int kDataLength(ComputeDataLength(kFrequency / kSamplingRate,
+                                                     kSignalDataPeriodsCount));
+
     TriangleDPW generator;
     generator.SetFrequency(kFrequency / kSamplingRate);
 
@@ -151,9 +150,8 @@ TEST(Generators, TriangleDPWPhaseControl) {
     // The history must be a non-integer number of periods:
     // this prevent having the transition falls on the period beginning/ending
     const float kSignalDataPeriod(1.3f);
-    const unsigned int kHistoryLength(static_cast<unsigned int>(
-                                        std::floor((0.5f / kFrequency)
-                                                * kSignalDataPeriod)));
+    const unsigned int kHistoryLength(ComputeDataLength(kFrequency,
+                                                        kSignalDataPeriod));
 
     // Generating data
     TriangleDPW generator_left;

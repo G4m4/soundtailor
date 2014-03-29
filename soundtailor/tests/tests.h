@@ -113,7 +113,7 @@ static inline bool Equal(SampleRead threshold, SampleRead value) {
 
 static const unsigned int kDataTestSetSize(32768);
 static const unsigned int kIterations(16);
-static const unsigned int kSignalDataPeriodsCount(32);
+static const float kSignalDataPeriodsCount(16.0f);
 
 /// @brief Base sampling rate unless indicated otherwise
 static const float kSamplingRate(96000.0f);
@@ -307,5 +307,13 @@ struct IsContinuous {
   float threshold_;
   float previous_;
 };
+
+/// @brief Compute how many samples are required in order to have exactly
+/// the given number of periods for the given signal frequency
+///
+/// @param[in]  frequency   Signal frequency
+/// @param[in]  period_count    Expected number of period (may be non-integer)
+unsigned int ComputeDataLength(const float frequency,
+                               const float period_count);
 
 #endif  // SOUNDTAILOR_TESTS_TESTS_H_

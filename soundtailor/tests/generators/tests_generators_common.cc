@@ -34,9 +34,8 @@ TEST(Generators, PhaseAccumulatorMean) {
     const float kFrequency(kFreqDistribution(kRandomGenerator));
 
     // We are generating complete periods to prevent false positive
-    const unsigned int kDataLength(static_cast<unsigned int>(
-                                     std::floor((0.5f / kFrequency)
-                                                * kSignalDataPeriodsCount)));
+    const unsigned int kDataLength(ComputeDataLength(kFrequency,
+                                                     kSignalDataPeriodsCount));
 
     // Generating data
     PhaseAccumulator generator;
@@ -60,9 +59,8 @@ TEST(Generators, PhaseAccumulatorPower) {
     const float kFrequency(kFreqDistribution(kRandomGenerator));
 
     // We are generating complete periods to prevent false positive
-    const unsigned int kDataLength(static_cast<unsigned int>(
-                                     std::floor((0.5f / kFrequency)
-                                                * kSignalDataPeriodsCount)));
+    const unsigned int kDataLength(ComputeDataLength(kFrequency,
+                                                     kSignalDataPeriodsCount));
 
     // Generating data
     PhaseAccumulator generator;
@@ -104,15 +102,16 @@ TEST(Generators, PhaseAccumulatorZeroCrossings) {
     IGNORE(iterations);
 
     const float kFrequency(kFreqDistribution(kRandomGenerator));
-    const unsigned int kDataLength(static_cast<unsigned int>(
-                                     std::floor((0.5f / kFrequency)
-                                                * kSignalDataPeriodsCount)));
+    // Adding half a period makes the test more robusts to few samples shifts
+    const unsigned int kDataLength(ComputeDataLength(
+                                     kFrequency,
+                                     kSignalDataPeriodsCount + 0.5f));
     PhaseAccumulator generator;
     generator.SetFrequency(kFrequency);
 
-    // Due to rounding one or even two zero crossings may be lost/added
-    const int kEpsilon(2);
-    const int kActual(ComputeZeroCrossing(generator, kDataLength));
+    const float kEpsilon(1.0f);
+    const float kActual(static_cast<float>(ComputeZeroCrossing(generator,
+                                                               kDataLength)));
 
     EXPECT_NEAR(kSignalDataPeriodsCount, kActual, kEpsilon);
   }
@@ -129,9 +128,8 @@ TEST(Generators, PhaseAccumulatorPhaseControl) {
     // The history must be a non-integer number of periods:
     // this prevent having the transition falls on the period beginning/ending
     const float kSignalDataPeriod(1.3f);
-    const unsigned int kHistoryLength(static_cast<unsigned int>(
-                                        std::floor((0.5f / kFrequency)
-                                                * kSignalDataPeriod)));
+    const unsigned int kHistoryLength(ComputeDataLength(kFrequency,
+                                                        kSignalDataPeriod));
 
     // Generating data
     PhaseAccumulator generator_left;
