@@ -113,7 +113,7 @@ static inline bool Equal(SampleRead threshold, SampleRead value) {
 
 static const unsigned int kDataTestSetSize(32768);
 static const unsigned int kIterations(16);
-static const float kSignalDataPeriodsCount(16.0f);
+static const float kSignalDataPeriodsCount(8.0f);
 
 /// @brief Base sampling rate unless indicated otherwise
 static const float kSamplingRate(96000.0f);
