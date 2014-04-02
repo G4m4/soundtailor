@@ -39,7 +39,6 @@ class Chamberlin : public Filter_Base {
 
  protected:
   float lp_;
-  float hp_;
   float bp_;
   float frequency_;
   float damping_;

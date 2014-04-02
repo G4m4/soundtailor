@@ -20,6 +20,8 @@
 
 // std::sin, std::cos
 #include <cmath>
+// std::min
+#include <algorithm>
 
 #include "soundtailor/src/maths.h"
 
@@ -31,7 +33,6 @@ namespace filters {
 Chamberlin::Chamberlin()
     : Filter_Base(),
       lp_(0.0f),
-      hp_(0.0f),
       bp_(0.0f),
       frequency_(0.0f),
       damping_(0.0f) {
@@ -42,8 +43,8 @@ Sample Chamberlin::operator()(SampleRead sample) {
   float out[soundtailor::SampleSize];
   for (unsigned int i(0); i < soundtailor::SampleSize; ++i) {
     lp_ = frequency_ * bp_ + lp_;
-    hp_ = GetByIndex(sample, i) - lp_ - bp_ * damping_;
-    bp_ = frequency_ * hp_ + bp_;
+    const float hp(GetByIndex(sample, i) - lp_ - bp_ * damping_);
+    bp_ = frequency_ * hp + bp_;
 
     out[i] = lp_;
   }
@@ -60,8 +61,8 @@ void Chamberlin::SetParameters(const float frequency,
   // Stability assertion
   SOUNDTAILOR_ASSERT(frequency * frequency + 2.0f * resonance * frequency < 4.0f);
 
-  frequency_ = static_cast<float>(2.0 * std::sin(Pi * static_cast<double>(frequency)));
-  damping_ = 1.0f / resonance;
+  damping_ = std::min(resonance, 2.0f - frequency);
+  frequency_ = frequency * (1.85f - 0.85f * frequency * damping_);
 }
 
 }  // namespace filters

@@ -26,7 +26,7 @@
 using soundtailor::filters::Chamberlin;
 
 /// @brief Frequency parameter to be set in order to have a near-passthrough
-static const float kPassthroughFrequency(1.0f / 6.0f);
+static const float kPassthroughFrequency(1.0f);
 /// @brief Resonance parameter to be set in order to have a near-passthrough
 static const float kPassthroughResonance(1.0f);
 
