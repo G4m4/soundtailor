@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
     for idx, _ in enumerate(in_data):
         out_data[idx] = lowpass.ProcessSample(in_data[idx])
-        out_data_minphase[idx] = lowpassminphase.ProcessSample(in_data[idx])
+        out_data_minphase[idx] = lowpassminphase.ProcessSampleMinimumPhase(in_data[idx])
 
     print(utilities.PrintMetadata(utilities.GetMetadata(out_data - out_data_minphase)))
 
