@@ -62,10 +62,11 @@ if __name__ == "__main__":
     '''
     Various tests/sandbox
     '''
-    import generator_sawtoothdpw
     import numpy
     import pylab
     import utilities
+
+    import generator_sawtoothdpw
 
     freq = 1000.0
     sampling_freq = 48000.0
