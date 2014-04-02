@@ -25,6 +25,8 @@
 
 // std::generate
 #include <algorithm>
+// std::bind
+#include <functional>
 #include <random>
 
 #include "gtest/gtest.h"
