@@ -45,8 +45,8 @@ class Chamberlin(filters_common.FilterInterface):
         '''
         Sets both frequency and resonance
         '''
-        self._frequency = 2.0 * math.sin(math.pi * frequency)
-        self._damping = 1.0 / resonance
+        self._damping = min(resonance, 2.0 - frequency)
+        self._frequency = frequency * (1.85 - 0.85 * frequency * self._damping)
 
     def ProcessSample(self, sample):
         '''
@@ -55,6 +55,16 @@ class Chamberlin(filters_common.FilterInterface):
         self._lp = self._frequency * self._bp + self._lp
         self._hp = sample - self._lp - self._bp * self._damping
         self._bp = self._frequency * self._hp + self._bp
+
+        return self._lp
+
+    def ProcessSampleMinimumPhase(self, sample):
+        '''
+        Actual process function
+        '''
+        self._lp = self._frequency * self._bp + self._lp
+        hp = sample - self._bp * self._damping - self._lp
+        self._bp = self._frequency * hp + self._bp
 
         return self._lp
 
@@ -71,8 +81,8 @@ if __name__ == "__main__":
     freq = 1000.0
     sampling_freq = 48000.0
     length = 256
-    filter_freq = 1.0 / 6.0
-    resonance = 1.0
+    filter_freq = 1.0
+    resonance = 0.1
 
     in_data = utilities.GenerateData(100, 2000, length, sampling_freq)
     generator = generator_sawtoothdpw.SawtoothDPW(sampling_freq)
@@ -82,14 +92,21 @@ if __name__ == "__main__":
 
     in_data = numpy.random.rand(length)
     out_data = numpy.zeros(length)
+    out_data_minphase = numpy.zeros(length)
 
     lowpass = Chamberlin()
     lowpass.SetParameters(filter_freq, resonance)
+    lowpassminphase = Chamberlin()
+    lowpassminphase.SetParameters(filter_freq, resonance)
 
     for idx, _ in enumerate(in_data):
         out_data[idx] = lowpass.ProcessSample(in_data[idx])
+        out_data_minphase[idx] = lowpassminphase.ProcessSample(in_data[idx])
+
+    print(utilities.PrintMetadata(utilities.GetMetadata(out_data - out_data_minphase)))
 
     pylab.plot(in_data, label="in")
     pylab.plot(out_data, label="out")
+    pylab.plot(out_data_minphase, label="out_minphase")
     pylab.legend()
     pylab.show()
