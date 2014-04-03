@@ -51,7 +51,7 @@ if __name__ == "__main__":
 #            '../build/soundtailor/tests/expected.dat',
              )
 
-    view_beginning = 33000
+    view_beginning = 0
     view_length = 256
 
     signals = []
