@@ -90,7 +90,7 @@ if __name__ == "__main__":
     for idx, _ in enumerate(in_data):
         in_data[idx] = generator.ProcessSample()
 
-    in_data = numpy.random.rand(length)
+    in_data = numpy.random.rand(length) * 2.0 - 1.0
     out_data = numpy.zeros(length)
     out_data_minphase = numpy.zeros(length)
 
