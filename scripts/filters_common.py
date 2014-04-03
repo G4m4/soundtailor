@@ -140,6 +140,32 @@ class FilterInterface(object):
 
     def ProcessSample(self):
         raise Exception("'Pure virtual' function called!")
+
+class AllPoleLowPass(FilterInterface):
+    '''
+    Implements a simple 1st order all-pole Low pass
+    '''
+    def __init__(self):
+        self._gain = 0.0
+        self._coeff = 0.0
+        self._history = 0.0
+
+    def SetParameters(self, frequency, resonance):
+        '''
+        Sets frequency (normalized, < 0.5)
+        '''
+        b = (math.sin(math.pi * frequency) * math.sin(math.pi * frequency))
+        self._coeff = 2.0 * (math.sqrt(b * b + b) - b)
+
+    def ProcessSample(self, sample):
+        '''
+        Actual process function
+        '''
+        out = self._coeff * sample + (1.0 - self._coeff) * self._history
+        self._history = out
+
+        return out
+
 class PoleZeroLowPass(FilterInterface):
     '''
     Implements a simple 1 pole Low pass
@@ -209,6 +235,7 @@ if __name__ == "__main__":
         in_data[idx] = generator.ProcessSample()
 
     out_data = numpy.zeros(length)
+    out_data_allpole = numpy.zeros(length)
     out_data_vectorized = numpy.zeros(length)
 
     lowpass = PoleZeroLowPass()
@@ -234,8 +261,15 @@ if __name__ == "__main__":
 
     print(utilities.PrintMetadata(utilities.GetMetadata(out_data - out_data_vectorized)))
 
+    lowpass_allpole = AllPoleLowPass()
+    lowpass_allpole.SetParameters(filter_freq, 0.0)
+
+    for idx, sample in enumerate(in_data):
+        out_data_allpole[idx] = lowpass_allpole.ProcessSample(sample)
+
     pylab.plot(in_data, label="in")
     pylab.plot(out_data, label="out")
+    pylab.plot(out_data_allpole, label="out_allpole")
     pylab.plot(out_data_vectorized, label="out_vectorized")
     pylab.legend()
     pylab.show()
