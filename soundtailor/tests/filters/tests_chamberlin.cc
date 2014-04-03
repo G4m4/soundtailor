@@ -30,7 +30,7 @@ static const float kPassthroughFrequency(1.0f);
 /// @brief Resonance parameter to be set in order to have a near-passthrough
 static const float kPassthroughResonance(1.0f);
 
-/// @brief Filters a random signal, check for mean close to the one
+/// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)
 TEST(Filters, ChamberlinOutputMean) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
@@ -52,12 +52,11 @@ TEST(Filters, ChamberlinOutputMean) {
       actual_mean = Add(actual_mean, filtered);
       expected_mean = Add(expected_mean, input);
     }
-
-    const float kActual(AddHorizontal(actual_mean));
-    const float kExpected(AddHorizontal(expected_mean));
+    const float kActual(std::abs(AddHorizontal(actual_mean)));
+    const float kExpected(std::abs(AddHorizontal(expected_mean)));
     const float kEpsilon(1e-3f * kDataTestSetSize);
 
-    EXPECT_NEAR(kExpected, kActual, kEpsilon);
+    EXPECT_GT(kExpected + kEpsilon, kActual);
   }  // iterations?
 }
 
