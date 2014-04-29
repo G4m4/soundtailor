@@ -92,4 +92,4 @@ def WriteWav(signal, filename, sampling_rate):
     '''
     return write(filename + ".wav",
                             sampling_rate,
-                            (signal * 32768).astype(numpy.int16))
+                            ((signal * 32768) - 1.0).astype(numpy.int16))
