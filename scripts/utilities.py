@@ -31,13 +31,6 @@ from scipy import signal
 from scipy import io
 from scipy.io.wavfile import write
 
-def SinSynthesis(freq, sampling_freq):
-    '''
-    Simple sin synthesis
-    '''
-    time = numpy.linspace(0, 2 * numpy.pi * freq, sampling_freq)
-    return numpy.sin(time)
-
 def GenerateData(freq_low, freq_high, length, sampling_freq):
     '''
     Simple chirp synthesis
