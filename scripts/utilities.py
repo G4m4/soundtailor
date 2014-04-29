@@ -27,8 +27,9 @@ Hence it may not really seems "pythonic" and not intended to be in any way.
 '''
 
 import numpy
+import time
+
 from scipy import signal
-from scipy import io
 from scipy.io.wavfile import write
 
 def GenerateData(freq_low, freq_high, length, sampling_freq):
@@ -93,3 +94,26 @@ def WriteWav(signal, filename, sampling_rate):
     return write(filename + ".wav",
                             sampling_rate,
                             ((signal * 32768) - 1.0).astype(numpy.int16))
+
+class Chrono(object):
+    '''
+    Simplistic chrono utility relying on time
+    '''
+    def __init__(self):
+        self._time_before = time.time()
+
+    def GetElapsed(self):
+        return time.time() - self._time_before
+
+def PrintTiming(func):
+    '''
+    Helper for returning the execution time for a function
+    Implemented as a decorator
+    '''
+    def wrapper(*arg):
+        chrono = Chrono()
+        res = func(*arg)
+        print '%s took %0.3f ms' % (func.func_name, chrono.GetElapsed() * 1000.0)
+        return res
+
+    return wrapper
