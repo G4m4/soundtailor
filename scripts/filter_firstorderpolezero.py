@@ -32,7 +32,7 @@ import filters_common
 
 class PoleZeroLowPass(filters_common.FilterInterface):
     '''
-    Implements a simple 1 pole Low pass
+    Implements a simple 1 pole - 1 zero Low pass
     '''
     def __init__(self):
         self._gain = 0.0
