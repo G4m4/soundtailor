@@ -36,9 +36,9 @@ class MoogBaseLowpass(filter_firstorderpolezero.FixedPoleZeroLowPass):
     Implements a simple 1 pole - 1 zero Low pass, with fixed coeffs tuned
     in order to be part of a bigger Moog filter
     '''
-    def __init__(self, zero_coeff):
+    def __init__(self):
         # The pole coeff will change, only the zero one is fixed here
-        super(MoogBaseLowpass, self).__init__(zero_coeff)
+        super(MoogBaseLowpass, self).__init__(0.3)
 
     def SetParameters(self, frequency, resonance):
         '''
@@ -56,12 +56,7 @@ class MoogBaseLowpass(filter_firstorderpolezero.FixedPoleZeroLowPass):
         '''
         Actual process function
         '''
-        direct = self._pole_coeff / 2.0 * sample
-        out = direct + self._last
-
-        self._last = out * (1.0 - self._pole_coeff) + self._zero_coeff * direct
-
-        return out
+        return super(MoogBaseLowpass, self).ProcessSample(sample)
 
 class Moog(filters_common.FilterInterface):
     '''
@@ -109,7 +104,7 @@ if __name__ == "__main__":
     out_data = numpy.zeros(length)
     out_base_lowpass = numpy.zeros(length)
 
-    base_lowpass = MoogBaseLowpass(0.3)
+    base_lowpass = MoogBaseLowpass()
     base_lowpass.SetParameters(filter_freq, resonance)
     lowpass = Moog()
     lowpass.SetParameters(filter_freq, resonance)
