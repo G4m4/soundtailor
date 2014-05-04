@@ -26,8 +26,6 @@ Note that all of this mimics C++ code for testing/prototyping purpose.
 Hence it may not really seems "pythonic" and not intended to be in any way.
 '''
 
-import math
-
 import filters_common
 import filter_firstorderpolezero
 
@@ -44,19 +42,18 @@ class MoogBaseLowpass(filter_firstorderpolezero.FixedPoleZeroLowPass):
         '''
         Sets frequency (normalized, < 1.0) and resonance (0 <= resonance < 4.0)
         '''
-        f = frequency * (1.0 + 0.03617 * frequency
-                                        * (4.0 - resonance) * (4.0 - resonance))
-        self._big_f = 1.25 * f * (1.0 - 0.595 * f + 0.24 * f * f)
-        self._big_r = resonance * (1.0 + 0.077 * self._big_f
-                                     - 0.117 * self._big_f * self._big_f
-                                     - 0.049 * self._big_f * self._big_f * self._big_f)
-        super(MoogBaseLowpass, self).SetParameters(self._big_f, self._big_r)
+        self._pole_coeff = frequency
 
     def ProcessSample(self, sample):
         '''
         Actual process function
         '''
-        return super(MoogBaseLowpass, self).ProcessSample(sample)
+        direct = self._pole_coeff / 1.3 * sample
+        out = direct + self._last
+
+        self._last = out * (1.0 - self._pole_coeff) + self._zero_coeff * direct
+
+        return out
 
 class Moog(filters_common.FilterInterface):
     '''
@@ -64,19 +61,39 @@ class Moog(filters_common.FilterInterface):
     '''
     def __init__(self):
         self._frequency = 0.0
-        self._damping = 0.0
+        self._resonance = 0.0
+        self._last = 0.0
+        self._filters = (MoogBaseLowpass(),
+                         MoogBaseLowpass(),
+                         MoogBaseLowpass(),
+                         MoogBaseLowpass())
 
     def SetParameters(self, frequency, resonance):
         '''
         Sets both frequency and resonance
         '''
-        pass
+        f = frequency * (1.0 + 0.03617 * frequency
+                                        * (4.0 - resonance) * (4.0 - resonance))
+        self._frequency = 1.25 * f * (1.0 - 0.595 * f + 0.24 * f * f)
+        self._resonance = resonance * (1.0 + 0.077 * self._frequency
+                                     - 0.117 * self._frequency * self._frequency
+                                     - 0.049 * self._frequency * self._frequency * self._frequency)
+        for lowpass in self._filters:
+            lowpass.SetParameters(self._frequency, self._resonance)
 
     def ProcessSample(self, sample):
         '''
         Actual process function
         '''
-        pass
+        actual_input = sample - self._resonance * self._last
+        # Todo: find a more elegant way to do that
+        out = self._filters[3].ProcessSample(
+                               self._filters[2].ProcessSample(
+                                self._filters[1].ProcessSample(
+                                    self._filters[0].ProcessSample(actual_input))))
+        self._last = out
+
+        return out
 
 if __name__ == "__main__":
     '''
@@ -91,8 +108,8 @@ if __name__ == "__main__":
     freq = 1000.0
     sampling_freq = 48000.0
     length = 256
-    filter_freq = 1.0
-    resonance = 0.1
+    filter_freq = 0.5
+    resonance = 0.0
 
     in_data = utilities.GenerateData(100, 2000, length, sampling_freq)
     generator = generator_sawtoothdpw.SawtoothDPW(sampling_freq)
@@ -100,14 +117,15 @@ if __name__ == "__main__":
     for idx, _ in enumerate(in_data):
         in_data[idx] = generator.ProcessSample()
 
-    in_data = numpy.random.rand(length) * 2.0 - 1.0
+    #in_data = numpy.random.rand(length) * 2.0 - 1.0
     out_data = numpy.zeros(length)
     out_base_lowpass = numpy.zeros(length)
 
-    base_lowpass = MoogBaseLowpass()
-    base_lowpass.SetParameters(filter_freq, resonance)
     lowpass = Moog()
     lowpass.SetParameters(filter_freq, resonance)
+    # The base lowpass has to be updated with the actual internal values
+    base_lowpass = MoogBaseLowpass()
+    base_lowpass.SetParameters(lowpass._frequency, lowpass._resonance)
 
     for idx, _ in enumerate(in_data):
         out_data[idx] = lowpass.ProcessSample(in_data[idx])
