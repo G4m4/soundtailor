@@ -59,13 +59,14 @@ class PoleZeroLowPass(filters_common.FilterInterface):
 
 class FixedPoleZeroLowPass(PoleZeroLowPass):
     '''
-    Implements a simple 1 pole - 1 zero Low pass, with fixed coeffs and
-    the ability to independently tune the zero coefficient
+    Implements a simple 1 pole - 1 zero Low pass, with a fixed zero coeff and
+    the ability to initially tune it
     '''
-    def __init__(self, pole_coeff, zero_coeff):
+    def __init__(self, zero_coeff):
+        # The pole coeff will change, only the zero one is fixed here
         super(FixedPoleZeroLowPass, self).__init__()
         self._gain = 0.0
-        self._pole_coeff = pole_coeff
+        self._pole_coeff = 0.0
         self._zero_coeff = zero_coeff
         self._last = 0.0
 
@@ -73,7 +74,8 @@ class FixedPoleZeroLowPass(PoleZeroLowPass):
         '''
         Sets frequency (normalized, < 0.5)
         '''
-        pass
+        b = math.pi * frequency
+        self._pole_coeff = (2.0 * math.sin(b)) / (math.cos(b) + math.sin(b))
 
     def ProcessSample(self, sample):
         '''
@@ -113,7 +115,8 @@ if __name__ == "__main__":
     lowpass.SetParameters(filter_freq, 0.0)
     # Assigning the same coeff to the "fixed" version with unitary zero coeff
     # should gives the same output
-    fixed_lowpass = FixedPoleZeroLowPass(lowpass._coeff, 1.0)
+    fixed_lowpass = FixedPoleZeroLowPass(1.0)
+    fixed_lowpass.SetParameters(filter_freq, 0.0)
 
     for idx, sample in enumerate(in_data):
         out_data[idx] = lowpass.ProcessSample(sample)
