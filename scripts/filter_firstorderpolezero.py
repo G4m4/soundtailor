@@ -37,8 +37,7 @@ class PoleZeroLowPass(filters_common.FilterInterface):
     def __init__(self):
         self._gain = 0.0
         self._coeff = 0.0
-        self._last_input = 0.0
-        self._last_output = 0.0
+        self._last = 0.0
 
     def SetParameters(self, frequency, resonance):
         '''
@@ -51,14 +50,11 @@ class PoleZeroLowPass(filters_common.FilterInterface):
         '''
         Actual process function
         '''
-        direct = sample + self._last_input
-        direct *= self._coeff / 2.0
-        out = direct + self._last_output * (1.0 - self._coeff)
-
-        self._last_input = sample
-        self._last_output = out
+        direct = self._coeff / 2.0 * sample
+        out = direct + self._last
 
         return out
+        self._last = out * (1.0 - self._coeff) + direct
 
     def Process4Samples(self, vector):
         '''
