@@ -57,6 +57,35 @@ class PoleZeroLowPass(filters_common.FilterInterface):
 
         return out
 
+class FixedPoleZeroLowPass(PoleZeroLowPass):
+    '''
+    Implements a simple 1 pole - 1 zero Low pass, with fixed coeffs and
+    the ability to independently tune the zero coefficient
+    '''
+    def __init__(self, pole_coeff, zero_coeff):
+        super(FixedPoleZeroLowPass, self).__init__()
+        self._gain = 0.0
+        self._pole_coeff = pole_coeff
+        self._zero_coeff = zero_coeff
+        self._last = 0.0
+
+    def SetParameters(self, frequency, resonance):
+        '''
+        Sets frequency (normalized, < 0.5)
+        '''
+        pass
+
+    def ProcessSample(self, sample):
+        '''
+        Actual process function
+        '''
+        direct = self._pole_coeff / 2.0 * sample
+        out = direct + self._last
+
+        self._last = out * (1.0 - self._pole_coeff) + self._zero_coeff * direct
+
+        return out
+
 if __name__ == "__main__":
     '''
     Various tests/sandbox
@@ -78,14 +107,22 @@ if __name__ == "__main__":
         in_data[idx] = generator.ProcessSample()
 
     out_data = numpy.zeros(length)
+    out_fixed_data = numpy.zeros(length)
 
     lowpass = PoleZeroLowPass()
     lowpass.SetParameters(filter_freq, 0.0)
+    # Assigning the same coeff to the "fixed" version with unitary zero coeff
+    # should gives the same output
+    fixed_lowpass = FixedPoleZeroLowPass(lowpass._coeff, 1.0)
 
     for idx, sample in enumerate(in_data):
         out_data[idx] = lowpass.ProcessSample(sample)
+        out_fixed_data[idx] = fixed_lowpass.ProcessSample(sample)
+
+    print(utilities.PrintMetadata(utilities.GetMetadata(out_data - out_fixed_data)))
 
     pylab.plot(in_data, label="in")
     pylab.plot(out_data, label="out")
+    pylab.plot(out_fixed_data, label="out_fixed")
     pylab.legend()
     pylab.show()
