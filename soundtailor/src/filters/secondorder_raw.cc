@@ -117,5 +117,15 @@ void SecondOrderRaw::SetParameters(const float frequency,
   coeffs_[3] = static_cast<float>(-a1 / a0);
 }
 
+const Filter_Meta& SecondOrderRaw::Meta(void) {
+  static const Filter_Meta metas(1e-5f,
+                                 0.4999f,
+                                 0.4999f,
+                                 0.0f,
+                                 0.7f,
+                                 1000.0f);  // Arbitrary value
+  return metas;
+}
+
 }  // namespace filters
 }  // namespace soundtailor

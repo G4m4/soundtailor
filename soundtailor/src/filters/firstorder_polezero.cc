@@ -53,5 +53,16 @@ void FirstOrderPoleZero::SetParameters(const float frequency,
   coeff_ = (2.0 * std::sin(lambda)) / (std::cos(lambda) + std::sin(lambda));
 }
 
+const Filter_Meta& FirstOrderPoleZero::Meta(void) {
+  static const Filter_Meta metas(1e-5f,
+                                 0.5f,
+                                 0.5f,
+                                 // No resonance anyway
+                                 0.0f,
+                                 1.0f,
+                                 1.0f);
+  return metas;
+}
+
 }  // namespace filters
 }  // namespace soundtailor

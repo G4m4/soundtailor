@@ -63,5 +63,15 @@ void Moog::SetParameters(const float frequency, const float resonance) {
   }
 }
 
+const Filter_Meta& Moog::Meta(void) {
+  static const Filter_Meta metas(1e-5f,
+                                 1.0f,
+                                 1.0f,
+                                 0.0f,
+                                 0.0f,
+                                 3.9999f);  // Arbitrary value
+  return metas;
+}
+
 }  // namespace filters
 }  // namespace soundtailor

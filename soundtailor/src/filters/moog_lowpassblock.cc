@@ -52,5 +52,15 @@ void MoogLowPassBlock::SetParameters(const float frequency,
   pole_coeff_ = frequency;
 }
 
+const Filter_Meta& MoogLowPassBlock::Meta(void) {
+  static const Filter_Meta metas(1e-5f,
+                                 1.3f,
+                                 1.31f,
+                                 0.0f,
+                                 0.0f,
+                                 3.9999f);  // Arbitrary value
+  return metas;
+}
+
 }  // namespace filters
 }  // namespace soundtailor

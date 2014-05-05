@@ -65,5 +65,15 @@ void Chamberlin::SetParameters(const float frequency,
   frequency_ = frequency * (1.85f - 0.85f * frequency * damping_);
 }
 
+const Filter_Meta& Chamberlin::Meta(void) {
+  static const Filter_Meta metas(0.0f,
+                                 1.0f,
+                                 1.0f,
+                                 1e-5f,
+                                 1.0f,
+                                 2.0f);
+  return metas;
+}
+
 }  // namespace filters
 }  // namespace soundtailor

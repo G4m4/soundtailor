@@ -37,6 +37,8 @@ class Chamberlin : public Filter_Base {
   virtual Sample operator()(SampleRead sample);
   virtual void SetParameters(const float frequency, const float resonance);
 
+  static const Filter_Meta& Meta(void);
+
  protected:
   float lp_;
   float bp_;
