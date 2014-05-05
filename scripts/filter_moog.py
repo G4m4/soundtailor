@@ -63,10 +63,7 @@ class Moog(filters_common.FilterInterface):
         self._frequency = 0.0
         self._resonance = 0.0
         self._last = 0.0
-        self._filters = (MoogBaseLowpass(),
-                         MoogBaseLowpass(),
-                         MoogBaseLowpass(),
-                         MoogBaseLowpass())
+        self._filters = [MoogBaseLowpass() for i in xrange(4)]
 
     def SetParameters(self, frequency, resonance):
         '''
@@ -87,10 +84,11 @@ class Moog(filters_common.FilterInterface):
         '''
         actual_input = sample - self._resonance * self._last
         # Todo: find a more elegant way to do that
-        out = self._filters[3].ProcessSample(
-                               self._filters[2].ProcessSample(
-                                self._filters[1].ProcessSample(
-                                    self._filters[0].ProcessSample(actual_input))))
+        tmp_filtered = actual_input
+        for lowpass in self._filters:
+            tmp_filtered = lowpass.ProcessSample(tmp_filtered)
+
+        out = tmp_filtered
         self._last = out
 
         return out
@@ -107,9 +105,9 @@ if __name__ == "__main__":
 
     freq = 1000.0
     sampling_freq = 48000.0
-    length = 256
-    filter_freq = 0.5
-    resonance = 0.0
+    length = 512
+    filter_freq = 1.0
+    resonance = 3.0
 
     in_data = utilities.GenerateData(100, 2000, length, sampling_freq)
     generator = generator_sawtoothdpw.SawtoothDPW(sampling_freq)
