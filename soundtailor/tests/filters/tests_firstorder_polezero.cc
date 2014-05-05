@@ -26,9 +26,9 @@
 using soundtailor::filters::FirstOrderPoleZero;
 
 /// @brief Frequency parameter to be set in order to have a near-passthrough
-static const float kPassthroughFrequency(0.5f);
+static const float kPassthroughFrequency(FirstOrderPoleZero::Meta().freq_passthrough);
 /// @brief Resonance parameter to be set in order to have a near-passthrough
-static const float kPassthroughResonance(0.0f);
+static const float kPassthroughResonance(FirstOrderPoleZero::Meta().res_passthrough);
 
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)

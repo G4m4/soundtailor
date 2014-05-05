@@ -26,9 +26,9 @@
 using soundtailor::filters::SecondOrderRaw;
 
 /// @brief Frequency parameter to be set in order to have a near-passthrough
-static const float kPassthroughFrequency(0.4998f);
+static const float kPassthroughFrequency(SecondOrderRaw::Meta().freq_passthrough);
 /// @brief Resonance parameter to be set in order to have a near-passthrough
-static const float kPassthroughResonance(0.7f);
+static const float kPassthroughResonance(SecondOrderRaw::Meta().res_passthrough);
 
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)

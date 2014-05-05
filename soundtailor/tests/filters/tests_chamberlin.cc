@@ -26,9 +26,9 @@
 using soundtailor::filters::Chamberlin;
 
 /// @brief Frequency parameter to be set in order to have a near-passthrough
-static const float kPassthroughFrequency(1.0f);
+static const float kPassthroughFrequency(Chamberlin::Meta().freq_passthrough);
 /// @brief Resonance parameter to be set in order to have a near-passthrough
-static const float kPassthroughResonance(1.0f);
+static const float kPassthroughResonance(Chamberlin::Meta().res_passthrough);
 
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)

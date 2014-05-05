@@ -26,9 +26,9 @@
 using soundtailor::filters::MoogLowPassBlock;
 
 /// @brief Frequency parameter to be set in order to have a near-passthrough
-static const float kPassthroughFrequency(1.3f);
+static const float kPassthroughFrequency(MoogLowPassBlock::Meta().freq_passthrough);
 /// @brief Resonance parameter to be set in order to have a near-passthrough
-static const float kPassthroughResonance(0.0f);
+static const float kPassthroughResonance(MoogLowPassBlock::Meta().res_passthrough);
 
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)
