@@ -39,8 +39,7 @@ class FirstOrderPoleZero : public Filter_Base {
 
  protected:
   double coeff_;
-  float last_input_;
-  float last_output_;
+  float last_;
 };
 
 }  // namespace filters

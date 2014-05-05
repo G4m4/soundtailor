@@ -31,33 +31,15 @@ namespace filters {
 FirstOrderPoleZero::FirstOrderPoleZero()
     : Filter_Base(),
       coeff_(0.0),
-      last_input_(0.0f),
-      last_output_(0.0f)
-{
+      last_(0.0f) {
   // Nothing to do here for now
 }
 
 Sample FirstOrderPoleZero::operator()(SampleRead sample) {
-  const Sample direct_v(Add(sample, RotateOnRight(sample, last_input_)));
-  const Sample muldirect_v(MulConst(static_cast<float>(coeff_ / 2.0),
-                                    direct_v));
-  const float comp_coeff(static_cast<float>(1.0 - coeff_));
-  const float oldest_out(GetByIndex<0>(muldirect_v) + last_output_ * comp_coeff);
+  const float direct(sample * static_cast<float>(coeff_ / 2.0f));
+  const float out(direct + last_);
 
-#if (_USE_SSE)
-  const float old_out(GetByIndex<1>(muldirect_v) + oldest_out * comp_coeff);
-  const float new_out(GetByIndex<2>(muldirect_v) + old_out * comp_coeff);
-  const float newest_out(GetByIndex<3>(muldirect_v) + new_out * comp_coeff);
-
-  const Sample out(Fill(oldest_out, old_out, new_out, newest_out));
-
-  last_input_ = GetLast(sample);
-  last_output_ = newest_out;
-#else
-  const Sample out(oldest_out);
-  last_input_ = sample;
-  last_output_ = oldest_out;
-#endif (_USE_SSE)
+  last_ = out * static_cast<float>(1.0 - coeff_) + direct;
 
   return out;
 }
