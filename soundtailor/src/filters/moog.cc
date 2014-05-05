@@ -48,10 +48,10 @@ Sample Moog::operator()(SampleRead sample) {
 }
 
 void Moog::SetParameters(const float frequency, const float resonance) {
-  SOUNDTAILOR_ASSERT(frequency > 0.0f);
-  SOUNDTAILOR_ASSERT(frequency <= 1.0f);
-  SOUNDTAILOR_ASSERT(resonance >= 0.0f);
-  SOUNDTAILOR_ASSERT(resonance < 4.0f);
+  SOUNDTAILOR_ASSERT(frequency > Meta().freq_min);
+  SOUNDTAILOR_ASSERT(frequency <= Meta().freq_max);
+  SOUNDTAILOR_ASSERT(resonance >= Meta().res_min);
+  SOUNDTAILOR_ASSERT(resonance < Meta().res_max);
   const float temp(frequency * (1.0f + 0.03617f * frequency
                                 * (4.0f - resonance) * (4.0f - resonance)));
   frequency_ = 1.25f * temp * (1.0f - 0.595f * temp + 0.24f * temp * temp);

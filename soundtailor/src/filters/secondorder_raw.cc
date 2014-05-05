@@ -87,10 +87,10 @@ Sample SecondOrderRaw::operator()(SampleRead sample) {
 void SecondOrderRaw::SetParameters(const float frequency,
                                    const float resonance) {
   // Based on Audio EQ Cookbook material
-  SOUNDTAILOR_ASSERT(resonance >= 0.0f);
-  // Required due to imprecisions
-  SOUNDTAILOR_ASSERT(frequency > 0.0f);
-  SOUNDTAILOR_ASSERT(frequency <= 0.5f);
+  SOUNDTAILOR_ASSERT(frequency > Meta().freq_min);
+  SOUNDTAILOR_ASSERT(frequency <= Meta().freq_max);
+  SOUNDTAILOR_ASSERT(resonance > Meta().res_min);
+  SOUNDTAILOR_ASSERT(resonance < Meta().res_max);
 
   // Computations done in double since precision is crucial here
   const double kFrequency(frequency);

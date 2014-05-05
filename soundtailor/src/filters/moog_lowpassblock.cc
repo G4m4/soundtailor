@@ -46,8 +46,8 @@ Sample MoogLowPassBlock::operator()(SampleRead sample) {
 void MoogLowPassBlock::SetParameters(const float frequency,
                                      const float resonance) {
   // TODO(gm): check for these bounds
-  SOUNDTAILOR_ASSERT(frequency > 0.0f);
-  SOUNDTAILOR_ASSERT(frequency <= 2.0f);
+  SOUNDTAILOR_ASSERT(frequency > Meta().freq_min);
+  SOUNDTAILOR_ASSERT(frequency <= Meta().freq_max);
   IGNORE(resonance);
   pole_coeff_ = frequency;
 }

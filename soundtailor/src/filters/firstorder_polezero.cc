@@ -46,8 +46,8 @@ Sample FirstOrderPoleZero::operator()(SampleRead sample) {
 
 void FirstOrderPoleZero::SetParameters(const float frequency,
                                        const float resonance) {
-  SOUNDTAILOR_ASSERT(frequency > 0.0f);
-  SOUNDTAILOR_ASSERT(frequency <= 0.5f);
+  SOUNDTAILOR_ASSERT(frequency > Meta().freq_min);
+  SOUNDTAILOR_ASSERT(frequency <= Meta().freq_max);
   IGNORE(resonance);
   const double lambda(Pi * frequency);
   coeff_ = (2.0 * std::sin(lambda)) / (std::cos(lambda) + std::sin(lambda));
