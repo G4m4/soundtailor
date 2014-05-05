@@ -30,6 +30,11 @@ static const float kPassthroughFrequency(Moog::Meta().freq_passthrough);
 /// @brief Resonance parameter to be set in order to have a near-passthrough
 static const float kPassthroughResonance(Moog::Meta().res_passthrough);
 
+/// @brief Random distribution for filter frequency, within its own bounds
+std::uniform_real_distribution<float> MoogFilterFreqDistribution(
+  Moog::Meta().freq_min,
+  Moog::Meta().freq_max);
+
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)
 TEST(Filters, MoogOutputMean) {
@@ -37,7 +42,7 @@ TEST(Filters, MoogOutputMean) {
     IGNORE(iterations);
 
     // Random normalized frequency
-    const float kFrequency(kFreqDistribution(kRandomGenerator));
+    const float kFrequency(MoogFilterFreqDistribution(kRandomGenerator));
     Moog filter;
 
     filter.SetParameters(kFrequency, kPassthroughResonance);
@@ -100,7 +105,7 @@ TEST(Filters, MoogPerf) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
     IGNORE(iterations);
 
-    const float kFrequency(kFreqDistribution(kRandomGenerator));
+    const float kFrequency(MoogFilterFreqDistribution(kRandomGenerator));
     Moog filter;
     filter.SetParameters(kFrequency, kPassthroughResonance);
 

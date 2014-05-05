@@ -30,6 +30,11 @@ static const float kPassthroughFrequency(Chamberlin::Meta().freq_passthrough);
 /// @brief Resonance parameter to be set in order to have a near-passthrough
 static const float kPassthroughResonance(Chamberlin::Meta().res_passthrough);
 
+/// @brief Random distribution for filter frequency, within its own bounds
+std::uniform_real_distribution<float> ChamberlinFilterFreqDistribution(
+  Chamberlin::Meta().freq_min,
+  Chamberlin::Meta().freq_max);
+
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)
 TEST(Filters, ChamberlinOutputMean) {
@@ -37,7 +42,7 @@ TEST(Filters, ChamberlinOutputMean) {
     IGNORE(iterations);
 
     // Random normalized frequency
-    const float kFrequency(kFreqDistribution(kRandomGenerator));
+    const float kFrequency(ChamberlinFilterFreqDistribution(kRandomGenerator));
     Chamberlin filter;
 
     filter.SetParameters(kFrequency, kPassthroughResonance);
@@ -96,7 +101,7 @@ TEST(Filters, ChamberlinPerf) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
     IGNORE(iterations);
 
-    const float kFrequency(kFreqDistribution(kRandomGenerator));
+    const float kFrequency(ChamberlinFilterFreqDistribution(kRandomGenerator));
     Chamberlin filter;
     filter.SetParameters(kFrequency, kPassthroughResonance);
 

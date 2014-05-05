@@ -30,6 +30,11 @@ static const float kPassthroughFrequency(FirstOrderPoleZero::Meta().freq_passthr
 /// @brief Resonance parameter to be set in order to have a near-passthrough
 static const float kPassthroughResonance(FirstOrderPoleZero::Meta().res_passthrough);
 
+/// @brief Random distribution for filter frequency, within its own bounds
+std::uniform_real_distribution<float> FirstOrderPoleZeroFilterFreqDistribution(
+  FirstOrderPoleZero::Meta().freq_min,
+  FirstOrderPoleZero::Meta().freq_max);
+
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)
 TEST(Filters, FirstOrderPoleZeroOutputMean) {
@@ -37,7 +42,7 @@ TEST(Filters, FirstOrderPoleZeroOutputMean) {
     IGNORE(iterations);
 
     // Random normalized frequency
-    const float kFrequency(kFreqDistribution(kRandomGenerator));
+    const float kFrequency(FirstOrderPoleZeroFilterFreqDistribution(kRandomGenerator));
     FirstOrderPoleZero filter;
 
     filter.SetParameters(kFrequency, kPassthroughResonance);
@@ -100,7 +105,7 @@ TEST(Filters, FirstOrderPoleZeroPerf) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
     IGNORE(iterations);
 
-    const float kFrequency(kFreqDistribution(kRandomGenerator));
+    const float kFrequency(FirstOrderPoleZeroFilterFreqDistribution(kRandomGenerator));
     FirstOrderPoleZero filter;
     filter.SetParameters(kFrequency, kPassthroughResonance);
 

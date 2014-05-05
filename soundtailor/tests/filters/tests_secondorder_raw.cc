@@ -30,6 +30,11 @@ static const float kPassthroughFrequency(SecondOrderRaw::Meta().freq_passthrough
 /// @brief Resonance parameter to be set in order to have a near-passthrough
 static const float kPassthroughResonance(SecondOrderRaw::Meta().res_passthrough);
 
+/// @brief Random distribution for filter frequency, within its own bounds
+std::uniform_real_distribution<float> SecondOrderRawFilterFreqDistribution(
+  SecondOrderRaw::Meta().freq_min,
+  SecondOrderRaw::Meta().freq_max);
+
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)
 TEST(Filters, SecondOrderRawOutputMean) {
@@ -37,7 +42,7 @@ TEST(Filters, SecondOrderRawOutputMean) {
     IGNORE(iterations);
 
     // Random normalized frequency
-    const float kFrequency(kFreqDistribution(kRandomGenerator));
+    const float kFrequency(SecondOrderRawFilterFreqDistribution(kRandomGenerator));
     SecondOrderRaw filter;
 
     filter.SetParameters(kFrequency, kPassthroughResonance);
@@ -100,7 +105,7 @@ TEST(Filters, SecondOrderRawPerf) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
     IGNORE(iterations);
 
-    const float kFrequency(kFreqDistribution(kRandomGenerator));
+    const float kFrequency(SecondOrderRawFilterFreqDistribution(kRandomGenerator));
     SecondOrderRaw filter;
     filter.SetParameters(kFrequency, kPassthroughResonance);
 
