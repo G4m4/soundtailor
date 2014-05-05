@@ -57,6 +57,26 @@ class PoleZeroLowPass(filters_common.FilterInterface):
 
         return out
 
+    def Process4Samples(self, vector):
+        '''
+        Actual process function - vectorized version
+        '''
+        direct_v = filters_common.MulConst(vector, self._coeff / 2.0)
+        oldest_out = direct_v[0] \
+                    + self._last
+        old_out = direct_v[1] \
+                    + oldest_out * (1.0 - self._coeff) + direct_v[0]
+        new_out = direct_v[2] \
+                    + old_out * (1.0 - self._coeff) + direct_v[1]
+        newest_out = direct_v[3] \
+                    + new_out * (1.0 - self._coeff) + direct_v[2]
+
+        out = (oldest_out, old_out, new_out, newest_out)
+
+        self._last = newest_out * (1.0 - self._coeff) + direct_v[3]
+
+        return out
+
 class FixedPoleZeroLowPass(PoleZeroLowPass):
     '''
     Implements a simple 1 pole - 1 zero Low pass, with a fixed zero coeff and
@@ -110,6 +130,7 @@ if __name__ == "__main__":
 
     out_data = numpy.zeros(length)
     out_fixed_data = numpy.zeros(length)
+    out_data_vectorized = numpy.zeros(length)
 
     lowpass = PoleZeroLowPass()
     lowpass.SetParameters(filter_freq, 0.0)
@@ -122,10 +143,29 @@ if __name__ == "__main__":
         out_data[idx] = lowpass.ProcessSample(sample)
         out_fixed_data[idx] = fixed_lowpass.ProcessSample(sample)
 
+    # Vectorized processing
+    lowpass_v = PoleZeroLowPass()
+    lowpass_v.SetParameters(filter_freq, 0.0)
+    idx = 0
+    while idx < len(in_data):
+        current_vector = (in_data[idx],
+                          in_data[idx + 1],
+                          in_data[idx + 2],
+                          in_data[idx + 3])
+        (out_data_vectorized[idx],
+         out_data_vectorized[idx + 1],
+         out_data_vectorized[idx + 2],
+         out_data_vectorized[idx + 3]) = lowpass_v.Process4Samples(current_vector)
+        idx += 4
+
+    print(utilities.PrintMetadata(utilities.GetMetadata(out_data - out_data_vectorized)))
+
     print(utilities.PrintMetadata(utilities.GetMetadata(out_data - out_fixed_data)))
 
     pylab.plot(in_data, label="in")
     pylab.plot(out_data, label="out")
+    pylab.plot(out_data_vectorized, label="out_vectorized")
     pylab.plot(out_fixed_data, label="out_fixed")
     pylab.legend()
+
     pylab.show()
