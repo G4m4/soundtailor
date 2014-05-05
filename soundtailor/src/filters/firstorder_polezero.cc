@@ -46,7 +46,7 @@ Sample FirstOrderPoleZero::operator()(SampleRead sample) {
 
 void FirstOrderPoleZero::SetParameters(const float frequency,
                                        const float resonance) {
-  SOUNDTAILOR_ASSERT(frequency > Meta().freq_min);
+  SOUNDTAILOR_ASSERT(frequency >= Meta().freq_min);
   SOUNDTAILOR_ASSERT(frequency <= Meta().freq_max);
   IGNORE(resonance);
   const double lambda(Pi * frequency);

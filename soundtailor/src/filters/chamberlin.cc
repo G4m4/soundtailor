@@ -54,10 +54,10 @@ Sample Chamberlin::operator()(SampleRead sample) {
 
 void Chamberlin::SetParameters(const float frequency,
                                const float resonance) {
-  SOUNDTAILOR_ASSERT(frequency > Meta().freq_min);
+  SOUNDTAILOR_ASSERT(frequency >= Meta().freq_min);
   SOUNDTAILOR_ASSERT(frequency <= Meta().freq_max);
-  SOUNDTAILOR_ASSERT(resonance > Meta().res_min);
-  SOUNDTAILOR_ASSERT(resonance < Meta().res_max);
+  SOUNDTAILOR_ASSERT(resonance >= Meta().res_min);
+  SOUNDTAILOR_ASSERT(resonance <= Meta().res_max);
   // Stability assertion
   SOUNDTAILOR_ASSERT(frequency * frequency + 2.0f * resonance * frequency < 4.0f);
 
