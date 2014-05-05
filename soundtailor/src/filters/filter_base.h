@@ -29,6 +29,51 @@
 namespace soundtailor {
 namespace filters {
 
+/// @brief Struct holding a filter "metadata",
+/// e.g. informations on its parameters bounds
+///
+/// Each filter specialization has its own, static one.
+// TODO(gm): find a way to to do this in a 100% static way
+struct Filter_Meta {
+  Filter_Meta(const float freq_min,
+              const float freq_passthrough,
+              const float freq_max,
+              const float res_min,
+              const float res_passthrough,
+              const float res_max)
+    : freq_min(freq_min),
+      freq_passthrough(freq_passthrough),
+      freq_max(freq_max),
+      res_min(res_min),
+      res_passthrough(res_passthrough),
+      res_max(res_max) {
+    // TODO(gm): These have to be static asserts
+    SOUNDTAILOR_ASSERT(freq_min >= 0.0f);
+    SOUNDTAILOR_ASSERT(freq_max >= 0.0f);
+    SOUNDTAILOR_ASSERT(freq_min < freq_max);
+    SOUNDTAILOR_ASSERT(freq_passthrough >= freq_min);
+    SOUNDTAILOR_ASSERT(freq_passthrough <= freq_max);
+    SOUNDTAILOR_ASSERT(res_min >= 0.0f);
+    SOUNDTAILOR_ASSERT(res_max >= 0.0f);
+    SOUNDTAILOR_ASSERT(res_min < res_max);
+    SOUNDTAILOR_ASSERT(res_passthrough >= res_min);
+    SOUNDTAILOR_ASSERT(res_passthrough <= res_max);
+  };
+
+  const float freq_min;  ///< Lower bound for filter frequency
+  const float freq_passthrough;  ///< Frequency to set the filter to in order
+                                 ///< for it to be passthrough
+  const float freq_max;  ///< Higher bound for filter frequency
+  const float res_min;  ///< Lower bound for filter resonance
+  const float res_passthrough;  ///< Resonance to set the filter to in order
+                                ///< for it to be passthrough
+  const float res_max;  ///< Higher bound for filter resonance
+
+ private:
+  // No assignment operator for this class
+  Filter_Meta& operator=(const Filter_Meta& right);
+};
+
 /// @brief Base class, defining common methods
 /// to be implemented in all filters
 ///
