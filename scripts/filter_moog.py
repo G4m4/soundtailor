@@ -360,43 +360,26 @@ if __name__ == "__main__":
     ref_data = numpy.array(list(ref_data),dtype='float') / numpy.max(ref_data)
     ref_data = ref_data[0:length]
 
-    #in_data = numpy.random.rand(length) * 2.0 - 1.0
-    out_data = numpy.zeros(length)
-    out_base_lowpass = numpy.zeros(length)
-    out_data_ref1 = numpy.zeros(length)
-    out_data_ref2 = numpy.zeros(length)
-    out_data_ref3 = numpy.zeros(length)
-    out_data_ref4 = numpy.zeros(length)
+    available_filters = [MoogBaseLowpass,
+                         Moog,
+                         MoogMusicDSP,
+                         MoogMusicDSPVar1,
+                         MoogMusicDSPVar2,
+                         MoogMusicDSPVarStilson]
 
-    lowpass = Moog()
-    lowpass.SetParameters(filter_freq, resonance)
-    # The base lowpass has to be updated with the actual internal values
-    base_lowpass = MoogBaseLowpass()
-    base_lowpass.SetParameters(lowpass._frequency, lowpass._resonance)
-    # Comparison
-    ref1_lowpass = MoogMusicDSP()
-    ref1_lowpass.SetParameters(lowpass._frequency, lowpass._resonance)
-    ref2_lowpass = MoogMusicDSPVar1()
-    ref2_lowpass.SetParameters(lowpass._frequency, lowpass._resonance)
-    ref3_lowpass = MoogMusicDSPVar2()
-    ref3_lowpass.SetParameters(lowpass._frequency, lowpass._resonance)
-    ref4_lowpass = MoogMusicDSPVarStilson()
-    ref4_lowpass.SetParameters(lowpass._frequency, lowpass._resonance)
+#     in_data = numpy.random.rand(length) * 2.0 - 1.0
+    out_data = numpy.zeros([len(available_filters), length])
 
-    for idx, _ in enumerate(in_data):
-        out_data[idx] = lowpass.ProcessSample(in_data[idx])
-        out_base_lowpass[idx] = base_lowpass.ProcessSample(in_data[idx])
-        out_data_ref1[idx] = ref1_lowpass.ProcessSample(in_data[idx])
-        out_data_ref2[idx] = ref2_lowpass.ProcessSample(in_data[idx])
-        out_data_ref3[idx] = ref3_lowpass.ProcessSample(in_data[idx])
-        out_data_ref4[idx] = ref3_lowpass.ProcessSample(in_data[idx])
+    for filter_idx, filter_class in enumerate(available_filters):
+        filter_instance = filter_class()
+        filter_instance.SetParameters(filter_freq, resonance)
+        filter_instance.SetParameters(filter_freq, resonance)
+        # The base lowpass has to be updated with the actual internal values
+        for idx, _ in enumerate(in_data):
+            out_data[filter_idx][idx] = filter_instance.ProcessSample(in_data[idx])
+        pylab.plot(out_data[filter_idx], label="out" + str(type(filter_instance)))
 
     pylab.plot(in_data, label="in")
-#     pylab.plot(out_base_lowpass, label="out_baselp")
-    pylab.plot(out_data, label="out")
-    pylab.plot(out_data_ref1, label="out_ref1")
-    pylab.plot(out_data_ref2, label="out_ref2")
-    pylab.plot(out_data_ref3, label="out_ref3")
-    pylab.plot(out_data_ref4, label="out_ref4")
+
     pylab.legend()
     pylab.show()
