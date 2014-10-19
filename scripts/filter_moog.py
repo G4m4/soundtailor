@@ -268,7 +268,7 @@ class MoogMusicDSPVarStilson(filters_common.FilterInterface):
 #         self.in1 = 0.0
 #         self.in2 = 0.0
 #         self.in3 = 0.0
-        self.last_out = 0.0
+        self.output = 0.0
         self.state = [0.0, 0.0, 0.0, 0.0]
         self.Q = 0.0
         self.p = 0.0
@@ -300,7 +300,7 @@ class MoogMusicDSPVarStilson(filters_common.FilterInterface):
         self.Q = resonance * 1 / (ixfrac * 1.48 + 0.85) - 0.1765
 
         # code for setting pole coefficient based on frequency
-        fc = 2 * frequency
+        fc = 2.0 * frequency
         x2 = fc * fc
         x3 = fc * x2
         # cubic fit by DFL, not 100% accurate but better than nothing...
@@ -311,7 +311,7 @@ class MoogMusicDSPVarStilson(filters_common.FilterInterface):
         Actual process function
         '''
         # negative feedback
-        self.last_out = 0.25 * (sample - self.last_out)
+        self.output = 0.25 * (sample - self.output)
 
         for pole in range(4):
             temp = self.state[pole]
