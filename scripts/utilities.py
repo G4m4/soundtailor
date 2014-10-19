@@ -57,6 +57,7 @@ def GetMetadata(signal):
     '''
     return (("Length: ", len(signal)),
             ("Sum: ", numpy.sum(signal)),
+            ("Min: ", numpy.min(signal)),
             ("Max: ", numpy.max(signal)),
             ("Mean: ", numpy.mean(signal)),
             ("Var: ", numpy.var(signal)),
@@ -113,7 +114,7 @@ def PrintTiming(func):
     def wrapper(*arg):
         chrono = Chrono()
         res = func(*arg)
-        print '%s took %0.3f ms' % (func.func_name, chrono.GetElapsed() * 1000.0)
+        print func.func_name + " took " + str(chrono.GetElapsed() * 1000.0) + " ms"
         return res
 
     return wrapper
