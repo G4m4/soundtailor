@@ -100,20 +100,28 @@ if __name__ == "__main__":
     import numpy
     import pylab
     import utilities
+    from scipy.io.wavfile import read
 
     import generator_sawtoothdpw
 
-    freq = 1000.0
+    freq = 89.0
     sampling_freq = 48000.0
-    length = 512
-    filter_freq = 1.0
-    resonance = 3.0
+    length = 4096
+    filter_freq = 1000.0 / sampling_freq
+    resonance = 0.9
 
     in_data = utilities.GenerateData(100, 2000, length, sampling_freq)
     generator = generator_sawtoothdpw.SawtoothDPW(sampling_freq)
     generator.SetFrequency(freq)
     for idx, _ in enumerate(in_data):
         in_data[idx] = generator.ProcessSample()
+    (_, in_data) = read("f2_20khz_emphasis_0_no_soft_clipping.wav")
+    in_data = numpy.array(list(in_data),dtype='float') / numpy.max(in_data)
+    in_data = in_data[0:length]
+
+    (_, ref_data) = read("f2_1khz_emphasis_0.wav")
+    ref_data = numpy.array(list(ref_data),dtype='float') / numpy.max(ref_data)
+    ref_data = ref_data[0:length]
 
     #in_data = numpy.random.rand(length) * 2.0 - 1.0
     out_data = numpy.zeros(length)
