@@ -404,6 +404,20 @@ static inline bool GreaterEqual(SampleRead threshold, SampleRead input) {
 }
 
 /// @brief Helper binary function:
+/// true if each threshold element is <= than the input element
+static inline bool LowerEqual(SampleRead threshold, SampleRead input) {
+#if (_USE_SSE)
+  // Not checked yet!
+  // @todo(gm) check it
+  SOUNDTAILOR_ASSERT(false);
+  const Sample test_result(_mm_cmple_ps(threshold, input));
+  return IsMaskFull(test_result);
+#else
+  return threshold <= input;
+#endif
+}
+
+/// @brief Helper binary function:
 /// true if any input element is >= than the matching threshold element
 static inline bool GreaterEqualAny(SampleRead threshold, SampleRead input) {
 #if (_USE_SSE)
