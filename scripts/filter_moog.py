@@ -55,6 +55,32 @@ class MoogBaseLowpass(filter_firstorderpolezero.FixedPoleZeroLowPass):
 
         return out
 
+class MoogLowAliasNonLinearBaseLowpass(filter_firstorderpolezero.FixedPoleZeroLowPass):
+    '''
+    Implements a simple 1 pole - 1 zero Low pass, with fixed coeffs tuned
+    in order to be part of a bigger Moog filter
+    '''
+    def __init__(self):
+        # The pole coeff will change, only the zero one is fixed here
+        super(MoogLowAliasNonLinearBaseLowpass, self).__init__(0.3)
+
+    def SetParameters(self, frequency, resonance):
+        '''
+        Sets frequency (normalized, < 1.0) and resonance (0 <= resonance < 4.0)
+        '''
+        self._pole_coeff = frequency
+
+    def ProcessSample(self, sample):
+        '''
+        Actual process function
+        '''
+        direct = self._pole_coeff * sample
+        out = direct + self._last
+
+        self._last = out * (1.0 - self._pole_coeff) + self._zero_coeff * direct
+
+        return out
+
 class Moog(filters_common.FilterInterface):
     '''
     Implements a Moog filter
@@ -86,6 +112,67 @@ class Moog(filters_common.FilterInterface):
         # Todo: find a more elegant way to do that
         tmp_filtered = actual_input
         for lowpass in self._filters:
+            tmp_filtered = lowpass.ProcessSample(tmp_filtered)
+
+        out = tmp_filtered
+        self._last = out
+
+        return out
+
+class MoogLowAliasNonLinear(filters_common.FilterInterface):
+    '''
+    Implements a Moog filter
+    '''
+    def __init__(self):
+        self._frequency = 0.0
+        self._resonance = 0.0
+        self._last = 0.0
+        self._filters = [MoogLowAliasNonLinearBaseLowpass() for i in xrange(4)]
+        self._last_side_factor = 0.0
+
+    def _Saturation(self, sample):
+        if (numpy.abs(sample) < 1.0):
+            return sample - sample * sample * sample / 3.0
+        else:
+            return (2.0 / 3.0) * min(max(sample, -1.0), 1.0)
+
+    def SetParameters(self, frequency, resonance):
+        '''
+        Sets both frequency and resonance
+        '''
+        resonance /= 4.0
+        f = frequency * (1.0 + 0.5787 * frequency
+                                        * (1.0 - resonance) * (1.0 - resonance))
+        self._frequency = 1.25 * f * (1.0 - 0.595 * f + 0.24 * f * f)
+        self._resonance = resonance * (1.4 + 0.108 * self._frequency
+                                     - 0.164 * self._frequency * self._frequency
+                                     - 0.069 * self._frequency * self._frequency * self._frequency)
+        for lowpass in self._filters:
+            lowpass.SetParameters(self._frequency, self._resonance)
+
+    def ProcessSample(self, sample):
+        '''
+        Actual process function
+        '''
+        sample *= 0.18 + 0.25 * self._resonance
+        actual_input = sample - self._resonance * self._last
+        current_side_factor = min(max(self._last_side_factor, -1.0), 1.0)
+
+        self._last_side_factor = actual_input * actual_input
+        self._last_side_factor *= 0.062
+        self._last_side_factor += current_side_factor * 0.993
+
+        current_side_factor = 1.0 - current_side_factor + current_side_factor * current_side_factor / 2.0
+        actual_input *= current_side_factor
+
+        # Todo: find a more elegant way to do that
+        tmp_filtered = actual_input
+        for lowpass in self._filters[0:2]:
+            tmp_filtered = lowpass.ProcessSample(tmp_filtered)
+
+        # Saturation
+        tmp_filtered = self._Saturation(tmp_filtered)
+        for lowpass in self._filters[2:4]:
             tmp_filtered = lowpass.ProcessSample(tmp_filtered)
 
         out = tmp_filtered
