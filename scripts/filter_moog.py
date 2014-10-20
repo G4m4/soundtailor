@@ -117,7 +117,8 @@ class MoogMusicDSP(filters_common.FilterInterface):
         Sets both frequency and resonance
         '''
 
-        f = (frequency + frequency) #[0 - 1]
+#         f = (frequency + frequency) #[0 - 1]
+        f = frequency
         self.p = f * (1.8 - 0.8 * f)
         # self.k = self.p + self.p - 1.0
         # A much better tuning seems to be:
@@ -169,6 +170,7 @@ class MoogMusicDSPVar1(filters_common.FilterInterface):
         '''
         Sets both frequency and resonance
         '''
+        frequency /= 2.0
         self.q = 1.0 - frequency
         self.p = frequency + 0.8 * frequency * self.q
         self.f = self.p + self.p - 1.0
@@ -300,7 +302,8 @@ class MoogMusicDSPVarStilson(filters_common.FilterInterface):
         self.Q = resonance * 1 / (ixfrac * 1.48 + 0.85) - 0.1765
 
         # code for setting pole coefficient based on frequency
-        fc = 2.0 * frequency
+#         fc = 2.0 * frequency
+        fc = frequency
         x2 = fc * fc
         x3 = fc * x2
         # cubic fit by DFL, not 100% accurate but better than nothing...
@@ -344,8 +347,9 @@ if __name__ == "__main__":
     freq = 89.0
     sampling_freq = 48000.0
     length = 4096
-    filter_freq = 1000.0 / sampling_freq
     resonance = 0.9
+    filter_freq = 1000.0
+    filter_freq *= 2.0 / sampling_freq
 
     in_data = utilities.GenerateData(100, 2000, length, sampling_freq)
     generator = generator_sawtoothdpw.SawtoothDPW(sampling_freq)
