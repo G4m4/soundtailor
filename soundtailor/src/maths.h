@@ -393,7 +393,7 @@ static inline bool IsMaskNull(SampleRead input) {
 }
 
 /// @brief Helper binary function:
-/// true if each input element is >= than the matching threshold element
+/// true if each threshold element is >= than the input element
 static inline bool GreaterEqual(SampleRead threshold, SampleRead input) {
 #if (_USE_SSE)
   const Sample test_result(_mm_cmpge_ps(threshold, input));
