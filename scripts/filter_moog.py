@@ -293,14 +293,6 @@ class MoogMusicDSPVarStilson(filters_common.FilterInterface):
         Sets both frequency and resonance
         '''
 
-        # code for setting Q
-        ix = self.p * 99.0
-        ixint = numpy.floor(ix).astype(numpy.int32)
-        ixfrac = ix - ixint
-        # The following are identical
-#         self.Q = resonance * self._crossfade( ixfrac, self.GAINTABLE[ixint + 99], self.GAINTABLE[ixint + 100])
-        self.Q = resonance * 1 / (ixfrac * 1.48 + 0.85) - 0.1765
-
         # code for setting pole coefficient based on frequency
 #         fc = 2.0 * frequency
         fc = frequency
@@ -308,6 +300,14 @@ class MoogMusicDSPVarStilson(filters_common.FilterInterface):
         x3 = fc * x2
         # cubic fit by DFL, not 100% accurate but better than nothing...
         self.p = -0.69346 * x3 - 0.59515 * x2 + 3.2937 * fc - 1.0072
+
+        # code for setting Q
+        ix = self.p * 99.0
+        ixint = numpy.floor(ix).astype(numpy.int32)
+        ixfrac = ix - ixint
+        # The following are identical
+        self.Q = resonance * self._crossfade( ixfrac, self.GAINTABLE[ixint + 99], self.GAINTABLE[ixint + 100])
+#         self.Q = resonance * 1.0 / (ixfrac * 1.48 + 0.85) - 0.1765
 
     def ProcessSample(self, sample):
         '''
@@ -376,7 +376,6 @@ if __name__ == "__main__":
 
     for filter_idx, filter_class in enumerate(available_filters):
         filter_instance = filter_class()
-        filter_instance.SetParameters(filter_freq, resonance)
         filter_instance.SetParameters(filter_freq, resonance)
         # The base lowpass has to be updated with the actual internal values
         for idx, _ in enumerate(in_data):
