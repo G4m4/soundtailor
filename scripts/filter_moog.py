@@ -186,6 +186,40 @@ class MoogLowAliasNonLinear(filters_common.FilterInterface):
         '''
         self.ProcessSample(sample)
         return self.ProcessSample(sample)
+
+class MoogOversampled(MoogLowAliasNonLinear):
+    '''
+    Implements an oversampled low alias, non-linear Moog filter
+    '''
+    def __init__(self):
+        super(MoogOversampled, self).__init__()
+        self._history = [0.0, 0.0, 0.0]
+        self._last_out = 0.0
+
+    def ProcessSample(self, sample):
+        '''
+        Actual process function
+        '''
+        out = super(MoogOversampled, self).ProcessSample(sample)
+        self._history[2] = self._history[1]
+        self._history[1] = self._history[0]
+        self._history[0] = out
+        # 2x oversampled
+        out = super(MoogOversampled, self).ProcessSample(sample)
+        tmp = self._history[2]
+        self._history[2] = self._history[1]
+        self._history[1] = self._history[0]
+        self._history[0] = out
+
+        out = 0.19 * tmp \
+                + 0.57 * self._history[2] \
+                + 0.57 * self._history[1] \
+                + 0.19 * self._history[0]
+
+        self._last_out = self._last_out * -0.52 + out
+
+        return out
+
 class MoogMusicDSP(filters_common.FilterInterface):
     '''
     Implements a Moog filter based on MusicDSP source:
@@ -439,30 +473,36 @@ if __name__ == "__main__":
 
     freq = 89.0
     sampling_freq = 48000.0
-    length = 4096
-    resonance = 0.9
-    filter_freq = 1000.0
+    length = 2048
+    resonance = 4.0
+    filter_freq = 24000.0
     filter_freq *= 2.0 / sampling_freq
 
     in_data = utilities.GenerateData(100, 2000, length, sampling_freq)
-    generator = generator_sawtoothdpw.SawtoothDPW(sampling_freq)
-    generator.SetFrequency(freq)
-    for idx, _ in enumerate(in_data):
-        in_data[idx] = generator.ProcessSample()
+#     generator = generator_sawtoothdpw.SawtoothDPW(sampling_freq)
+#     generator.SetFrequency(freq)
+#     for idx, _ in enumerate(in_data):
+#         in_data[idx] = generator.ProcessSample()
     (_, in_data) = read("f2_20khz_emphasis_0_no_soft_clipping.wav")
     in_data = numpy.array(list(in_data),dtype='float') / numpy.max(in_data)
     in_data = in_data[0:length]
+#     in_data = 2.0 * numpy.random.rand(length) - 1.0
 
-    (_, ref_data) = read("f2_1khz_emphasis_0.wav")
+    (_, ref_data) = read("f2_1khz_emphasis_10_no_soft_clipping.wav")
     ref_data = numpy.array(list(ref_data),dtype='float') / numpy.max(ref_data)
     ref_data = ref_data[0:length]
 
-    available_filters = [MoogBaseLowpass,
-                         Moog,
-                         MoogMusicDSP,
-                         MoogMusicDSPVar1,
-                         MoogMusicDSPVar2,
-                         MoogMusicDSPVarStilson]
+    available_filters = [
+#                          MoogLowAliasNonLinearBaseLowpass,
+#                          MoogBaseLowpass,
+#                          Moog,
+                         MoogLowAliasNonLinear,
+                         MoogOversampled,
+#                          MoogMusicDSP,
+#                          MoogMusicDSPVar1,
+#                          MoogMusicDSPVar2,
+#                          MoogMusicDSPVarStilson
+                         ]
 
 #     in_data = numpy.random.rand(length) * 2.0 - 1.0
     out_data = numpy.zeros([len(available_filters) + 1, length])
