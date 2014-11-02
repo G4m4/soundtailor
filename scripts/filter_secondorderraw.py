@@ -27,6 +27,7 @@ Hence it may not really seems "pythonic" and not intended to be in any way.
 '''
 
 import math
+import numpy
 
 import filters_common
 
