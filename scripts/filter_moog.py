@@ -121,7 +121,7 @@ class Moog(filters_common.FilterInterface):
 
 class MoogLowAliasNonLinear(filters_common.FilterInterface):
     '''
-    Implements a Moog filter
+    Implements a low alias, non-linear Moog filter
     '''
     def __init__(self):
         self._frequency = 0.0
@@ -180,6 +180,12 @@ class MoogLowAliasNonLinear(filters_common.FilterInterface):
 
         return out
 
+    def ProcessOversampled(self, sample):
+        '''
+        2x oversampled process function
+        '''
+        self.ProcessSample(sample)
+        return self.ProcessSample(sample)
 class MoogMusicDSP(filters_common.FilterInterface):
     '''
     Implements a Moog filter based on MusicDSP source:
@@ -459,7 +465,7 @@ if __name__ == "__main__":
                          MoogMusicDSPVarStilson]
 
 #     in_data = numpy.random.rand(length) * 2.0 - 1.0
-    out_data = numpy.zeros([len(available_filters), length])
+    out_data = numpy.zeros([len(available_filters) + 1, length])
 
     for filter_idx, filter_class in enumerate(available_filters):
         filter_instance = filter_class()
@@ -468,6 +474,12 @@ if __name__ == "__main__":
         for idx, _ in enumerate(in_data):
             out_data[filter_idx][idx] = filter_instance.ProcessSample(in_data[idx])
         pylab.plot(out_data[filter_idx], label="out" + str(type(filter_instance)))
+    filter_instance = MoogLowAliasNonLinear()
+    filter_instance.SetParameters(filter_freq, resonance)
+    # The base lowpass has to be updated with the actual internal values
+    for idx, _ in enumerate(in_data):
+        out_data[filter_idx + 1][idx] = filter_instance.ProcessOversampled(in_data[idx])
+    pylab.plot(out_data[filter_idx + 1], label="out_oversampled")
 
     pylab.plot(in_data, label="in")
 
