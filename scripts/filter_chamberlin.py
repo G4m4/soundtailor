@@ -68,6 +68,27 @@ class Chamberlin(filters_common.FilterInterface):
 
         return self._lp
 
+class ChamberlinOverSampled(Chamberlin):
+    '''
+    Implements an oversampled Chamberlin state variable filter
+    '''
+    def __init__(self):
+        super(ChamberlinOverSampled, self).__init__()
+
+    def SetParameters(self, frequency, resonance):
+        '''
+        Sets both frequency and resonance
+        '''
+        self._damping = min(resonance, 2.0 - frequency)
+        self._frequency = frequency * (1.22 - 0.22 * frequency * self._damping)
+
+    def ProcessSample(self, sample):
+        '''
+        Actual process function
+        '''
+        super(ChamberlinOverSampled, self).ProcessSample(sample)
+        return super(ChamberlinOverSampled, self).ProcessSample(sample)
+
 if __name__ == "__main__":
     '''
     Various tests/sandbox
@@ -80,9 +101,10 @@ if __name__ == "__main__":
 
     freq = 1000.0
     sampling_freq = 48000.0
-    length = 256
-    filter_freq = 1.0
-    resonance = 0.1
+    length = 1024
+    filter_freq = 48000.0
+    filter_freq /= sampling_freq
+    resonance = 1.0
 
     in_data = utilities.GenerateData(100, 2000, length, sampling_freq)
     generator = generator_sawtoothdpw.SawtoothDPW(sampling_freq)
@@ -93,20 +115,27 @@ if __name__ == "__main__":
     in_data = numpy.random.rand(length) * 2.0 - 1.0
     out_data = numpy.zeros(length)
     out_data_minphase = numpy.zeros(length)
+    out_data_oversampled = numpy.zeros(length)
 
     lowpass = Chamberlin()
     lowpass.SetParameters(filter_freq, resonance)
     lowpassminphase = Chamberlin()
     lowpassminphase.SetParameters(filter_freq, resonance)
+    lowpassoversampled = ChamberlinOverSampled()
+    lowpassoversampled.SetParameters(filter_freq, resonance)
 
     for idx, _ in enumerate(in_data):
         out_data[idx] = lowpass.ProcessSample(in_data[idx])
         out_data_minphase[idx] = lowpassminphase.ProcessSampleMinimumPhase(in_data[idx])
+        out_data_oversampled[idx] = lowpassoversampled.ProcessSample(in_data[idx])
 
     print(utilities.PrintMetadata(utilities.GetMetadata(out_data - out_data_minphase)))
+    print(utilities.PrintMetadata(utilities.GetMetadata(out_data - out_data_oversampled)))
+    print(utilities.PrintMetadata(utilities.GetMetadata(in_data - out_data_oversampled)))
 
     pylab.plot(in_data, label="in")
     pylab.plot(out_data, label="out")
     pylab.plot(out_data_minphase, label="out_minphase")
+    pylab.plot(out_data_oversampled, label="out_oversampled")
     pylab.legend()
     pylab.show()
