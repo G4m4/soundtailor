@@ -1,4 +1,4 @@
-/// @file tests_moog_lowaliasnonlinear .cc
+/// @file tests_moog_lowaliasnonlinear.cc
 /// @brief MoogLowAliasNonLinear low-alias nonlinear filters specific tests
 /// @author gm
 /// @copyright gm 2014
