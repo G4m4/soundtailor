@@ -64,26 +64,6 @@ TEST(Filters, MoogLowAliasNonLinearOutputMean) {
   }  // iterations?
 }
 
-/// @brief Filters a random signal with max frequency cutoff and default Q
-/// Check for minimal output/input error
-TEST(Filters, MoogLowAliasNonLinearPassthrough) {
-  MoogLowAliasNonLinear filter;
-
-  filter.SetParameters(kPassthroughFrequency, kPassthroughResonance);
-
-  Sample diff_mean(Fill(0.0f));
-  for (unsigned int i(0); i < kDataTestSetSize; i += soundtailor::SampleSize) {
-    const Sample input(Fill(kNormDistribution(kRandomGenerator)));
-    const Sample filtered(filter(input));
-    diff_mean = Add(diff_mean, Sub(filtered, input));
-  }
-  const float kExpected(0.0f);
-  const float kActual(AddHorizontal(diff_mean));
-  const float kEpsilon(1e-6f * kDataTestSetSize);
-
-  EXPECT_NEAR(kExpected, kActual, kEpsilon);
-}
-
 /// @brief Check output range behaviour with max Q parameter without overshoot
 TEST(Filters, MoogLowAliasNonLinearRange) {
   MoogLowAliasNonLinear filter;
