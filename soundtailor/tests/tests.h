@@ -153,14 +153,9 @@ static const unsigned int kModulatorDataPerfSetSize(kMaxTime * 4);
 
 /// @brief Uniform distribution of normalized frequencies
 /// in ] 0.0f ; kMaxFundamentalNorm [
-class NormFrequencyDistribution : public std::uniform_real_distribution<float> {
- public:
-  NormFrequencyDistribution();
-  ~NormFrequencyDistribution() {
-    // Nothing to do here for now
-  }
-};
-static NormFrequencyDistribution kFreqDistribution;
+static std::uniform_real_distribution<float> kFreqDistribution(
+  kMinFundamentalNorm, kMaxFundamentalNorm);
+
 static std::uniform_real_distribution<float> kNormDistribution(-1.0f, 1.0f);
 static std::uniform_real_distribution<float> kNormPosDistribution(0.0f, 1.0f);
 static std::bernoulli_distribution kBoolDistribution;
