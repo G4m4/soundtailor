@@ -518,6 +518,7 @@ if __name__ == "__main__":
     in_data = numpy.array(list(in_data),dtype='float') / numpy.max(in_data)
     in_data = in_data[0:length]
 #     in_data = 2.0 * numpy.random.rand(length) - 1.0
+#     in_data = numpy.ones(length)
 
     (_, ref_data) = read("f2_1khz_emphasis_10_no_soft_clipping.wav")
     ref_data = numpy.array(list(ref_data),dtype='float') / numpy.max(ref_data)
