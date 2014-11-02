@@ -60,7 +60,8 @@ const Filter_Meta& FirstOrderPoleZero::Meta(void) {
                                  // No resonance anyway
                                  0.0f,
                                  1.0f,
-                                 1.0f);
+                                 1.0f,
+                                 1);
   return metas;
 }
 

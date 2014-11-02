@@ -40,13 +40,15 @@ struct Filter_Meta {
               const float freq_max,
               const float res_min,
               const float res_passthrough,
-              const float res_max)
+              const float res_max,
+              const unsigned int output_delay)
     : freq_min(freq_min),
       freq_passthrough(freq_passthrough),
       freq_max(freq_max),
       res_min(res_min),
       res_passthrough(res_passthrough),
-      res_max(res_max) {
+      res_max(res_max),
+      output_delay(output_delay) {
     // TODO(gm): These have to be static asserts
     SOUNDTAILOR_ASSERT(freq_min >= 0.0f);
     SOUNDTAILOR_ASSERT(freq_max >= 0.0f);
@@ -58,6 +60,8 @@ struct Filter_Meta {
     SOUNDTAILOR_ASSERT(res_min < res_max);
     SOUNDTAILOR_ASSERT(res_passthrough >= res_min);
     SOUNDTAILOR_ASSERT(res_passthrough <= res_max);
+    // Arbitrary value here, just as a sanity check
+    SOUNDTAILOR_ASSERT(output_delay <= 4);
   };
 
   const float freq_min;  ///< Lower bound for filter frequency
@@ -68,6 +72,7 @@ struct Filter_Meta {
   const float res_passthrough;  ///< Resonance to set the filter to in order
                                 ///< for it to be passthrough
   const float res_max;  ///< Higher bound for filter resonance
+  const unsigned int output_delay;  ///< Delay between input and output
 
  private:
   // No assignment operator for this class

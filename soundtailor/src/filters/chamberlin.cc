@@ -71,7 +71,8 @@ const Filter_Meta& Chamberlin::Meta(void) {
                                  1.0f,
                                  1e-5f,
                                  1.0f,
-                                 2.0f);
+                                 2.0f,
+                                 1);
   return metas;
 }
 

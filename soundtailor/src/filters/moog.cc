@@ -69,7 +69,8 @@ const Filter_Meta& Moog::Meta(void) {
                                  1.0f,
                                  0.0f,
                                  0.0f,
-                                 3.9999f);  // Arbitrary value
+                                 3.9999f,
+                                 1);  // Arbitrary value
   return metas;
 }
 
