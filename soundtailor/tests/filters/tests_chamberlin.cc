@@ -29,6 +29,8 @@ using soundtailor::filters::Chamberlin;
 static const float kPassthroughFrequency(Chamberlin::Meta().freq_passthrough);
 /// @brief Resonance parameter to be set in order to have a near-passthrough
 static const float kPassthroughResonance(Chamberlin::Meta().res_passthrough);
+/// @brief Filter delay
+static const unsigned int kDelay(Chamberlin::Meta().output_delay);
 
 /// @brief Random distribution for filter frequency, within its own bounds
 std::uniform_real_distribution<float> ChamberlinFilterFreqDistribution(
@@ -83,11 +85,10 @@ TEST(Filters, ChamberlinPassthrough) {
     Store(&data_out[i], filtered);
   }
   float diff_mean(0.0f);
-  // There is a 1-sample delay!
   for (unsigned int i(0);
-       i < kDataTestSetSize - 1;
+       i < kDataTestSetSize - kDelay;
        i += soundtailor::SampleSize) {
-    diff_mean += data_in[i] - data_out[i + 1];
+    diff_mean += data_in[i] - data_out[i + kDelay];
   }
   const float kExpected(0.0f);
   const float kActual(diff_mean);
