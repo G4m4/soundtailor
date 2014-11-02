@@ -35,10 +35,11 @@ MoogLowPassBlock::MoogLowPassBlock()
 
 Sample MoogLowPassBlock::operator()(SampleRead sample) {
   const float kGain(pole_coeff_ / 1.3f);
+  const float kHistoryGain(1.0f - pole_coeff_);
   const float direct = kGain * sample;
   const float out = direct + last_;
 
-  last_ = out * (1.0f - pole_coeff_) + zero_coeff_ * direct;
+  last_ = direct * (kHistoryGain + zero_coeff_) + kHistoryGain * last_;
 
   return out;
 }

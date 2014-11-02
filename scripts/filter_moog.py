@@ -55,6 +55,27 @@ class MoogBaseLowpass(filter_firstorderpolezero.FixedPoleZeroLowPass):
 
         return out
 
+class MoogBaseLowpassVariant(MoogBaseLowpass):
+    '''
+    Variant of the above, for comparison purpose
+    '''
+    def __init__(self):
+        super(MoogBaseLowpassVariant, self).__init__()
+
+    def ProcessSample(self, sample):
+        '''
+        Actual process function
+        '''
+        gain = self._pole_coeff / 1.3
+        history_gain = 1.0 - self._pole_coeff
+
+        direct = gain * sample
+        out = direct + self._last
+
+        self._last = direct * (history_gain + self._zero_coeff) + history_gain * self._last
+
+        return out
+
 class MoogLowAliasNonLinearBaseLowpass(filter_firstorderpolezero.FixedPoleZeroLowPass):
     '''
     Implements a simple 1 pole - 1 zero Low pass, with fixed coeffs tuned
