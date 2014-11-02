@@ -161,6 +161,8 @@ class MoogLowAliasNonLinear(filters_common.FilterInterface):
         '''
         Sets both frequency and resonance
         '''
+        # This filter corrected resonance should be within [0.0 ; 1.0]
+        # For consistency with other Moog filters it is scaled down here
         resonance /= 4.0
         f = frequency * (1.0 + 0.5787 * frequency
                                         * (1.0 - resonance) * (1.0 - resonance))
