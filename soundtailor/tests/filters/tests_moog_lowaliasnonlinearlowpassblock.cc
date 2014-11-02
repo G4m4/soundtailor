@@ -58,7 +58,7 @@ TEST(Filters, MoogLowAliasNonLinearLowPassBlockZeroOutputMean) {
     }
     const float kActual(std::abs(AddHorizontal(actual_mean)));
     const float kExpected(std::abs(AddHorizontal(expected_mean)));
-    const float kEpsilon(2e-3f * kDataTestSetSize);
+    const float kEpsilon(3e-3f * kDataTestSetSize);
 
     EXPECT_GT(kExpected + kEpsilon, kActual);
   }  // iterations?
