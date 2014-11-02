@@ -62,7 +62,7 @@ struct Filter_Meta {
     SOUNDTAILOR_ASSERT(res_passthrough <= res_max);
     // Arbitrary value here, just as a sanity check
     SOUNDTAILOR_ASSERT(output_delay <= 4);
-  };
+  }
 
   const float freq_min;  ///< Lower bound for filter frequency
   const float freq_passthrough;  ///< Frequency to set the filter to in order

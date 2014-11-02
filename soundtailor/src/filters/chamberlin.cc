@@ -59,7 +59,8 @@ void Chamberlin::SetParameters(const float frequency,
   SOUNDTAILOR_ASSERT(resonance >= Meta().res_min);
   SOUNDTAILOR_ASSERT(resonance <= Meta().res_max);
   // Stability assertion
-  SOUNDTAILOR_ASSERT(frequency * frequency + 2.0f * resonance * frequency < 4.0f);
+  SOUNDTAILOR_ASSERT(frequency * frequency
+                     + 2.0f * resonance * frequency < 4.0f);
 
   damping_ = std::min(resonance, 2.0f - frequency);
   frequency_ = frequency * (1.85f - 0.85f * frequency * damping_);

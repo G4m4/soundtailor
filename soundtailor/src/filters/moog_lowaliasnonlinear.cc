@@ -36,7 +36,7 @@ MoogLowAliasNonLinear::MoogLowAliasNonLinear()
 }
 
 Sample MoogLowAliasNonLinear::operator()(SampleRead sample) {
-  const float actual_sample(sample * (0.18f + 0.25f * resonance_ ));
+  const float actual_sample(sample * (0.18f + 0.25f * resonance_));
   float actual_input(actual_sample - resonance_ * last_);
 
   float kCurrentSideFactor(Saturate(last_side_factor_));
@@ -64,19 +64,22 @@ Sample MoogLowAliasNonLinear::operator()(SampleRead sample) {
   return out;
 }
 
-void MoogLowAliasNonLinear::SetParameters(const float frequency, const float resonance) {
+void MoogLowAliasNonLinear::SetParameters(const float frequency,
+                                          const float resonance) {
   SOUNDTAILOR_ASSERT(frequency >= Meta().freq_min);
   SOUNDTAILOR_ASSERT(frequency <= Meta().freq_max);
   SOUNDTAILOR_ASSERT(resonance >= Meta().res_min);
   SOUNDTAILOR_ASSERT(resonance <= Meta().res_max);
   const float kActualResonance(resonance / 4.0f);
   const float temp(frequency * (1.0f + 0.5787f * frequency
-                                * (1.0f - kActualResonance) * (1.0f - kActualResonance)));
+                      * (1.0f - kActualResonance) * (1.0f - kActualResonance)));
   frequency_ = 1.25f * temp * (1.0f - 0.595f * temp + 0.24f * temp * temp);
-  resonance_ = kActualResonance * (1.4f + 0.108f * frequency_
-                                - 0.164f * frequency_ * frequency_
-                                - 0.069f * frequency_ * frequency_ * frequency_);
-  for(MoogLowAliasNonLinearLowPassBlock& filter : filters_) {
+  resonance_ = kActualResonance * (
+    1.4f
+    + 0.108f * frequency_
+    - 0.164f * frequency_ * frequency_
+    - 0.069f * frequency_ * frequency_ * frequency_);
+  for (MoogLowAliasNonLinearLowPassBlock& filter : filters_) {
     filter.SetParameters(frequency_, resonance_);
   }
 }

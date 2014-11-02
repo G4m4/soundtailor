@@ -38,7 +38,7 @@ Sample Moog::operator()(SampleRead sample) {
   const float actual_input(sample - resonance_ * last_);
   // Todo(gm): find a more efficient way to do that
   float tmp_filtered(actual_input);
-  for(MoogLowPassBlock& filter : filters_) {
+  for (MoogLowPassBlock& filter : filters_) {
     tmp_filtered = filter(tmp_filtered);
   }
   const float out(tmp_filtered);
@@ -55,10 +55,11 @@ void Moog::SetParameters(const float frequency, const float resonance) {
   const float temp(frequency * (1.0f + 0.03617f * frequency
                                 * (4.0f - resonance) * (4.0f - resonance)));
   frequency_ = 1.25f * temp * (1.0f - 0.595f * temp + 0.24f * temp * temp);
-  resonance_ = resonance * (1.0f + 0.077f * frequency_
-                                - 0.117f * frequency_ * frequency_
-                                - 0.049f * frequency_ * frequency_ * frequency_);
-  for(MoogLowPassBlock& filter : filters_) {
+  resonance_ = resonance * (1.0f
+                            + 0.077f * frequency_
+                            - 0.117f * frequency_ * frequency_
+                            - 0.049f * frequency_ * frequency_ * frequency_);
+  for (MoogLowPassBlock& filter : filters_) {
     filter.SetParameters(frequency_, resonance_);
   }
 }
