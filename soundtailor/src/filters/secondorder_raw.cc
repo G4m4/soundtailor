@@ -30,9 +30,10 @@ namespace filters {
 
 SecondOrderRaw::SecondOrderRaw()
     : Filter_Base(),
-      gain_(0.0f) {
-  coeffs_.fill(0.0f);
-  history_.fill(0.0f);
+      gain_(0.0f),
+      coeffs_({{0.0f, 0.0f, 0.0f, 0.0f}}),
+      history_({{0.0f, 0.0f, 0.0f, 0.0f}}) {
+  // Nothing to do here for now
 }
 
 Sample SecondOrderRaw::operator()(SampleRead sample) {

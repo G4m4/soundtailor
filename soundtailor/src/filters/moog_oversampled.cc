@@ -26,8 +26,9 @@ namespace soundtailor {
 namespace filters {
 
 MoogOversampled::MoogOversampled()
-    : MoogLowAliasNonLinear() {
-  history_.fill(0.0f);
+    : MoogLowAliasNonLinear(),
+    history_({{0.0f, 0.0f, 0.0f, 0.0f}}) {
+  // Nothing to do here for now
 }
 
 Sample MoogOversampled::operator()(SampleRead sample) {
