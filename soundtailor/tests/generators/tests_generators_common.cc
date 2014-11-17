@@ -185,6 +185,26 @@ TEST(Generators, PhaseAccumulatorBeginsAtZero) {
   }  // iterations?
 }
 
+/// @brief Check that both per-sample and per-block generation methods
+/// yield an identical result
+TEST(Generators, PhaseAccumulatorProcess) {
+  std::vector<float> output_data(kDataTestSetSize);
+  // Random normalized frequency
+  const float kFrequency(kFreqDistribution(kRandomGenerator));
+
+  PhaseAccumulator generator_perblock;
+  PhaseAccumulator generator_persample;
+  generator_perblock.SetFrequency(kFrequency);
+  generator_persample.SetFrequency(kFrequency);
+
+  generator_perblock.ProcessBlock(&output_data[0], output_data.size());
+  for (unsigned int i(0); i < kDataTestSetSize; i += soundtailor::SampleSize) {
+    const Sample kReference(Fill(&output_data[i]));
+    const Sample kGenerated((generator_persample()));
+    EXPECT_TRUE(Equal(kReference, kGenerated));
+  }
+}
+
 /// @brief Generates a signal (performance tests)
 TEST(Generators, PhaseAccumulatorPerf) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
@@ -197,6 +217,27 @@ TEST(Generators, PhaseAccumulatorPerf) {
     unsigned int sample_idx(0);
     while (sample_idx < kGeneratorDataPerfSetSize) {
       const Sample kCurrent(Fill(kFreqDistribution(kRandomGenerator)));
+      sample_idx += soundtailor::SampleSize;
+      // No actual test!
+      EXPECT_TRUE(LessEqual(-2.0f, kCurrent));
+    }
+  }
+}
+
+/// @brief Generates a signal (block performance tests)
+TEST(Generators, PhaseAccumulatorBlockPerf) {
+  std::vector<float> out_data(kGeneratorDataPerfSetSize);
+  for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
+    IGNORE(iterations);
+
+    const float kFrequency(kFreqDistribution(kRandomGenerator));
+    PhaseAccumulator generator;
+    generator.SetFrequency(kFrequency);
+
+    generator.ProcessBlock(&out_data[0], out_data.size());
+    unsigned int sample_idx(0);
+    while (sample_idx < kGeneratorDataPerfSetSize) {
+      const Sample kCurrent(Fill(&out_data[sample_idx]));
       sample_idx += soundtailor::SampleSize;
       // No actual test!
       EXPECT_TRUE(LessEqual(-2.0f, kCurrent));
