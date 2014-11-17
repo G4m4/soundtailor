@@ -109,6 +109,14 @@ class Filter_Base {
   /// gets inlined if needed
   virtual Sample operator()(SampleRead sample) = 0;
 
+  /// @brief Actual process function for many samples
+  ///
+  /// In a context of dynamic polymorphism this will save you from per-sample
+  /// virtual function calls
+  virtual void ProcessBlock(BlockIn in,
+                            BlockOut out,
+                            unsigned int block_size) = 0;
+
   /// @brief Set the filter parameters:
   /// quality factor ("resonance") and cutoff frequency
   ///
