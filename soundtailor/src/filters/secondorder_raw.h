@@ -44,6 +44,7 @@ class SecondOrderRaw : public Filter_Base {
 
   static const Filter_Meta& Meta(void);
 
+  FILTER_PROCESSBLOCK_DEFINITION
  protected:
   float gain_;  ///< Filter gain (b0 coefficient)
   std::array<float, 4> coeffs_;  ///< Filter coefficients (for zeroes and poles)

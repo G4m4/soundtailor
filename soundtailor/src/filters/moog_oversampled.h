@@ -40,6 +40,7 @@ class MoogOversampled : public MoogLowAliasNonLinear {
 
   static const Filter_Meta& Meta(void);
 
+  FILTER_PROCESSBLOCK_DEFINITION
  protected:
   std::array<float, 4> history_;  ///< Filter history (last outputs)
                       ///< organized as follows:

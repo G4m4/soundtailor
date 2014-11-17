@@ -78,5 +78,7 @@ const Filter_Meta& Chamberlin::Meta(void) {
   return metas;
 }
 
+FILTER_PROCESSBLOCK_IMPLEMENTATION(Chamberlin)
+
 }  // namespace filters
 }  // namespace soundtailor

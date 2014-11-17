@@ -64,5 +64,7 @@ const Filter_Meta& MoogLowPassBlock::Meta(void) {
   return metas;
 }
 
+FILTER_PROCESSBLOCK_IMPLEMENTATION(MoogLowPassBlock)
+
 }  // namespace filters
 }  // namespace soundtailor

@@ -65,5 +65,7 @@ const Filter_Meta& MoogOversampled::Meta(void) {
   return metas;
 }
 
+FILTER_PROCESSBLOCK_IMPLEMENTATION(MoogOversampled)
+
 }  // namespace filters
 }  // namespace soundtailor

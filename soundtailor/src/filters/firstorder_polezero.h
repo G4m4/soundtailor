@@ -39,6 +39,7 @@ class FirstOrderPoleZero : public Filter_Base {
 
   static const Filter_Meta& Meta(void);
 
+  FILTER_PROCESSBLOCK_DEFINITION
  protected:
   double coeff_;
   float last_;

@@ -130,5 +130,7 @@ const Filter_Meta& SecondOrderRaw::Meta(void) {
   return metas;
 }
 
+FILTER_PROCESSBLOCK_IMPLEMENTATION(SecondOrderRaw)
+
 }  // namespace filters
 }  // namespace soundtailor

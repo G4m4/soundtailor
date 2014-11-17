@@ -109,5 +109,7 @@ const Filter_Meta& MoogLowAliasNonLinear::Meta(void) {
   return metas;
 }
 
+FILTER_PROCESSBLOCK_IMPLEMENTATION(MoogLowAliasNonLinear)
+
 }  // namespace filters
 }  // namespace soundtailor

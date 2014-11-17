@@ -45,6 +45,17 @@ class Oversampler : public Filter_Base {
     return filter_(sample);
   }
 
+  virtual void ProcessBlock(BlockIn in, BlockOut out, unsigned int block_size) {
+    const float* in_ptr(in);
+    float* out_write(out);
+    for (unsigned int i(0); i < block_size; i += SampleSize) {
+      const float kInput(Fill(in_ptr));
+      *out_write = static_cast<Oversampler<FilterType>*>(this)->operator()(kInput);
+      in_ptr += SampleSize;
+      out_write += SampleSize;
+    }
+  }
+
   virtual void SetParameters(const float frequency, const float resonance) {
     filter_.SetParameters(frequency, resonance);
   }
