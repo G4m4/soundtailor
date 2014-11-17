@@ -93,6 +93,18 @@ class Generator_Base {
   virtual float ProcessParameters(void) = 0;
 };
 
+#define GENERATOR_PROCESSBLOCK_DEFINITION    virtual void ProcessBlock(BlockOut out, \
+                                                                       unsigned int block_size) override;
+
+#define GENERATOR_PROCESSBLOCK_IMPLEMENTATION(GeneratorType)    void GeneratorType::ProcessBlock(BlockOut out, \
+                                                                                                 unsigned int block_size) {  \
+  float* out_write(out);  \
+  for (unsigned int i(0); i < block_size; i += SampleSize) {  \
+    Store(out_write, static_cast<GeneratorType*>(this)->operator()());  \
+    out_write += SampleSize;  \
+  } \
+}
+
 }  // namespace generators
 }  // namespace soundtailor
 
