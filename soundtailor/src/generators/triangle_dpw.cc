@@ -75,5 +75,7 @@ float TriangleDPW::ProcessParameters(void) {
   return normalization_factor_ * differentiator_.ProcessParameters(minus);
 }
 
+GENERATOR_PROCESSBLOCK_IMPLEMENTATION(TriangleDPW)
+
 }  // namespace generators
 }  // namespace soundtailor

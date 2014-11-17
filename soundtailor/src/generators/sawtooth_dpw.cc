@@ -62,5 +62,7 @@ float SawtoothDPW::ProcessParameters(void) {
   return normalization_factor_ * differentiator_.ProcessParameters(squared);
 }
 
+GENERATOR_PROCESSBLOCK_IMPLEMENTATION(SawtoothDPW)
+
 }  // namespace generators
 }  // namespace soundtailor

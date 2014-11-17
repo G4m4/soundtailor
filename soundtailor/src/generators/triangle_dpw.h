@@ -40,6 +40,7 @@ class TriangleDPW : public Generator_Base {
   virtual void SetFrequency(const float frequency);
   virtual float ProcessParameters(void);
 
+  GENERATOR_PROCESSBLOCK_DEFINITION
  protected:
   PhaseAccumulator sawtooth_gen_;  //< Internal basic sawtooth signal generator
   Differentiator differentiator_;  //< Internal basic differentiator

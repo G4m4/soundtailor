@@ -63,6 +63,8 @@ float PhaseAccumulator::ProcessParameters(void) {
   return out;
 }
 
+GENERATOR_PROCESSBLOCK_IMPLEMENTATION(PhaseAccumulator)
+
 Differentiator::Differentiator(const float last)
     : last_(last) {
   // Nothing to do here
