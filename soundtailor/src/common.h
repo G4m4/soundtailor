@@ -70,6 +70,12 @@ template<typename Type> void IGNORE(const Type&) {}
 /// instead of passing its address and loading it.
 typedef const Sample SampleRead;
 
+/// @brief Type for block input parameter
+typedef const float* const BlockIn;
+
+/// @brief Type for block output parameter
+typedef float* const BlockOut;
+
 /// @brief "Sample" type size in bytes
 static const unsigned int SampleSizeBytes(sizeof(Sample));
 /// @brief "Sample" type size compared to audio samples
