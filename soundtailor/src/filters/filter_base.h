@@ -144,7 +144,7 @@ class Filter_Base {
   float* out_write(out);  \
   for (unsigned int i(0); i < block_size; i += SampleSize) {  \
     const float kInput(Fill(in_ptr)); \
-    *out_write = static_cast<FilterType*>(this)->operator()(kInput);  \
+    Store(out_write, static_cast<FilterType*>(this)->operator()(kInput));  \
     in_ptr += SampleSize; \
     out_write += SampleSize;  \
   } \
