@@ -243,6 +243,14 @@ TEST(Generators, DifferentiatedSawtooth) {
 
 /// @brief Differentiate random values (performance test)
 TEST(Generators, DifferentiatorPerf) {
+
+  // Smaller performance test sets in debug
+#if (_BUILD_CONFIGURATION_DEBUG)
+  const unsigned int kFilterDataPerfSetSize(16 * 1024);
+#else  // (_BUILD_CONFIGURATION_DEBUG)
+  const unsigned int kFilterDataPerfSetSize(16 * 1024 * 256);
+#endif  // (_BUILD_CONFIGURATION_DEBUG)
+
   Differentiator differentiator;
   for (unsigned int i(0);
        i < kFilterDataPerfSetSize;
