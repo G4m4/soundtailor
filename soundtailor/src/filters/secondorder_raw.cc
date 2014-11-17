@@ -125,7 +125,8 @@ const Filter_Meta& SecondOrderRaw::Meta(void) {
                                  0.0f,
                                  0.7f,
                                  1000.0f,
-                                 1);  // Arbitrary value
+                                 0,
+                                 1.0f);
   return metas;
 }
 

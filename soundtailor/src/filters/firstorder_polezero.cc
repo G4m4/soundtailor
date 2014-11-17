@@ -61,7 +61,8 @@ const Filter_Meta& FirstOrderPoleZero::Meta(void) {
                                  0.0f,
                                  1.0f,
                                  1.0f,
-                                 1);
+                                 0,
+                                 1.0f);
   return metas;
 }
 

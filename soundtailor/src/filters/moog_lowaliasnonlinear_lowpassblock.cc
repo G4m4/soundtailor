@@ -58,7 +58,8 @@ const Filter_Meta& MoogLowAliasNonLinearLowPassBlock::Meta(void) {
                                  0.0f,
                                  0.0f,
                                  3.9999f,
-                                 1);  // Arbitrary value
+                                 0,
+                                 1.3f);
   return metas;
 }
 

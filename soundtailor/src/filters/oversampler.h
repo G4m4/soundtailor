@@ -50,7 +50,19 @@ class Oversampler : public Filter_Base {
   }
 
   static const Filter_Meta& Meta(void) {
-    return FilterType::Meta();
+    // Same metadata, except the usually reduced delay
+    static const Filter_Meta metas(
+      FilterType::Meta().freq_min,
+      FilterType::Meta().freq_passthrough,
+      FilterType::Meta().freq_max,
+      FilterType::Meta().res_min,
+      FilterType::Meta().res_passthrough,
+      FilterType::Meta().res_max,
+      // Can't use std::max(0 - 1, 0) on unsigneds...
+      FilterType::Meta().output_delay > 0
+        ? FilterType::Meta().output_delay - 1 : 0,
+      FilterType::Meta().output_gain);
+    return metas;
   }
 
  protected:

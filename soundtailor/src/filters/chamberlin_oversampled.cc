@@ -61,7 +61,8 @@ const Filter_Meta& ChamberlinOversampled::Meta(void) {
                                  0.0f,
                                  1.0f,
                                  1.0f,
-                                 0);
+                                 0,
+                                 1.0f);
   return metas;
 }
 
