@@ -58,6 +58,12 @@ class Generator_Base {
   /// gets inlined if needed
   virtual Sample operator()(void) = 0;
 
+  /// @brief Actual process function for many samples
+  ///
+  /// In a context of dynamic polymorphism this will save you from per-sample
+  /// virtual function calls
+  virtual void ProcessBlock(BlockOut out, unsigned int block_size) = 0;
+
   /// @brief Reset the instance to the given phase - nothing else gets changed
   ///
   /// Phase is normalized - the input value should be in [-1.0f ; 1.0f]
