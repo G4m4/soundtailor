@@ -133,6 +133,23 @@ class Filter_Base {
   virtual void SetParameters(const float frequency, const float resonance) = 0;
 };
 
+#define FILTER_PROCESSBLOCK_DEFINITION    virtual void ProcessBlock(BlockIn in, \
+                                                                    BlockOut out, \
+                                                                    unsigned int block_size) override;
+
+#define FILTER_PROCESSBLOCK_IMPLEMENTATION(FilterType)    void FilterType::ProcessBlock(BlockIn in, \
+                                                                                        BlockOut out, \
+                                                                                        unsigned int block_size) {  \
+  const float* in_ptr(in);  \
+  float* out_write(out);  \
+  for (unsigned int i(0); i < block_size; i += SampleSize) {  \
+    const float kInput(Fill(in_ptr)); \
+    *out_write = static_cast<FilterType*>(this)->operator()(kInput);  \
+    in_ptr += SampleSize; \
+    out_write += SampleSize;  \
+  } \
+}
+
 }  // namespace filters
 }  // namespace soundtailor
 
