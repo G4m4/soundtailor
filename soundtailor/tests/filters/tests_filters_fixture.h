@@ -52,12 +52,8 @@ class Filter : public ::testing::Test {
     kDelay(FilterType::Meta().output_delay),
     kInverseFilterGain(1.0f / FilterType::Meta().output_gain),
     FilterFreqDistribution(FilterType::Meta().freq_min,
-                           FilterType::Meta().freq_max),
-    output_data_(this->kDataTestSetSize),
-    input_data_(this->kDataTestSetSize) {
-    std::generate(input_data_.begin(),
-                  input_data_.end(),
-                  std::bind(this->kNormDistribution, this->kRandomGenerator));
+                           FilterType::Meta().freq_max) {
+    // Nothing to be done here for now
   }
 
   virtual ~Filter() {
@@ -81,6 +77,25 @@ class Filter : public ::testing::Test {
   const float kInverseFilterGain;
   /// @brief Random distribution for filter frequency, within its own bounds
   std::uniform_real_distribution<float> FilterFreqDistribution;
+};
+
+/// @brief Base tests fixture with data
+template <typename FilterType>
+class FilterData : public Filter<FilterType> {
+ protected:
+
+  FilterData()
+      : output_data_(this->kDataTestSetSize),
+    input_data_(this->kDataTestSetSize) {
+    std::generate(input_data_.begin(),
+                  input_data_.end(),
+                  std::bind(this->kNormDistribution, this->kRandomGenerator));
+  }
+
+  virtual ~FilterData() {
+    // Nothing to be done here for now
+  }
+
   std::vector<float> output_data_;
   mutable std::vector<float> input_data_;
 };

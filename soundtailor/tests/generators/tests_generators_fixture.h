@@ -53,8 +53,7 @@ class Generator : public ::testing::Test {
     kMinKeyNote(0),
     kMaxKeyNote(93),
     kRandomGenerator(),
-    kFreqDistribution(kMinFundamentalNorm, kMaxFundamentalNorm),
-    output_data_(this->kDataTestSetSize)
+    kFreqDistribution(kMinFundamentalNorm, kMaxFundamentalNorm)
   {
     // Nothing to be done here for now
   }
@@ -84,6 +83,23 @@ class Generator : public ::testing::Test {
   /// @brief Uniform distribution of normalized frequencies
   /// in ] 0.0f ; kMaxFundamentalNorm [
   std::uniform_real_distribution<float> kFreqDistribution;
+};
+
+/// @brief Base tests fixture data
+template <typename GeneratorType>
+class GeneratorData : public Generator<GeneratorType> {
+ protected:
+
+  GeneratorData()
+      : output_data_(this->kDataTestSetSize)
+  {
+    // Nothing to be done here for now
+  }
+
+  virtual ~GeneratorData() {
+    // Nothing to be done here for now
+  }
+
   std::vector<float> output_data_;
 };
 

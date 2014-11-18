@@ -65,6 +65,7 @@ typedef ::testing::Types<ChamberlinOversampled,
                          SecondOrderRaw> PassthroughFilterTypes;
 
 TYPED_TEST_CASE(Filter, FilterTypes);
+TYPED_TEST_CASE(FilterData, FilterTypes);
 TYPED_TEST_CASE(FilterPassThrough, PassthroughFilterTypes);
 
 /// @brief Filters a random signal, check for mean lower than the one
@@ -114,7 +115,7 @@ TYPED_TEST(Filter, Range) {
 
 /// @brief Check that both per-sample and per-block generation methods
 /// yield an identical result
-TYPED_TEST(Filter, Process) {
+TYPED_TEST(FilterData, Process) {
   // Random normalized frequency
   const float kFrequency(this->FilterFreqDistribution(this->kRandomGenerator));
 
@@ -154,7 +155,7 @@ TYPED_TEST(Filter, Perf) {
 }
 
 /// @brief Filters random data (block performance tests)
-TYPED_TEST(Filter, BlockPerf) {
+TYPED_TEST(FilterData, BlockPerf) {
   for (unsigned int iterations(0); iterations < this->kPerfIterations; ++iterations) {
     IGNORE(iterations);
 

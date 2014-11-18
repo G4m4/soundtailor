@@ -34,6 +34,7 @@ typedef ::testing::Types<PhaseAccumulator,
                          TriangleDPW> GeneratorTypes;
 
 TYPED_TEST_CASE(Generator, GeneratorTypes);
+TYPED_TEST_CASE(GeneratorData, GeneratorTypes);
 
 /// @brief Generates a signal, check for null mean (no DC offset)
 TYPED_TEST(Generator, Mean) {
@@ -216,7 +217,7 @@ TYPED_TEST(Generator, BeginsAtZero) {
 
 /// @brief Check that both per-sample and per-block generation methods
 /// yield an identical result
-TYPED_TEST(Generator, Process) {
+TYPED_TEST(GeneratorData, Process) {
   // Random normalized frequency
   const float kFrequency(this->kFreqDistribution(this->kRandomGenerator));
 
@@ -253,7 +254,7 @@ TYPED_TEST(Generator, Perf) {
 }
 
 /// @brief Generates a signal (block performance tests)
-TYPED_TEST(Generator, BlockPerf) {
+TYPED_TEST(GeneratorData, BlockPerf) {
   for (unsigned int iterations(0); iterations < this->kPerfIterations; ++iterations) {
     IGNORE(iterations);
 
