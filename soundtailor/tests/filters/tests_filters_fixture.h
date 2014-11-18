@@ -23,6 +23,10 @@
 
 #include "soundtailor/tests/tests.h"
 
+// std::generate
+#include <algorithm>
+// std::bind
+#include <functional>
 #include <random>
 
 /// @brief Base tests fixture for all filters
@@ -31,14 +35,14 @@ class Filter : public ::testing::Test {
  protected:
 
   Filter()
-      : kDataTestSetSize(32768),
-    kIterations(16),
+      : kDataTestSetSize(16 * 1024),
+    kTestIterations(16),
 
   // Smaller performance test sets in debug
 #if (_BUILD_CONFIGURATION_DEBUG)
-    kFilterDataPerfSetSize(16 * 1024),
+    kPerfIterations(1),
 #else  // (_BUILD_CONFIGURATION_DEBUG)
-    kFilterDataPerfSetSize(16 * 1024 * 256),
+    kPerfIterations(256 * 2),
 #endif  // (_BUILD_CONFIGURATION_DEBUG)
 
     kRandomGenerator(),
@@ -48,9 +52,12 @@ class Filter : public ::testing::Test {
     kDelay(FilterType::Meta().output_delay),
     kInverseFilterGain(1.0f / FilterType::Meta().output_gain),
     FilterFreqDistribution(FilterType::Meta().freq_min,
-                           FilterType::Meta().freq_max)
-  {
-    // Nothing to be done here for now
+                           FilterType::Meta().freq_max),
+    output_data_(this->kDataTestSetSize),
+    input_data_(this->kDataTestSetSize) {
+    std::generate(input_data_.begin(),
+                  input_data_.end(),
+                  std::bind(this->kNormDistribution, this->kRandomGenerator));
   }
 
   virtual ~Filter() {
@@ -58,8 +65,8 @@ class Filter : public ::testing::Test {
   }
 
   const unsigned int kDataTestSetSize;
-  const unsigned int kIterations;
-  const unsigned int kFilterDataPerfSetSize;
+  const unsigned int kTestIterations;
+  const unsigned int kPerfIterations;
   // @todo(gm) set the seed for deterministic tests across platforms
   std::default_random_engine kRandomGenerator;
   std::uniform_real_distribution<float> kNormDistribution;
@@ -74,6 +81,8 @@ class Filter : public ::testing::Test {
   const float kInverseFilterGain;
   /// @brief Random distribution for filter frequency, within its own bounds
   std::uniform_real_distribution<float> FilterFreqDistribution;
+  std::vector<float> output_data_;
+  mutable std::vector<float> input_data_;
 };
 
 /// @brief Base tests fixture for all filters able to be passthrough
