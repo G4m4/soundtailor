@@ -18,6 +18,9 @@
 /// You should have received a copy of the GNU General Public License
 /// along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef SOUNDTAILOR_TESTS_FILTERS_TESTS_FILTERS_FIXTURES_H_
+#define SOUNDTAILOR_TESTS_FILTERS_TESTS_FILTERS_FIXTURES_H_
+
 #include "soundtailor/tests/tests.h"
 
 #include <random>
@@ -75,3 +78,5 @@ class Filter : public ::testing::Test {
 template <typename FilterType>
 class FilterPassThrough : public Filter<FilterType> {
 };
+
+#endif  // SOUNDTAILOR_TESTS_FILTERS_TESTS_FILTERS_FIXTURES_H_
