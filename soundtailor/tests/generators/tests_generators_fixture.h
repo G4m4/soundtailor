@@ -23,6 +23,10 @@
 
 #include "soundtailor/tests/tests.h"
 
+// std::generate
+#include <algorithm>
+// std::bind
+#include <functional>
 #include <random>
 
 /// @brief Base tests fixture for all generators
@@ -31,24 +35,26 @@ class Generator : public ::testing::Test {
  protected:
 
   Generator()
-      : kIterations(16),
-    kSignalDataPeriodsCount(8.0f),
-    kDataTestSetSize(32768),
+      :
+      kTestIterations( 16 ),
 
-// Smaller performance test sets in debug
+      // Smaller performance test sets in debug
 #if (_BUILD_CONFIGURATION_DEBUG)
-    kGeneratorDataPerfSetSize(16 * 1024),
+      kPerfIterations( 1 ),
 #else  // (_BUILD_CONFIGURATION_DEBUG)
-    kGeneratorDataPerfSetSize(16 * 1024 * 256),
+      kPerfIterations( 256 * 2 ),
 #endif  // (_BUILD_CONFIGURATION_DEBUG)
 
+    kSignalDataPeriodsCount(8.0f),
+    kDataTestSetSize(32768),
     kSamplingRate(96000.0f),
     kMinFundamentalNorm(10.0f / kSamplingRate),
     kMaxFundamentalNorm(2000.0f / kSamplingRate),
     kMinKeyNote(0),
     kMaxKeyNote(93),
     kRandomGenerator(),
-    kFreqDistribution(kMinFundamentalNorm, kMaxFundamentalNorm)
+    kFreqDistribution(kMinFundamentalNorm, kMaxFundamentalNorm),
+    output_data_(this->kDataTestSetSize)
   {
     // Nothing to be done here for now
   }
@@ -57,10 +63,10 @@ class Generator : public ::testing::Test {
     // Nothing to be done here for now
   }
 
-  const unsigned int kIterations;
+  const unsigned int kTestIterations;
+  const unsigned int kPerfIterations;
   const float kSignalDataPeriodsCount;
   const unsigned int kDataTestSetSize;
-  const unsigned int kGeneratorDataPerfSetSize;
   /// @brief Base sampling rate unless indicated otherwise
   const float kSamplingRate;
   /// @brief Arbitrary lowest allowed fundamental
@@ -78,6 +84,7 @@ class Generator : public ::testing::Test {
   /// @brief Uniform distribution of normalized frequencies
   /// in ] 0.0f ; kMaxFundamentalNorm [
   std::uniform_real_distribution<float> kFreqDistribution;
+  std::vector<float> output_data_;
 };
 
 #endif  // SOUNDTAILOR_TESTS_GENERATORS_TESTS_GENERATORS_FIXTURES_H_

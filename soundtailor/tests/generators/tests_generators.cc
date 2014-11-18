@@ -18,11 +18,6 @@
 /// You should have received a copy of the GNU General Public License
 /// along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 
-// std::generate
-#include <algorithm>
-// std::bind
-#include <functional>
-
 #include "soundtailor/tests/generators/tests_generators_fixture.h"
 
 #include "soundtailor/src/generators/generators_common.h"
@@ -42,7 +37,7 @@ TYPED_TEST_CASE(Generator, GeneratorTypes);
 
 /// @brief Generates a signal, check for null mean (no DC offset)
 TYPED_TEST(Generator, Mean) {
-  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations; ++iterations) {
     IGNORE(iterations);
     // Random normalized frequency
     const float kFrequency(this->kFreqDistribution(this->kRandomGenerator));
@@ -66,7 +61,7 @@ TYPED_TEST(Generator, Mean) {
 
 /// @brief Generates a signal, check for signal power
 TYPED_TEST(Generator, Power) {
-  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations; ++iterations) {
     IGNORE(iterations);
 
     // Random normalized frequency
@@ -92,7 +87,7 @@ TYPED_TEST(Generator, Power) {
 /// @brief Generates a signal,
 /// check for normalized range (within [-1.0f ; 1.0f])
 TYPED_TEST(Generator, Range) {
-  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations; ++iterations) {
     IGNORE(iterations);
 
     const float kFrequency(this->kFreqDistribution(this->kRandomGenerator));
@@ -112,7 +107,7 @@ TYPED_TEST(Generator, Range) {
 /// @brief Generates a signal and check for expected zero crossing
 /// according parameterized frequency (1 expected zero crossings per period)
 TYPED_TEST(Generator, ZeroCrossings) {
-  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations; ++iterations) {
     IGNORE(iterations);
 
     const float kFrequency(this->kFreqDistribution(this->kRandomGenerator));
@@ -155,7 +150,7 @@ TYPED_TEST(Generator, Notes) {
 /// for the other half by forcing the second generator phase.
 /// No difference should be perceptible at the transition
 TYPED_TEST(Generator, PhaseControl) {
-  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations; ++iterations) {
     IGNORE(iterations);
     const float kFrequency(this->kFreqDistribution(this->kRandomGenerator));
 
@@ -207,7 +202,7 @@ TYPED_TEST(Generator, PhaseControl) {
 
 /// @brief Check that the first generated sample is always a zero
 TYPED_TEST(Generator, BeginsAtZero) {
-  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations; ++iterations) {
     IGNORE(iterations);
     const float kFrequency(this->kFreqDistribution(this->kRandomGenerator));
 
@@ -222,7 +217,6 @@ TYPED_TEST(Generator, BeginsAtZero) {
 /// @brief Check that both per-sample and per-block generation methods
 /// yield an identical result
 TYPED_TEST(Generator, Process) {
-  std::vector<float> output_data(this->kDataTestSetSize);
   // Random normalized frequency
   const float kFrequency(this->kFreqDistribution(this->kRandomGenerator));
 
@@ -231,9 +225,9 @@ TYPED_TEST(Generator, Process) {
   generator_perblock.SetFrequency(kFrequency);
   generator_persample.SetFrequency(kFrequency);
 
-  generator_perblock.ProcessBlock(&output_data[0], output_data.size());
+  generator_perblock.ProcessBlock(&this->output_data_[0], this->output_data_.size());
   for (unsigned int i(0); i < this->kDataTestSetSize; i += soundtailor::SampleSize) {
-    const Sample kReference(Fill(&output_data[i]));
+    const Sample kReference(Fill(&this->output_data_[i]));
     const Sample kGenerated((generator_persample()));
     EXPECT_TRUE(Equal(kReference, kGenerated));
   }
@@ -241,7 +235,7 @@ TYPED_TEST(Generator, Process) {
 
 /// @brief Generates a signal (performance tests)
 TYPED_TEST(Generator, Perf) {
-  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kPerfIterations; ++iterations) {
     IGNORE(iterations);
 
     const float kFrequency(this->kFreqDistribution(this->kRandomGenerator));
@@ -249,7 +243,7 @@ TYPED_TEST(Generator, Perf) {
     generator.SetFrequency(kFrequency);
 
     unsigned int sample_idx(0);
-    while (sample_idx < this->kGeneratorDataPerfSetSize) {
+    while (sample_idx < this->kDataTestSetSize) {
       const Sample kCurrent(Fill(this->kFreqDistribution(this->kRandomGenerator)));
       sample_idx += soundtailor::SampleSize;
       // No actual test!
@@ -260,18 +254,17 @@ TYPED_TEST(Generator, Perf) {
 
 /// @brief Generates a signal (block performance tests)
 TYPED_TEST(Generator, BlockPerf) {
-  std::vector<float> out_data(this->kGeneratorDataPerfSetSize);
-  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kPerfIterations; ++iterations) {
     IGNORE(iterations);
 
     const float kFrequency(this->kFreqDistribution(this->kRandomGenerator));
     PhaseAccumulator generator;
     generator.SetFrequency(kFrequency);
 
-    generator.ProcessBlock(&out_data[0], out_data.size());
+    generator.ProcessBlock(&this->output_data_[0], this->output_data_.size());
     unsigned int sample_idx(0);
-    while (sample_idx < this->kGeneratorDataPerfSetSize) {
-      const Sample kCurrent(Fill(&out_data[sample_idx]));
+    while (sample_idx < this->kDataTestSetSize) {
+      const Sample kCurrent(Fill(&this->output_data_[sample_idx]));
       sample_idx += soundtailor::SampleSize;
       // No actual test!
       EXPECT_TRUE(LessEqual(-2.0f, kCurrent));
