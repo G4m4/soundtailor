@@ -94,7 +94,7 @@ class Generator_Base {
 };
 
 #define GENERATOR_PROCESSBLOCK_DEFINITION    virtual void ProcessBlock(BlockOut out, \
-                                                                       unsigned int block_size) override;
+                                                                       unsigned int block_size);
 
 #define GENERATOR_PROCESSBLOCK_IMPLEMENTATION(GeneratorType)    void GeneratorType::ProcessBlock(BlockOut out, \
                                                                                                  unsigned int block_size) {  \

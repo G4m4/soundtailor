@@ -135,7 +135,7 @@ class Filter_Base {
 
 #define FILTER_PROCESSBLOCK_DEFINITION    virtual void ProcessBlock(BlockIn in, \
                                                                     BlockOut out, \
-                                                                    unsigned int block_size) override;
+                                                                    unsigned int block_size);
 
 #define FILTER_PROCESSBLOCK_IMPLEMENTATION(FilterType)    void FilterType::ProcessBlock(BlockIn in, \
                                                                                         BlockOut out, \
