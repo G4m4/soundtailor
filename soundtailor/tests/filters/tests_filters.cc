@@ -18,6 +18,11 @@
 /// You should have received a copy of the GNU General Public License
 /// along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 
+// std::generate
+#include <algorithm>
+// std::bind
+#include <functional>
+
 #include "soundtailor/tests/filters/tests_filters_fixture.h"
 
 #include "soundtailor/src/filters/chamberlin.h"
@@ -112,6 +117,33 @@ TYPED_TEST(Filter, Range) {
   }
 }
 
+/// @brief Check that both per-sample and per-block generation methods
+/// yield an identical result
+TYPED_TEST(Filter, Process) {
+  std::vector<float> output_data(this->kDataTestSetSize);
+  std::vector<float> kInputData(this->kDataTestSetSize);
+  std::generate(kInputData.begin(),
+                kInputData.end(),
+                std::bind(this->kNormDistribution, this->kRandomGenerator));
+  // Random normalized frequency
+  const float kFrequency(this->FilterFreqDistribution(this->kRandomGenerator));
+
+  TypeParam filter_perblock;
+  TypeParam filter_persample;
+  filter_perblock.SetParameters(kFrequency, this->kPassthroughResonance);
+  filter_persample.SetParameters(kFrequency, this->kPassthroughResonance);
+
+  filter_perblock.ProcessBlock(&kInputData[0],
+                               &output_data[0],
+                               output_data.size());
+  for (unsigned int i(0); i < this->kDataTestSetSize; i += soundtailor::SampleSize) {
+    const Sample kInput(Fill(&kInputData[i]));
+    const Sample kReference(Fill(&output_data[i]));
+    const Sample kGenerated((filter_persample(kInput)));
+    EXPECT_TRUE(Equal(kReference, kGenerated));
+  }
+}
+
 /// @brief Filters random data (performance test)
 TYPED_TEST(Filter, Perf) {
   for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
@@ -127,6 +159,31 @@ TYPED_TEST(Filter, Perf) {
       // No actual test!
       EXPECT_TRUE(LessEqual(-2.0f, filter(kCurrent)));
       sample_idx += soundtailor::SampleSize;
+    }
+  }
+}
+
+/// @brief Filters random data (block performance tests)
+TYPED_TEST(Filter, BlockPerf) {
+  std::vector<float> data_in(this->kFilterDataPerfSetSize);
+  std::generate(data_in.begin(),
+                data_in.end(),
+                std::bind(this->kNormDistribution, this->kRandomGenerator));
+  std::vector<float> out_data(this->kFilterDataPerfSetSize);
+  for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
+    IGNORE(iterations);
+
+    const float kFrequency(this->FilterFreqDistribution(this->kRandomGenerator));
+    TypeParam filter;
+    filter.SetParameters(kFrequency, this->kPassthroughResonance);
+
+    filter.ProcessBlock(&data_in[0], &out_data[0], out_data.size());
+    unsigned int sample_idx(0);
+    while (sample_idx < this->kFilterDataPerfSetSize) {
+      const Sample kCurrent(Fill(&out_data[sample_idx]));
+      sample_idx += soundtailor::SampleSize;
+      // No actual test!
+      EXPECT_TRUE(LessEqual(-2.0f, kCurrent));
     }
   }
 }
