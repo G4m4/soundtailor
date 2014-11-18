@@ -27,7 +27,7 @@ using soundtailor::generators::PhaseAccumulator;
 using soundtailor::generators::Differentiator;
 
 /// @brief Differentiate a constant, check for null derivative
-TEST(Generators, DifferentiatedConstant) {
+TEST(GeneratorsCommon, DifferentiatedConstant) {
   // The input is a random value in [-1.0f ; 1.0f]
   const Sample input(Fill(kNormDistribution(kRandomGenerator)));
   Differentiator differentiator;
@@ -42,7 +42,7 @@ TEST(Generators, DifferentiatedConstant) {
 
 /// @brief Generates a triangle, check for its differentiated output:
 /// it is supposed to be almost null everywhere except at discontinuities
-TEST(Generators, DifferentiatedSawtooth) {
+TEST(GeneratorsCommon, DifferentiatedSawtooth) {
   /// @brief Arbitrary lowest allowed fundamental
   const float kMinFundamentalNorm(10.0f / kSamplingRate);
   /// @brief Arbitrary highest allowed fundamental
@@ -72,7 +72,7 @@ TEST(Generators, DifferentiatedSawtooth) {
 }
 
 /// @brief Differentiate random values (performance test)
-TEST(Generators, DifferentiatorPerf) {
+TEST(GeneratorsCommon, DifferentiatorPerf) {
 
   // Smaller performance test sets in debug
 #if (_BUILD_CONFIGURATION_DEBUG)
