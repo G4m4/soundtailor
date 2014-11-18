@@ -32,6 +32,7 @@ class Filter : public ::testing::Test {
 
   Filter()
       : kDataTestSetSize(32768),
+    kIterations(16),
 
   // Smaller performance test sets in debug
 #if (_BUILD_CONFIGURATION_DEBUG)
@@ -57,6 +58,7 @@ class Filter : public ::testing::Test {
   }
 
   const unsigned int kDataTestSetSize;
+  const unsigned int kIterations;
   const unsigned int kFilterDataPerfSetSize;
   // @todo(gm) set the seed for deterministic tests across platforms
   std::default_random_engine kRandomGenerator;

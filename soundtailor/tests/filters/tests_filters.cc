@@ -75,7 +75,7 @@ TYPED_TEST_CASE(FilterPassThrough, PassthroughFilterTypes);
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)
 TYPED_TEST(Filter, ZeroOutputMean) {
-  for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
     IGNORE(iterations);
 
     // Random normalized frequency
@@ -146,7 +146,7 @@ TYPED_TEST(Filter, Process) {
 
 /// @brief Filters random data (performance test)
 TYPED_TEST(Filter, Perf) {
-  for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
     IGNORE(iterations);
 
     const float kFrequency(this->FilterFreqDistribution(this->kRandomGenerator));
@@ -170,7 +170,7 @@ TYPED_TEST(Filter, BlockPerf) {
                 data_in.end(),
                 std::bind(this->kNormDistribution, this->kRandomGenerator));
   std::vector<float> out_data(this->kFilterDataPerfSetSize);
-  for (unsigned int iterations(0); iterations < kIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kIterations; ++iterations) {
     IGNORE(iterations);
 
     const float kFrequency(this->FilterFreqDistribution(this->kRandomGenerator));
