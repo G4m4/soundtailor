@@ -262,6 +262,14 @@ TEST(Generators, DifferentiatedConstant) {
 /// @brief Generates a triangle, check for its differentiated output:
 /// it is supposed to be almost null everywhere except at discontinuities
 TEST(Generators, DifferentiatedSawtooth) {
+  /// @brief Arbitrary lowest allowed fundamental
+  const float kMinFundamentalNorm(10.0f / kSamplingRate);
+  /// @brief Arbitrary highest allowed fundamental
+  // TODO(gm): make this higher
+  const float kMaxFundamentalNorm(2000.0f / kSamplingRate);
+
+  std::uniform_real_distribution<float> kFreqDistribution(kMinFundamentalNorm,
+                                                          kMaxFundamentalNorm);
   const float kFrequency(kFreqDistribution(kRandomGenerator));
   PhaseAccumulator generator;
   generator.SetFrequency(kFrequency);

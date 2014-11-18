@@ -115,22 +115,9 @@ static inline bool Equal(SampleRead threshold, SampleRead value) {
 
 static const unsigned int kDataTestSetSize(32768);
 static const unsigned int kIterations(16);
-static const float kSignalDataPeriodsCount(8.0f);
 
 /// @brief Base sampling rate unless indicated otherwise
 static const float kSamplingRate(96000.0f);
-
-/// @brief Arbitrary lowest allowed fundamental
-static const float kMinFundamentalNorm(10.0f / kSamplingRate);
-/// @brief Arbitrary highest allowed fundamental
-// TODO(gm): make this higher
-static const float kMaxFundamentalNorm(2000.0f / kSamplingRate);
-
-/// @brief Arbitrary lowest allowed key note (= C0)
-static const unsigned int kMinKeyNote(0);
-/// @brief Arbitrary highest allowed key note (= A6)
-// TODO(gm): make this higher
-static const unsigned int kMaxKeyNote(93);
 
 /// @brief Arbitrary lowest allowed duration
 static const unsigned int kMinTime(0);
@@ -148,11 +135,6 @@ static const unsigned int kModulatorPerfIterations(kIterations * 16);
 
 // Except for modulators
 static const unsigned int kModulatorDataPerfSetSize(kMaxTime * 4);
-
-/// @brief Uniform distribution of normalized frequencies
-/// in ] 0.0f ; kMaxFundamentalNorm [
-static std::uniform_real_distribution<float> kFreqDistribution(
-  kMinFundamentalNorm, kMaxFundamentalNorm);
 
 static std::uniform_real_distribution<float> kNormDistribution(-1.0f, 1.0f);
 static std::uniform_real_distribution<float> kNormPosDistribution(0.0f, 1.0f);
