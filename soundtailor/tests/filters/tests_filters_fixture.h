@@ -50,11 +50,11 @@ class Filter : public ::testing::Test {
     FilterFreqDistribution(FilterType::Meta().freq_min,
                            FilterType::Meta().freq_max)
   {
-    // You can do set-up work for each test here.
+    // Nothing to be done here for now
   }
 
   virtual ~Filter() {
-    // You can do clean-up work that doesn't throw exceptions here.
+    // Nothing to be done here for now
   }
 
   const unsigned int kDataTestSetSize;
