@@ -3,6 +3,7 @@
 file(GLOB
      SOUNDTAILOR_TESTS_MODULATORS_SRC
      *.cc
+     *.h
 )
 
 # Expose variables to parent CMake files
