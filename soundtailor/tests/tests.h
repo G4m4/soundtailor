@@ -21,8 +21,6 @@
 #ifndef SOUNDTAILOR_TESTS_TESTS_H_
 #define SOUNDTAILOR_TESTS_TESTS_H_
 
-#include <cmath>
-
 // std::generate
 #include <algorithm>
 // std::bind
@@ -114,69 +112,14 @@ static inline bool Equal(SampleRead threshold, SampleRead value) {
 #endif
 
 static const unsigned int kDataTestSetSize(32768);
-static const unsigned int kIterations(16);
 
 /// @brief Base sampling rate unless indicated otherwise
 static const float kSamplingRate(96000.0f);
-
-/// @brief Arbitrary lowest allowed duration
-static const unsigned int kMinTime(0);
-/// @brief Arbitrary highest allowed duration
-static const unsigned int kMaxTime(static_cast<unsigned int>(kSamplingRate));
-
-// Smaller performance test sets in debug
-#if (_BUILD_CONFIGURATION_DEBUG)
-static const unsigned int kGeneratorDataPerfSetSize(16 * 1024);
-static const unsigned int kModulatorPerfIterations(1);
-#else  // (_BUILD_CONFIGURATION_DEBUG)
-static const unsigned int kGeneratorDataPerfSetSize(16 * 1024 * 256);
-static const unsigned int kModulatorPerfIterations(kIterations * 16);
-#endif  // (_BUILD_CONFIGURATION_DEBUG)
-
-// Except for modulators
-static const unsigned int kModulatorDataPerfSetSize(kMaxTime * 4);
 
 static std::uniform_real_distribution<float> kNormDistribution(-1.0f, 1.0f);
 static std::uniform_real_distribution<float> kNormPosDistribution(0.0f, 1.0f);
 static std::bernoulli_distribution kBoolDistribution;
 static std::default_random_engine kRandomGenerator;
-
-/// @brief Compute the mean value of a signal generator for the given length
-///
-/// @param[in]    generator      Generator to compute value from
-/// @param[in]    length         Sample length
-///
-/// @return the generator mean for such length
-template <typename TypeGenerator>
-float ComputeMean(TypeGenerator& generator, const unsigned int length) {
-  Sample sum(Fill(0.0f));
-  unsigned int sample_idx(0);
-  while (sample_idx < length) {
-    const Sample sample(generator());
-    sum = Add(sum, sample);
-    sample_idx += soundtailor::SampleSize;
-  }
-  return AddHorizontal(sum) / static_cast<float>(length);
-}
-
-/// @brief Compute the mean power of a signal generator for the given length
-///
-/// @param[in]    generator      Generator to compute value from
-/// @param[in]    length         Sample length
-///
-/// @return the generator mean for such length
-template <typename TypeGenerator>
-float ComputePower(TypeGenerator& generator, const unsigned int length) {
-  Sample power(Fill(0.0f));
-  unsigned int sample_idx(0);
-  while (sample_idx < length) {
-    const Sample sample(generator());
-    const Sample squared(Mul(sample, sample));
-    power = Add(power, squared);
-    sample_idx += soundtailor::SampleSize;
-  }
-  return AddHorizontal(power) / static_cast<float>(length);
-}
 
 /// @brief Helper structure for retrieving zero crossings informations
 template <typename TypeGenerator>
@@ -231,69 +174,5 @@ struct ZeroCrossing {
   float previous_sgn_;
   unsigned int cursor_;
 };
-
-/// @brief Compute zero crossings of a signal generator for the given length
-///
-/// @param[in]  generator   Generator to compute value from
-/// @param[in]  length    Sample length
-/// @param[in]  initial_sgn   Initial generator sign, useful for generators
-///                           beginning at 0 and decreasing (Triangle DPW...)
-///
-/// @return zero crossings occurence for such length
-template <typename TypeGenerator>
-int ComputeZeroCrossing(TypeGenerator& generator,
-                        const unsigned int length,
-                        const float initial_sgn = 1.0f) {
-  ZeroCrossing<TypeGenerator> zero_crossing(generator, initial_sgn);
-  int out(0);
-  unsigned int zero_crossing_idx(zero_crossing.GetNextZeroCrossing(length));
-  while (zero_crossing_idx < length) {
-    out += 1;
-    zero_crossing_idx = zero_crossing.GetNextZeroCrossing(length);
-  }
-  return out;
-}
-
-/// @brief Compute the frequency of a given piano key (A4 = 440Hz)
-float NoteToFrequency(const unsigned int key_number);
-
-/// @brief Helper structure for checking a signal continuity
-struct IsContinuous {
-  /// @brief Default constructor
-  ///
-  /// @param[in]  threshold   Max difference between two consecutive samples
-  /// @param[in]  previous   First sample initialization
-  IsContinuous(const float threshold, const float previous)
-      : threshold_(threshold),
-        previous_(previous) {
-    SOUNDTAILOR_ASSERT(threshold >= 0.0f);
-  }
-
-  /// @brief Check next sample continuity
-  ///
-  /// @param[in]  input   Sample to be tested
-  bool operator()(SampleRead input) {
-    const float before_diff(GetLast(input));
-    const Sample prev(RotateOnRight(input,
-                                    previous_));
-    const Sample after_diff(Sub(input, prev));
-    previous_ = before_diff;
-    if (LessThan(threshold_, Abs(after_diff))) {
-      return false;
-    }
-    return true;
-  }
-
-  float threshold_;
-  float previous_;
-};
-
-/// @brief Compute how many samples are required in order to have exactly
-/// the given number of periods for the given signal frequency
-///
-/// @param[in]  frequency   Signal frequency
-/// @param[in]  period_count    Expected number of period (may be non-integer)
-unsigned int ComputeDataLength(const float frequency,
-                               const float period_count);
 
 #endif  // SOUNDTAILOR_TESTS_TESTS_H_

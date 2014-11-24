@@ -21,13 +21,15 @@
 #ifndef SOUNDTAILOR_TESTS_GENERATORS_TESTS_GENERATORS_FIXTURES_H_
 #define SOUNDTAILOR_TESTS_GENERATORS_TESTS_GENERATORS_FIXTURES_H_
 
-#include "soundtailor/tests/tests.h"
+#include <cmath>
 
 // std::generate
 #include <algorithm>
 // std::bind
 #include <functional>
 #include <random>
+
+#include "soundtailor/tests/tests.h"
 
 /// @brief Base tests fixture for all generators
 template <typename GeneratorType>
@@ -102,5 +104,111 @@ class GeneratorData : public Generator<GeneratorType> {
 
   std::vector<float> output_data_;
 };
+
+/// @brief Compute the mean value of a signal generator for the given length
+///
+/// @param[in]    generator      Generator to compute value from
+/// @param[in]    length         Sample length
+///
+/// @return the generator mean for such length
+template <typename TypeGenerator>
+float ComputeMean(TypeGenerator& generator, const unsigned int length) {
+  Sample sum(Fill(0.0f));
+  unsigned int sample_idx(0);
+  while (sample_idx < length) {
+    const Sample sample(generator());
+    sum = Add(sum, sample);
+    sample_idx += soundtailor::SampleSize;
+  }
+  return AddHorizontal(sum) / static_cast<float>(length);
+}
+
+/// @brief Compute the mean power of a signal generator for the given length
+///
+/// @param[in]    generator      Generator to compute value from
+/// @param[in]    length         Sample length
+///
+/// @return the generator mean for such length
+template <typename TypeGenerator>
+float ComputePower(TypeGenerator& generator, const unsigned int length) {
+  Sample power(Fill(0.0f));
+  unsigned int sample_idx(0);
+  while (sample_idx < length) {
+    const Sample sample(generator());
+    const Sample squared(Mul(sample, sample));
+    power = Add(power, squared);
+    sample_idx += soundtailor::SampleSize;
+  }
+  return AddHorizontal(power) / static_cast<float>(length);
+}
+
+/// @brief Compute zero crossings of a signal generator for the given length
+///
+/// @param[in]  generator   Generator to compute value from
+/// @param[in]  length    Sample length
+/// @param[in]  initial_sgn   Initial generator sign, useful for generators
+///                           beginning at 0 and decreasing (Triangle DPW...)
+///
+/// @return zero crossings occurence for such length
+template <typename TypeGenerator>
+int ComputeZeroCrossing(TypeGenerator& generator,
+                        const unsigned int length,
+                        const float initial_sgn = 1.0f) {
+  ZeroCrossing<TypeGenerator> zero_crossing(generator, initial_sgn);
+  int out(0);
+  unsigned int zero_crossing_idx(zero_crossing.GetNextZeroCrossing(length));
+  while (zero_crossing_idx < length) {
+    out += 1;
+    zero_crossing_idx = zero_crossing.GetNextZeroCrossing(length);
+  }
+  return out;
+}
+
+/// @brief Compute the frequency of a given piano key (A4 = 440Hz)
+static inline float NoteToFrequency(const unsigned int key_number) {
+  const float exponent((static_cast<float>(key_number) - 69.0f) / 12.0f);
+  return std::pow(2.0f, exponent) * 440.0f;
+}
+
+/// @brief Helper structure for checking a signal continuity
+struct IsContinuous {
+  /// @brief Default constructor
+  ///
+  /// @param[in]  threshold   Max difference between two consecutive samples
+  /// @param[in]  previous   First sample initialization
+  IsContinuous(const float threshold, const float previous)
+      : threshold_(threshold),
+        previous_(previous) {
+    SOUNDTAILOR_ASSERT(threshold >= 0.0f);
+  }
+
+  /// @brief Check next sample continuity
+  ///
+  /// @param[in]  input   Sample to be tested
+  bool operator()(SampleRead input) {
+    const float before_diff(GetLast(input));
+    const Sample prev(RotateOnRight(input,
+                                    previous_));
+    const Sample after_diff(Sub(input, prev));
+    previous_ = before_diff;
+    if (LessThan(threshold_, Abs(after_diff))) {
+      return false;
+    }
+    return true;
+  }
+
+  float threshold_;
+  float previous_;
+};
+
+/// @brief Compute how many samples are required in order to have exactly
+/// the given number of periods for the given signal frequency
+///
+/// @param[in]  frequency   Signal frequency
+/// @param[in]  period_count    Expected number of period (may be non-integer)
+static inline unsigned int ComputeDataLength(const float frequency,
+                                             const float period_count) {
+  return static_cast<unsigned int>(std::floor(0.5f * period_count / frequency));
+}
 
 #endif  // SOUNDTAILOR_TESTS_GENERATORS_TESTS_GENERATORS_FIXTURES_H_

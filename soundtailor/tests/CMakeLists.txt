@@ -31,7 +31,6 @@ source_group("modulators"
 
 # Source files
 set(SOUNDTAILOR_TESTS_SRC
-    tests.cc
     main.cc
     ${SOUNDTAILOR_TESTS_FILTERS_SRC}
     ${SOUNDTAILOR_TESTS_GENERATORS_SRC}
