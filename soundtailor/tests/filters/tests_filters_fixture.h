@@ -35,22 +35,22 @@ class Filter : public ::testing::Test {
  protected:
 
   Filter()
-      : kDataTestSetSize(16 * 1024),
-    kTestIterations(16),
+      : kDataTestSetSize_(16 * 1024),
+    kTestIterations_(16),
 
   // Smaller performance test sets in debug
 #if (_BUILD_CONFIGURATION_DEBUG)
-    kPerfIterations(1),
+    kPerfIterations_(1),
 #else  // (_BUILD_CONFIGURATION_DEBUG)
-    kPerfIterations(256 * 2),
+    kPerfIterations_(256 * 2),
 #endif  // (_BUILD_CONFIGURATION_DEBUG)
 
-    kRandomGenerator(),
-    kNormDistribution(-1.0f, 1.0f),
-    kPassthroughFrequency(FilterType::Meta().freq_passthrough),
-    kPassthroughResonance(FilterType::Meta().res_passthrough),
-    kDelay(FilterType::Meta().output_delay),
-    kInverseFilterGain(1.0f / FilterType::Meta().output_gain),
+    kRandomGenerator_(),
+    kNormDistribution_(-1.0f, 1.0f),
+    kPassthroughFrequency_(FilterType::Meta().freq_passthrough),
+    kPassthroughResonance_(FilterType::Meta().res_passthrough),
+    kDelay_(FilterType::Meta().output_delay),
+    kInverseFilterGain_(1.0f / FilterType::Meta().output_gain),
     FilterFreqDistribution(FilterType::Meta().freq_min,
                            FilterType::Meta().freq_max) {
     // Nothing to be done here for now
@@ -60,21 +60,21 @@ class Filter : public ::testing::Test {
     // Nothing to be done here for now
   }
 
-  const unsigned int kDataTestSetSize;
-  const unsigned int kTestIterations;
-  const unsigned int kPerfIterations;
+  const unsigned int kDataTestSetSize_;
+  const unsigned int kTestIterations_;
+  const unsigned int kPerfIterations_;
   // @todo(gm) set the seed for deterministic tests across platforms
-  std::default_random_engine kRandomGenerator;
-  std::uniform_real_distribution<float> kNormDistribution;
+  std::default_random_engine kRandomGenerator_;
+  std::uniform_real_distribution<float> kNormDistribution_;
 
   /// @brief Frequency parameter to be set in order to have a near-passthrough
-  const float kPassthroughFrequency;
+  const float kPassthroughFrequency_;
   /// @brief Resonance parameter to be set in order to have a near-passthrough
-  const float kPassthroughResonance;
+  const float kPassthroughResonance_;
   /// @brief Filter delay
-  const unsigned int kDelay;
+  const unsigned int kDelay_;
   /// @brief Inverse of the gain introduced by the filter
-  const float kInverseFilterGain;
+  const float kInverseFilterGain_;
   /// @brief Random distribution for filter frequency, within its own bounds
   std::uniform_real_distribution<float> FilterFreqDistribution;
 };
@@ -85,11 +85,11 @@ class FilterData : public Filter<FilterType> {
  protected:
 
   FilterData()
-      : output_data_(this->kDataTestSetSize),
-    input_data_(this->kDataTestSetSize) {
+      : output_data_(kDataTestSetSize_),
+    input_data_(kDataTestSetSize_) {
     std::generate(input_data_.begin(),
                   input_data_.end(),
-                  std::bind(this->kNormDistribution, this->kRandomGenerator));
+                  std::bind(kNormDistribution_, kRandomGenerator_));
   }
 
   virtual ~FilterData() {

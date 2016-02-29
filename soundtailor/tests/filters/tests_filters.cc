@@ -71,20 +71,20 @@ TYPED_TEST_CASE(FilterPassThrough, PassthroughFilterTypes);
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)
 TYPED_TEST(Filter, ZeroOutputMean) {
-  for (unsigned int iterations(0); iterations < this->kTestIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < kTestIterations_; ++iterations) {
     IGNORE(iterations);
 
     // Random normalized frequency
-    const float kFrequency(this->FilterFreqDistribution(this->kRandomGenerator));
+    const float kFrequency(this->FilterFreqDistribution(kRandomGenerator_));
     TypeParam filter;
 
-    filter.SetParameters(kFrequency, this->kPassthroughResonance);
+    filter.SetParameters(kFrequency, kPassthroughResonance_);
     Sample expected_mean(Fill(0.0f));
     Sample actual_mean(Fill(0.0f));
     for (unsigned int i(0);
          i < kDataTestSetSize;
          i += soundtailor::SampleSize) {
-      const Sample input(Fill(this->kNormDistribution(this->kRandomGenerator)));
+      const Sample input(Fill(kNormDistribution_(kRandomGenerator_)));
       const Sample filtered(filter(input));
       actual_mean = Add(actual_mean, filtered);
       expected_mean = Add(expected_mean, input);
@@ -101,13 +101,13 @@ TYPED_TEST(Filter, ZeroOutputMean) {
 TYPED_TEST(Filter, Range) {
   TypeParam filter;
 
-  filter.SetParameters(this->kPassthroughFrequency, this->kPassthroughResonance);
+  filter.SetParameters(kPassthroughFrequency_, kPassthroughResonance_);
 
   // Very high Epsilon due to this filter implementation
   const float kEpsilon(1e-1f);
-  for (unsigned int i(0); i < this->kDataTestSetSize; i += soundtailor::SampleSize) {
-    const Sample input(Fill(this->kNormDistribution(this->kRandomGenerator)));
-    const Sample filtered(MulConst(this->kInverseFilterGain, filter(input)));
+  for (unsigned int i(0); i < kDataTestSetSize_; i += soundtailor::SampleSize) {
+    const Sample input(Fill(kNormDistribution_(kRandomGenerator_)));
+    const Sample filtered(MulConst(kInverseFilterGain_, filter(input)));
     EXPECT_TRUE(GreaterEqual(1.0f, Add(filtered, Fill(-kEpsilon))));
     EXPECT_TRUE(LessEqual(-1.0f, Add(filtered, Fill(kEpsilon))));
   }
@@ -117,17 +117,17 @@ TYPED_TEST(Filter, Range) {
 /// yield an identical result
 TYPED_TEST(FilterData, Process) {
   // Random normalized frequency
-  const float kFrequency(this->FilterFreqDistribution(this->kRandomGenerator));
+  const float kFrequency(this->FilterFreqDistribution(kRandomGenerator_));
 
   TypeParam filter_perblock;
   TypeParam filter_persample;
-  filter_perblock.SetParameters(kFrequency, this->kPassthroughResonance);
-  filter_persample.SetParameters(kFrequency, this->kPassthroughResonance);
+  filter_perblock.SetParameters(kFrequency, kPassthroughResonance_);
+  filter_persample.SetParameters(kFrequency, kPassthroughResonance_);
 
   filter_perblock.ProcessBlock(&this->input_data_[0],
                                &this->output_data_[0],
                                this->output_data_.size());
-  for (unsigned int i(0); i < this->kDataTestSetSize; i += soundtailor::SampleSize) {
+  for (unsigned int i(0); i < kDataTestSetSize_; i += soundtailor::SampleSize) {
     const Sample kInput(Fill(&this->input_data_[i]));
     const Sample kReference(Fill(&this->output_data_[i]));
     const Sample kGenerated((filter_persample(kInput)));
@@ -137,16 +137,16 @@ TYPED_TEST(FilterData, Process) {
 
 /// @brief Filters random data (performance test)
 TYPED_TEST(Filter, Perf) {
-  for (unsigned int iterations(0); iterations < this->kPerfIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < kPerfIterations_; ++iterations) {
     IGNORE(iterations);
 
-    const float kFrequency(this->FilterFreqDistribution(this->kRandomGenerator));
+    const float kFrequency(this->FilterFreqDistribution(kRandomGenerator_));
     TypeParam filter;
-    filter.SetParameters(kFrequency, this->kPassthroughResonance);
+    filter.SetParameters(kFrequency, kPassthroughResonance_);
 
     unsigned int sample_idx(0);
-    while (sample_idx < this->kDataTestSetSize) {
-      const Sample kCurrent(Fill(this->kNormDistribution(this->kRandomGenerator)));
+    while (sample_idx < kDataTestSetSize_) {
+      const Sample kCurrent(Fill(kNormDistribution_(kRandomGenerator_)));
       // No actual test!
       EXPECT_TRUE(LessEqual(-2.0f, filter(kCurrent)));
       sample_idx += soundtailor::SampleSize;
@@ -156,18 +156,18 @@ TYPED_TEST(Filter, Perf) {
 
 /// @brief Filters random data (block performance tests)
 TYPED_TEST(FilterData, BlockPerf) {
-  for (unsigned int iterations(0); iterations < this->kPerfIterations; ++iterations) {
+  for (unsigned int iterations(0); iterations < kPerfIterations_; ++iterations) {
     IGNORE(iterations);
 
-    const float kFrequency(this->FilterFreqDistribution(this->kRandomGenerator));
+    const float kFrequency(this->FilterFreqDistribution(kRandomGenerator_));
     TypeParam filter;
-    filter.SetParameters(kFrequency, this->kPassthroughResonance);
+    filter.SetParameters(kFrequency, kPassthroughResonance_);
 
     filter.ProcessBlock(&this->input_data_[0],
                         &this->output_data_[0],
                         this->output_data_.size());
     unsigned int sample_idx(0);
-    while (sample_idx < this->kDataTestSetSize) {
+    while (sample_idx < kDataTestSetSize_) {
       const Sample kCurrent(Fill(&this->output_data_[sample_idx]));
       sample_idx += soundtailor::SampleSize;
       // No actual test!
@@ -181,19 +181,19 @@ TYPED_TEST(FilterData, BlockPerf) {
 TYPED_TEST(FilterPassThrough, Passthrough) {
   TypeParam filter;
 
-  filter.SetParameters(this->kPassthroughFrequency, this->kPassthroughResonance);
+  filter.SetParameters(kPassthroughFrequency_, kPassthroughResonance_);
 
   Sample diff_mean(Fill(0.0f));
   for (unsigned int i(0);
-       i < this->kDataTestSetSize;
+       i < kDataTestSetSize_;
        i += soundtailor::SampleSize) {
-    const Sample input(Fill(this->kNormDistribution(this->kRandomGenerator)));
-    const Sample filtered(MulConst(this->kInverseFilterGain, filter(input)));
+    const Sample input(Fill(kNormDistribution_(kRandomGenerator_)));
+    const Sample filtered(MulConst(kInverseFilterGain_, filter(input)));
     diff_mean = Add(diff_mean, Sub(filtered, input));
   }
   const float kExpected(0.0f);
   const float kActual(AddHorizontal(diff_mean));
-  const float kEpsilon(2e-6f * this->kDataTestSetSize);
+  const float kEpsilon(2e-6f * kDataTestSetSize_);
 
   EXPECT_NEAR(kExpected, kActual, kEpsilon);
 }

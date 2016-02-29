@@ -36,25 +36,25 @@ class Modulator : public ::testing::Test {
  protected:
 
   Modulator()
-      : kTestIterations( 16 ),
+      : kTestIterations_( 16 ),
 
       // Smaller performance test sets in debug
 #if (_BUILD_CONFIGURATION_DEBUG)
-    kPerfIterations( 1 ),
+    kPerfIterations_( 1 ),
 #else  // (_BUILD_CONFIGURATION_DEBUG)
     kPerfIterations( 128 ),
 #endif  // (_BUILD_CONFIGURATION_DEBUG)
 
-    kMinTime(0),
-    kMaxTime(static_cast<unsigned int>(kSamplingRate)),
-    kModulatorDataPerfSetSize(kMaxTime * 4),
-    kTail(256),
-    kRandomGenerator(),
-    kTimeDistribution(kMinTime, kMaxTime),
-    kAttack(kTimeDistribution(kRandomGenerator)),
-    kDecay(kTimeDistribution(kRandomGenerator)),
-    kSustain(kTimeDistribution(kRandomGenerator)),
-    kSustainLevel(kNormPosDistribution(kRandomGenerator))
+    kMinTime_(0),
+    kMaxTime_(static_cast<unsigned int>(kSamplingRate)),
+    kModulatorDataPerfSetSize_(kMaxTime_ * 4),
+    kTail_(256),
+    kRandomGenerator_(),
+    kTimeDistribution_(kMinTime_, kMaxTime_),
+    kAttack_(kTimeDistribution_(kRandomGenerator_)),
+    kDecay_(kTimeDistribution_(kRandomGenerator_)),
+    kSustain_(kTimeDistribution_(kRandomGenerator_)),
+    kSustainLevel_(kNormPosDistribution(kRandomGenerator_))
   {
     // Nothing to be done here for now
   }
@@ -63,24 +63,24 @@ class Modulator : public ::testing::Test {
     // Nothing to be done here for now
   }
 
-  const unsigned int kTestIterations;
-  const unsigned int kPerfIterations;
+  const unsigned int kTestIterations_;
+  const unsigned int kPerfIterations_;
   /// @brief Arbitrary lowest allowed duration
-  const unsigned int kMinTime;
+  const unsigned int kMinTime_;
   /// @brief Arbitrary highest allowed duration
-  const unsigned int kMaxTime;
-  const unsigned int kModulatorDataPerfSetSize;
+  const unsigned int kMaxTime_;
+  const unsigned int kModulatorDataPerfSetSize_;
   /// @brief Length of the tail to check after each envelop
-  const unsigned int kTail;
+  const unsigned int kTail_;
   // @todo(gm) set the seed for deterministic tests across platforms
-  std::default_random_engine kRandomGenerator;
+  std::default_random_engine kRandomGenerator_;
   /// @brief Time parameters random generator
-  std::uniform_int_distribution<unsigned int> kTimeDistribution;
+  std::uniform_int_distribution<unsigned int> kTimeDistribution_;
   // Random parameters
-  const unsigned int kAttack;
-  const unsigned int kDecay;
-  const unsigned int kSustain;
-  const float kSustainLevel;
+  const unsigned int kAttack_;
+  const unsigned int kDecay_;
+  const unsigned int kSustain_;
+  const float kSustainLevel_;
 
   /// @brief Used in the timing test.
   /// TODO(gm): get rid of this by using a more robust system (std::functional)

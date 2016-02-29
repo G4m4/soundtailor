@@ -38,24 +38,24 @@ class Generator : public ::testing::Test {
 
   Generator()
       :
-      kTestIterations( 16 ),
+      kTestIterations_( 16 ),
 
       // Smaller performance test sets in debug
 #if (_BUILD_CONFIGURATION_DEBUG)
-      kPerfIterations( 1 ),
+      kPerfIterations_( 1 ),
 #else  // (_BUILD_CONFIGURATION_DEBUG)
-      kPerfIterations( 256 * 2 ),
+      kPerfIterations_( 256 * 2 ),
 #endif  // (_BUILD_CONFIGURATION_DEBUG)
 
-    kSignalDataPeriodsCount(8.0f),
-    kDataTestSetSize(32768),
-    kSamplingRate(96000.0f),
-    kMinFundamentalNorm(10.0f / kSamplingRate),
-    kMaxFundamentalNorm(2000.0f / kSamplingRate),
-    kMinKeyNote(0),
-    kMaxKeyNote(93),
-    kRandomGenerator(),
-    kFreqDistribution(kMinFundamentalNorm, kMaxFundamentalNorm)
+    kSignalDataPeriodsCount_(8.0f),
+    kDataTestSetSize_(32768),
+    kSamplingRate_(96000.0f),
+    kMinFundamentalNorm_(10.0f / kSamplingRate_),
+    kMaxFundamentalNorm_(2000.0f / kSamplingRate_),
+    kMinKeyNote_(0),
+    kMaxKeyNote_(93),
+    kRandomGenerator_(),
+    kFreqDistribution_(kMinFundamentalNorm_, kMaxFundamentalNorm_)
   {
     // Nothing to be done here for now
   }
@@ -64,27 +64,27 @@ class Generator : public ::testing::Test {
     // Nothing to be done here for now
   }
 
-  const unsigned int kTestIterations;
-  const unsigned int kPerfIterations;
-  const float kSignalDataPeriodsCount;
-  const unsigned int kDataTestSetSize;
+  const unsigned int kTestIterations_;
+  const unsigned int kPerfIterations_;
+  const float kSignalDataPeriodsCount_;
+  const unsigned int kDataTestSetSize_;
   /// @brief Base sampling rate unless indicated otherwise
-  const float kSamplingRate;
+  const float kSamplingRate_;
   /// @brief Arbitrary lowest allowed fundamental
-  const float kMinFundamentalNorm;
+  const float kMinFundamentalNorm_;
   /// @brief Arbitrary highest allowed fundamental
   // TODO(gm): make this higher
-  const float kMaxFundamentalNorm;
+  const float kMaxFundamentalNorm_;
   /// @brief Arbitrary lowest allowed key note (= C0)
-  const unsigned int kMinKeyNote;
+  const unsigned int kMinKeyNote_;
   /// @brief Arbitrary highest allowed key note (= A6)
   // TODO(gm): make this higher
-  const unsigned int kMaxKeyNote;
+  const unsigned int kMaxKeyNote_;
   // @todo(gm) set the seed for deterministic tests across platforms
-  std::default_random_engine kRandomGenerator;
+  std::default_random_engine kRandomGenerator_;
   /// @brief Uniform distribution of normalized frequencies
-  /// in ] 0.0f ; kMaxFundamentalNorm [
-  std::uniform_real_distribution<float> kFreqDistribution;
+  /// in ] 0.0f ; kMaxFundamentalNorm_ [
+  std::uniform_real_distribution<float> kFreqDistribution_;
 };
 
 /// @brief Base tests fixture data
@@ -93,7 +93,7 @@ class GeneratorData : public Generator<GeneratorType> {
  protected:
 
   GeneratorData()
-      : output_data_(this->kDataTestSetSize)
+      : output_data_(kDataTestSetSize_)
   {
     // Nothing to be done here for now
   }
