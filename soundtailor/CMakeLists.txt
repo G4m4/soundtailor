@@ -2,6 +2,6 @@
 
 add_subdirectory(src)
 
-if (${SOUNDTAILOR_HAS_GTEST} STREQUAL "ON")
+if (SOUNDTAILOR_HAS_GTEST)
   add_subdirectory(tests)
-endif (${SOUNDTAILOR_HAS_GTEST} STREQUAL "ON")
+endif (SOUNDTAILOR_HAS_GTEST)
