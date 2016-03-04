@@ -100,7 +100,7 @@ class Generator_Base {
                                                                                                  unsigned int block_size) {  \
   float* out_write(out);  \
   for (unsigned int i(0); i < block_size; i += SampleSize) {  \
-    Store(out_write, static_cast<GeneratorType*>(this)->operator()());  \
+    VectorMath::Store(out_write, static_cast<GeneratorType*>(this)->operator()());  \
     out_write += SampleSize;  \
   } \
 }

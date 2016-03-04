@@ -32,7 +32,7 @@ SecondOrderRaw::SecondOrderRaw()
     : Filter_Base(),
       gain_(0.0f),
       coeffs_({{0.0f, 0.0f, 0.0f, 0.0f}}),
-      history_({{0.0f, 0.0f, 0.0f, 0.0f}}) {
+      history_{0.0f, 0.0f, 0.0f, 0.0f} {
   // Nothing to do here for now
 }
 
@@ -41,45 +41,53 @@ Sample SecondOrderRaw::operator()(SampleRead sample) {
   // the Direct Form 2, although usually more efficient, has issues with
   // time-varying parameters
 
-#if (_USE_SSE)
+//#if (_USE_SSE)
   // Vector = (x_{n}, x_{n + 1}, x_{n + 2}, x_{n + 3})
   // previous = (x_{n - 1}, x_{n}, x_{n + 1}, x_{n + 2})
   // last = (x_{n - 2}, x_{n - 1}, x_{n}, x_{n + 1})
-  const Sample previous(RotateOnRight(sample, history_[1]));
-  const Sample last(RotateOnRight(previous, history_[0]));
-  const Sample current(MulConst(gain_, sample));
+#if (_USE_SSE)
+  const Sample previous(VectorMath::RotateOnRight(sample, history_[1]));
+  const Sample last(VectorMath::RotateOnRight(previous, history_[0]));
+  const Sample current(VectorMath::MulConst(gain_, sample));
   // previous *= b1
-  const Sample previous_gain(MulConst(coeffs_[1], previous));
+  const Sample previous_gain(VectorMath::MulConst(coeffs_[1], previous));
   // previous *= b2
-  const Sample last_gain(MulConst(coeffs_[0], last));
+  const Sample last_gain(VectorMath::MulConst(coeffs_[0], last));
   // All weighted inputs cumulated sum
-  const Sample tmp_sum(Add(Add(current, previous_gain), last_gain));
+  const Sample tmp_sum(VectorMath::Add(VectorMath::Add(current, previous_gain), last_gain));
 
-  const float oldest_out(GetByIndex<0>(tmp_sum)
+  const float oldest_out(VectorMath::GetByIndex<0>(tmp_sum)
                          + history_[2] * coeffs_[2]
                          + history_[3] * coeffs_[3]);
-  const float old_out(GetByIndex<1>(tmp_sum)
+  const float old_out(VectorMath::GetByIndex<1>(tmp_sum)
                       + history_[3] * coeffs_[2]
                       + oldest_out * coeffs_[3]);
-  const float new_out(GetByIndex<2>(tmp_sum)
+  const float new_out(VectorMath::GetByIndex<2>(tmp_sum)
                       + oldest_out * coeffs_[2]
                       + old_out * coeffs_[3]);
-  const float newest_out(GetByIndex<3>(tmp_sum)
+  const float newest_out(VectorMath::GetByIndex<3>(tmp_sum)
                          + old_out * coeffs_[2]
                          + new_out * coeffs_[3]);
-  const Sample out(Fill(newest_out, new_out, old_out, oldest_out));
-  const Sample history(TakeEachRightHalf(out, sample));
-  Store(history_.data(), history);
+  const Sample out(VectorMath::Fill(newest_out, new_out, old_out, oldest_out));
+  const Sample history(VectorMath::TakeEachRightHalf(out, sample));
+  VectorMath::Store(&history_[0], history);
 #else
-  const float out(gain_ * sample
-                  + history_[0] * coeffs_[0]
-                  + history_[1] * coeffs_[1]
-                  + history_[2] * coeffs_[2]
-                  + history_[3] * coeffs_[3]);
-  history_[0] = history_[1];
-  history_[1] = sample;
-  history_[2] = history_[3];
-  history_[3] = out;
+  // @todo(gm) find out what's going wrong above
+  float out_v[4];
+  for (int i = 0; i < SampleSize; ++i) {
+    const float current_sample = VectorMath::GetByIndex(sample, i);
+    const float out(gain_ * current_sample
+                    + history_[0] * coeffs_[0]
+                    + history_[1] * coeffs_[1]
+                    + history_[2] * coeffs_[2]
+                    + history_[3] * coeffs_[3]);
+    history_[0] = history_[1];
+    history_[1] = current_sample;
+    history_[2] = history_[3];
+    history_[3] = out;
+    out_v[i] = out;
+  }
+  const Sample out(VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]));
 #endif  // (_USE_SSE)
 
   return out;

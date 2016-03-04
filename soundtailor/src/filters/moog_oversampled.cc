@@ -27,29 +27,37 @@ namespace filters {
 
 MoogOversampled::MoogOversampled()
     : MoogLowAliasNonLinear(),
-    history_({{0.0f, 0.0f, 0.0f, 0.0f}}) {
+    history_{0.0f, 0.0f, 0.0f, 0.0f} {
   // Nothing to do here for now
 }
 
-Sample MoogOversampled::operator()(SampleRead sample) {
-  const Sample kFirstOut(MoogLowAliasNonLinear::operator()(sample));
-  history_[3] = history_[2];
-  history_[2] = history_[1];
-  history_[1] = kFirstOut;
+float MoogOversampled::operator()(float sample) {
+  const Sample kHistoryCoeffs(VectorMath::Fill( 0.19f, 0.57f, 0.57f, 0.19f ));
+  MoogLowAliasNonLinear::operator()(sample);
   // 2x oversampled
-  const Sample kSecondOut(MoogLowAliasNonLinear::operator()(sample));
-  const Sample kTemp(history_[3]);
-  history_[3] = history_[2];
-  history_[2] = history_[1];
-  history_[1] = kSecondOut;
+  const float kOut(MoogLowAliasNonLinear::operator()(sample));
+  const Sample kHistory(VectorMath::Fill(history_[0], history_[1], history_[2], history_[3]));
+  const Sample kNewHistory(VectorMath::RotateOnRight(kHistory, kOut));
+  const float kTemp(VectorMath::AddHorizontal(VectorMath::Mul(kNewHistory, kHistoryCoeffs)));
 
-  const Sample out(0.19f * kTemp
-                   + 0.57f * history_[3]
-                   + 0.57f * history_[2]
-                   + 0.19f * history_[1]);
+  const float out(kTemp + 0.52f * last_);
+  VectorMath::Store(&history_[0], kNewHistory);
+  last_ = out;
 
-  history_[0] = history_[0] * -0.52f + out;
+  return out;
+}
 
+Sample MoogOversampled::operator()(SampleRead sample) {
+  // @todo(gm) find out a better way to do that
+  float out_v[4];
+  float direct_v[4];
+  VectorMath::Store(&direct_v[0], sample);
+  out_v[0] = MoogOversampled::operator()(direct_v[0]);
+  out_v[1] = MoogOversampled::operator()(direct_v[1]);
+  out_v[2] = MoogOversampled::operator()(direct_v[2]);
+  out_v[3] = MoogOversampled::operator()(direct_v[3]);
+
+  const Sample out(VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]));
   return out;
 }
 

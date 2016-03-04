@@ -28,15 +28,15 @@ namespace generators {
 
 PhaseAccumulator::PhaseAccumulator(const float phase)
     : Generator_Base(phase),
-      phase_(Fill(phase)),
-      increment_(Fill(0.0f)) {
+      phase_(VectorMath::Fill(phase)),
+      increment_(VectorMath::Fill(0.0f)) {
   SOUNDTAILOR_ASSERT(phase <= 1.0f);
   SOUNDTAILOR_ASSERT(phase >= -1.0f);
 }
 
 Sample PhaseAccumulator::operator()(void) {
   const Sample out(phase_);
-  phase_ = IncrementAndWrap(phase_, increment_);
+  phase_ = VectorMath::IncrementAndWrap(phase_, increment_);
   return out;
 }
 
@@ -45,7 +45,7 @@ void PhaseAccumulator::SetPhase(const float phase) {
   SOUNDTAILOR_ASSERT(phase >= -1.0f);
   // If we are not sure, we can use the following:
   // phase_ = Wrap(phase);
-  phase_ = FillIncremental(phase, GetByIndex<0>(MulConst(0.25f, increment_)));
+  phase_ = VectorMath::FillIncremental(phase, VectorMath::GetByIndex<0>(VectorMath::MulConst(0.25f, increment_)));
 }
 
 void PhaseAccumulator::SetFrequency(const float frequency) {
@@ -53,13 +53,13 @@ void PhaseAccumulator::SetFrequency(const float frequency) {
   SOUNDTAILOR_ASSERT(frequency <= 0.5f);
 
   const float base_increment(2.0f * frequency);
-  increment_ = FillOnLength(base_increment);
-  phase_ = FillIncremental(GetByIndex<0>(phase_), base_increment);
+  increment_ = VectorMath::FillOnLength(base_increment);
+  phase_ = VectorMath::FillIncremental(VectorMath::GetByIndex<0>(phase_), base_increment);
 }
 
 float PhaseAccumulator::ProcessParameters(void) {
-  const float out(GetByIndex<0>(phase_));
-  phase_ = IncrementAndWrap(phase_, Normalize(increment_));
+  const float out(VectorMath::GetByIndex<0>(phase_));
+  phase_ = VectorMath::IncrementAndWrap(phase_, VectorMath::Normalize(increment_));
   return out;
 }
 
@@ -71,10 +71,10 @@ Differentiator::Differentiator(const float last)
 }
 
 Sample Differentiator::operator()(SampleRead sample) {
-  const float before_diff(GetLast(sample));
-  const Sample prev(RotateOnRight(sample,
+  const float before_diff(VectorMath::GetLast(sample));
+  const Sample prev(VectorMath::RotateOnLeft(sample,
                                   last_));
-  const Sample after_diff(Sub(sample, prev));
+  const Sample after_diff(VectorMath::Sub(sample, prev));
   last_ = before_diff;
   return after_diff;
 }

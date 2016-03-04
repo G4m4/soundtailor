@@ -29,14 +29,14 @@ using soundtailor::generators::Differentiator;
 /// @brief Differentiate a constant, check for null derivative
 TEST(GeneratorsCommon, DifferentiatedConstant) {
   // The input is a random value in [-1.0f ; 1.0f]
-  const Sample input(Fill(kNormDistribution(kRandomGenerator)));
+  const Sample input(VectorMath::Fill(kNormDistribution(kRandomGenerator)));
   Differentiator differentiator;
   // Not checking the first value!
   differentiator(input);
   for (unsigned int i(soundtailor::SampleSize);
        i < kDataTestSetSize;
        i += soundtailor::SampleSize) {
-    EXPECT_TRUE(Equal(0.0f, differentiator(input)));
+    EXPECT_TRUE(VectorMath::Equal(0.0f, differentiator(input)));
   }
 }
 
@@ -66,7 +66,7 @@ TEST(GeneratorsCommon, DifferentiatedSawtooth) {
     const Sample input(generator());
     const Sample diff(differentiator(input));
     if (i % kPeriod != 0) {
-      EXPECT_TRUE(GreaterThan(kThreshold, diff));
+      EXPECT_TRUE(VectorMath::GreaterThan(kThreshold, diff));
     }
   }
 }
@@ -85,9 +85,9 @@ TEST(GeneratorsCommon, DifferentiatorPerf) {
   for (unsigned int i(0);
        i < kFilterDataPerfSetSize;
        i += soundtailor::SampleSize) {
-    const Sample input(Fill(kNormDistribution(kRandomGenerator)));
+    const Sample input(VectorMath::Fill(kNormDistribution(kRandomGenerator)));
     const Sample diff(differentiator(input));
     // No actual test!
-    EXPECT_TRUE(LessThan(-2.0f, diff));
+    EXPECT_TRUE(VectorMath::LessThan(-2.0f, diff));
   }
 }

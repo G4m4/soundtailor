@@ -36,12 +36,21 @@ FirstOrderPoleZero::FirstOrderPoleZero()
 }
 
 Sample FirstOrderPoleZero::operator()(SampleRead sample) {
-  const float direct(sample * static_cast<float>(coeff_ / 2.0f));
-  const float out(direct + last_);
+  const Sample direct_v(VectorMath::MulConst(static_cast<float>(coeff_ / 2.0f), sample));
 
-  last_ = out * static_cast<float>(1.0 - coeff_) + direct;
+  const float actual_coeff = static_cast<float>(1.0 - coeff_);
+  float out_v[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  float last = last_;
 
-  return out;
+  for (unsigned int idx = 0; idx < 4; ++idx) {
+    // @todo(gm) : implement compile-time unrolling
+    const float direct = VectorMath::GetByIndex(direct_v, idx);
+    out_v[idx] = direct + last;
+    last = out_v[idx] * actual_coeff + direct;
+  }
+  last_ = last;
+
+  return VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]);
 }
 
 void FirstOrderPoleZero::SetParameters(const float frequency,

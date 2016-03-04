@@ -50,7 +50,8 @@ class SecondOrderRaw : public Filter_Base {
   std::array<float, 4> coeffs_;  ///< Filter coefficients (for zeroes and poles)
                      ///< organized as follows:
                      ///< [b2 b1 -a2 -a1]
-  std::array<float, 4> history_;  ///< Filter history (last inputs/outputs)
+  // @todo(gm) fix alignment, this is a mess
+  alignas(16) float history_[4];  ///< Filter history (last inputs/outputs)
                       ///< organized as follows:
                       ///< [x(n-2) x(n-1) y(n-2) y(n-1)]
                       ///< where x are the last inputs

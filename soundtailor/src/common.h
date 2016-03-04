@@ -23,12 +23,11 @@
 
 #include <cassert>
 
-// Has to be included BEFORE SSE intrinsics related headers,
-// in order to know if these headers actually have to be included
 #include "soundtailor/src/configuration.h"
 
 #if (_USE_SSE)
 extern "C" {
+  // @todo(gm) move that include
 #include <emmintrin.h>
 #include <mmintrin.h>
 }
@@ -58,11 +57,11 @@ template<typename Type> void IGNORE(const Type&) {}
 #endif
 
 /// @brief "Sample" type - actually, this is the data computed at each "tick";
-/// If using vectorization it may be longer than 1 audio sample
+/// If using vectorization it will be longer than 1 audio sample
 #if (_USE_SSE)
   typedef __m128 Sample;
 #else
-  typedef float Sample;
+  struct Sample { float data_[4]; };
 #endif  // (_USE_SSE)
 
 /// @brief Type for Sample parameter "read only":
@@ -79,7 +78,6 @@ typedef float* const BlockOut;
 /// @brief "Sample" type size in bytes
 static const unsigned int SampleSizeBytes(sizeof(Sample));
 /// @brief "Sample" type size compared to audio samples
-/// (e.g., if Sample == float, SampleSize = 1)
 static const unsigned int SampleSize(sizeof(Sample) / sizeof(float));
 
 }  // namespace soundtailor

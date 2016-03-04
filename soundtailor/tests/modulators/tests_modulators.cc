@@ -90,7 +90,7 @@ TYPED_TEST(Modulator, Timings) {
 
     // TODO(gm): get rid of that
     Modulator::AdsdFunctor modulators_functor(&generator);
-    ZeroCrossing<Modulator::AdsdFunctor> zero_crossing(modulators_functor);
+    ZeroCrossing<Modulator::AdsdFunctor> zero_crossing(modulators_functor, 1.0f);
     unsigned int kTriggerOnLength(kAttack_ + kDecay_ + kSustain_);
     unsigned int kTotalLength(kTriggerOnLength + kDecay_ + kTail_);
     // A tiny delay occurs due to differentiation and trigger unevenness

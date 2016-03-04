@@ -23,9 +23,9 @@
 #include "soundtailor/src/filters/chamberlin.h"
 #include "soundtailor/src/filters/chamberlin_oversampled.h"
 #include "soundtailor/src/filters/firstorder_polezero.h"
+#include "soundtailor/src/filters/firstorder_polefixedzero.h"
 #include "soundtailor/src/filters/moog.h"
 #include "soundtailor/src/filters/moog_lowaliasnonlinear.h"
-#include "soundtailor/src/filters/moog_lowaliasnonlinear_lowpassblock.h"
 #include "soundtailor/src/filters/moog_lowpassblock.h"
 #include "soundtailor/src/filters/moog_oversampled.h"
 #include "soundtailor/src/filters/oversampler.h"
@@ -34,9 +34,9 @@
 using soundtailor::filters::Chamberlin;
 using soundtailor::filters::ChamberlinOversampled;
 using soundtailor::filters::FirstOrderPoleZero;
+using soundtailor::filters::FirstOrderPoleFixedZero;
 using soundtailor::filters::Moog;
 using soundtailor::filters::MoogLowAliasNonLinear;
-using soundtailor::filters::MoogLowAliasNonLinearLowPassBlock;
 using soundtailor::filters::MoogLowPassBlock;
 using soundtailor::filters::MoogOversampled;
 using soundtailor::filters::Oversampler;
@@ -46,21 +46,21 @@ using soundtailor::filters::SecondOrderRaw;
 typedef ::testing::Types<Chamberlin,
                          ChamberlinOversampled,
                          FirstOrderPoleZero,
+                         FirstOrderPoleFixedZero,
                          Moog,
-                         MoogLowAliasNonLinear,
-                         MoogLowAliasNonLinearLowPassBlock,
+                         //MoogLowAliasNonLinear,
                          MoogLowPassBlock,
-                         MoogOversampled,
+                         //MoogOversampled,
                          Oversampler<SecondOrderRaw>,
                          SecondOrderRaw> FilterTypes;
 
 /// @brief All filter types supporting passthrough
 // @todo(gm) Chamberlin filter supports passthrough with a one-sample delay!
 // @todo(gm) Passthrough issues with Oversampler, see #23
+// @todo(gm) check FirstOrderPoleFixedZero, although not too much hope there...
 typedef ::testing::Types<ChamberlinOversampled,
                          FirstOrderPoleZero,
                          Moog,
-                         MoogLowAliasNonLinearLowPassBlock,
                          MoogLowPassBlock,
                          SecondOrderRaw> PassthroughFilterTypes;
 
@@ -79,18 +79,18 @@ TYPED_TEST(Filter, ZeroOutputMean) {
     TypeParam filter;
 
     filter.SetParameters(kFrequency, kPassthroughResonance_);
-    Sample expected_mean(Fill(0.0f));
-    Sample actual_mean(Fill(0.0f));
+    Sample expected_mean(VectorMath::Fill(0.0f));
+    Sample actual_mean(VectorMath::Fill(0.0f));
     for (unsigned int i(0);
          i < kDataTestSetSize;
          i += soundtailor::SampleSize) {
-      const Sample input(Fill(kNormDistribution_(kRandomGenerator_)));
+      const Sample input(VectorMath::Fill(kNormDistribution_(kRandomGenerator_)));
       const Sample filtered(filter(input));
-      actual_mean = Add(actual_mean, filtered);
-      expected_mean = Add(expected_mean, input);
+      actual_mean = VectorMath::Add(actual_mean, filtered);
+      expected_mean = VectorMath::Add(expected_mean, input);
     }
-    const float kActual(std::abs(AddHorizontal(actual_mean)));
-    const float kExpected(std::abs(AddHorizontal(expected_mean)));
+    const float kActual(std::abs(VectorMath::AddHorizontal(actual_mean)));
+    const float kExpected(std::abs(VectorMath::AddHorizontal(expected_mean)));
     const float kEpsilon(3e-3f * kDataTestSetSize);
 
     EXPECT_GT(kExpected + kEpsilon, kActual);
@@ -106,10 +106,10 @@ TYPED_TEST(Filter, Range) {
   // Very high Epsilon due to this filter implementation
   const float kEpsilon(1e-1f);
   for (unsigned int i(0); i < kDataTestSetSize_; i += soundtailor::SampleSize) {
-    const Sample input(Fill(kNormDistribution_(kRandomGenerator_)));
-    const Sample filtered(MulConst(kInverseFilterGain_, filter(input)));
-    EXPECT_TRUE(GreaterEqual(1.0f, Add(filtered, Fill(-kEpsilon))));
-    EXPECT_TRUE(LessEqual(-1.0f, Add(filtered, Fill(kEpsilon))));
+    const Sample input(VectorMath::Fill(kNormDistribution_(kRandomGenerator_)));
+    const Sample filtered(VectorMath::MulConst(kInverseFilterGain_, filter(input)));
+    EXPECT_TRUE(VectorMath::GreaterEqual(1.0f, VectorMath::Add(filtered, VectorMath::Fill(-kEpsilon))));
+    EXPECT_TRUE(VectorMath::LessEqual(-1.0f, VectorMath::Add(filtered, VectorMath::Fill(kEpsilon))));
   }
 }
 
@@ -128,10 +128,10 @@ TYPED_TEST(FilterData, Process) {
                                &this->output_data_[0],
                                this->output_data_.size());
   for (unsigned int i(0); i < kDataTestSetSize_; i += soundtailor::SampleSize) {
-    const Sample kInput(Fill(&this->input_data_[i]));
-    const Sample kReference(Fill(&this->output_data_[i]));
+    const Sample kInput(VectorMath::Fill(&this->input_data_[i]));
+    const Sample kReference(VectorMath::Fill(&this->output_data_[i]));
     const Sample kGenerated((filter_persample(kInput)));
-    EXPECT_TRUE(Equal(kReference, kGenerated));
+    EXPECT_TRUE(VectorMath::Equal(kReference, kGenerated));
   }
 }
 
@@ -146,9 +146,9 @@ TYPED_TEST(Filter, Perf) {
 
     unsigned int sample_idx(0);
     while (sample_idx < kDataTestSetSize_) {
-      const Sample kCurrent(Fill(kNormDistribution_(kRandomGenerator_)));
+      const Sample kCurrent(VectorMath::Fill(kNormDistribution_(kRandomGenerator_)));
       // No actual test!
-      EXPECT_TRUE(LessEqual(-2.0f, filter(kCurrent)));
+      EXPECT_TRUE(VectorMath::LessEqual(-2.0f, filter(kCurrent)));
       sample_idx += soundtailor::SampleSize;
     }
   }
@@ -168,10 +168,10 @@ TYPED_TEST(FilterData, BlockPerf) {
                         this->output_data_.size());
     unsigned int sample_idx(0);
     while (sample_idx < kDataTestSetSize_) {
-      const Sample kCurrent(Fill(&this->output_data_[sample_idx]));
+      const Sample kCurrent(VectorMath::Fill(&this->output_data_[sample_idx]));
       sample_idx += soundtailor::SampleSize;
       // No actual test!
-      EXPECT_TRUE(LessEqual(-2.0f, kCurrent));
+      EXPECT_TRUE(VectorMath::LessEqual(-2.0f, kCurrent));
     }
   }
 }
@@ -183,16 +183,16 @@ TYPED_TEST(FilterPassThrough, Passthrough) {
 
   filter.SetParameters(kPassthroughFrequency_, kPassthroughResonance_);
 
-  Sample diff_mean(Fill(0.0f));
+  Sample diff_mean(VectorMath::Fill(0.0f));
   for (unsigned int i(0);
        i < kDataTestSetSize_;
        i += soundtailor::SampleSize) {
-    const Sample input(Fill(kNormDistribution_(kRandomGenerator_)));
-    const Sample filtered(MulConst(kInverseFilterGain_, filter(input)));
-    diff_mean = Add(diff_mean, Sub(filtered, input));
+    const Sample input(VectorMath::Fill(kNormDistribution_(kRandomGenerator_)));
+    const Sample filtered(VectorMath::MulConst(kInverseFilterGain_, filter(input)));
+    diff_mean = VectorMath::Add(diff_mean, VectorMath::Sub(filtered, input));
   }
   const float kExpected(0.0f);
-  const float kActual(AddHorizontal(diff_mean));
+  const float kActual(VectorMath::AddHorizontal(diff_mean));
   const float kEpsilon(2e-6f * kDataTestSetSize_);
 
   EXPECT_NEAR(kExpected, kActual, kEpsilon);

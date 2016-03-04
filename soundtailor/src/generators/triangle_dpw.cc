@@ -41,13 +41,13 @@ TriangleDPW::TriangleDPW(const float phase)
 Sample TriangleDPW::operator()(void) {
   // Raw sawtooth signal
   Sample current(sawtooth_gen_());
-  const Sample current_abs(Abs(current));
+  const Sample current_abs(VectorMath::Abs(current));
   // Parabolization
-  const Sample squared(Mul(current, current_abs));
-  const Sample minus(Sub(current, squared));
+  const Sample squared(VectorMath::Mul(current, current_abs));
+  const Sample minus(VectorMath::Sub(current, squared));
   // Differentiation & Normalization
   const Sample diff(differentiator_(minus));
-  return MulConst(normalization_factor_, diff);
+  return VectorMath::MulConst(normalization_factor_, diff);
 }
 
 void TriangleDPW::SetPhase(const float phase) {

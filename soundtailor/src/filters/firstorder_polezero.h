@@ -27,7 +27,7 @@
 namespace soundtailor {
 namespace filters {
 
-/// @brief Chamberlin state variable low pass filter
+/// @brief 1st order pole-zero low pass filter
 class FirstOrderPoleZero : public Filter_Base {
  public:
   FirstOrderPoleZero();

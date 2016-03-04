@@ -38,78 +38,7 @@ using soundtailor::IGNORE;
 // Using declarations for soundtailor maths stuff
 using soundtailor::Sample;
 using soundtailor::SampleRead;
-using soundtailor::Fill;
-using soundtailor::FillWithFloatGenerator;
-using soundtailor::GetByIndex;
-using soundtailor::GetLast;
-using soundtailor::GetFirst;
-using soundtailor::Add;
-using soundtailor::AddHorizontal;
-using soundtailor::Sub;
-using soundtailor::Mul;
-using soundtailor::MulConst;
-using soundtailor::Abs;
-using soundtailor::Sgn;
-using soundtailor::SgnNoZero;
-using soundtailor::Store;
-using soundtailor::Round;
-using soundtailor::IsMaskFull;
-using soundtailor::IsMaskNull;
-using soundtailor::GreaterEqual;
-using soundtailor::IsNear;
-using soundtailor::RotateOnRight;
-
-// Tests-specific maths (comparison operators) stuff
-
-static inline bool GreaterThan(const float threshold, SampleRead value) {
-#if (_USE_SSE)
-  const Sample test_result(_mm_cmpgt_ps(Fill(threshold), value));
-  return IsMaskFull(test_result);
-#else
-  return threshold > value;
-#endif
-}
-
-static inline bool LessThan(const float threshold, SampleRead value) {
-#if (_USE_SSE)
-  const Sample test_result(_mm_cmplt_ps(Fill(threshold), value));
-  return IsMaskFull(test_result);
-#else
-  return threshold < value;
-#endif
-}
-
-static inline bool LessEqual(const float threshold, SampleRead value) {
-#if (_USE_SSE)
-  const Sample test_result(_mm_cmple_ps(Fill(threshold), value));
-  return IsMaskFull(test_result);
-#else
-  return threshold <= value;
-#endif
-}
-
-#if (_USE_SSE)
-static inline bool LessEqual(SampleRead threshold, SampleRead value) {
-  const Sample test_result(_mm_cmple_ps(threshold, value));
-  return IsMaskFull(test_result);
-}
-#endif
-
-static inline bool Equal(const float threshold, SampleRead value) {
-#if (_USE_SSE)
-  const Sample test_result(_mm_cmpeq_ps(Fill(threshold), value));
-  return IsMaskFull(test_result);
-#else
-  return threshold == value;
-#endif
-}
-
-#if (_USE_SSE)
-static inline bool Equal(SampleRead threshold, SampleRead value) {
-  const Sample test_result(_mm_cmpeq_ps(threshold, value));
-  return IsMaskFull(test_result);
-}
-#endif
+using soundtailor::VectorMath;
 
 static const unsigned int kDataTestSetSize(32768);
 
@@ -158,9 +87,9 @@ struct ZeroCrossing {
   ///
   /// @return the (relative) index of the next zero crossing, or -1
   int GetZeroCrossingRelative(Sample input) {
-    const Sample sign_v(SgnNoZero(input));
+    const Sample sign_v(VectorMath::SgnNoZero(input));
     for (unsigned int index(0); index < soundtailor::SampleSize; index += 1) {
-      const float current_sgn(GetByIndex(sign_v, index));
+      const float current_sgn(VectorMath::GetByIndex(sign_v, index));
       if (previous_sgn_ != current_sgn) {
         previous_sgn_ = current_sgn;
         return index;

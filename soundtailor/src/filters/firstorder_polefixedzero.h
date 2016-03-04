@@ -1,7 +1,7 @@
-/// @file moog_lowaliasnonlinear_lowpassblock.h
-/// @brief Low Pass (1st order pole-zero filter), base block for Moog filter
+/// @file firstorder_polefixedzero.h
+/// @brief 1st order pole-zero filter, with a fixed zero
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -18,8 +18,8 @@
 /// You should have received a copy of the GNU General Public License
 /// along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SOUNDTAILOR_SRC_FILTERS_MOOG_LOWALIASNONLINEAR_LOWPASSBLOCK_H_
-#define SOUNDTAILOR_SRC_FILTERS_MOOG_LOWALIASNONLINEAR_LOWPASSBLOCK_H_
+#ifndef SOUNDTAILOR_SRC_FILTERS_FIRSTORDER_POLEFIXEDZERO_H_
+#define SOUNDTAILOR_SRC_FILTERS_FIRSTORDER_POLEFIXEDZERO_H_
 
 #include "soundtailor/src/common.h"
 #include "soundtailor/src/filters/filter_base.h"
@@ -27,11 +27,11 @@
 namespace soundtailor {
 namespace filters {
 
-/// @brief Chamberlin state variable low pass filter
-class MoogLowAliasNonLinearLowPassBlock : public Filter_Base {
+/// @brief A simple 1st order lowpass filter with a fixed zero
+class FirstOrderPoleFixedZero : public Filter_Base {
  public:
-  MoogLowAliasNonLinearLowPassBlock();
-  virtual ~MoogLowAliasNonLinearLowPassBlock() {
+   FirstOrderPoleFixedZero();
+  virtual ~FirstOrderPoleFixedZero() {
     // Nothing to do here for now
   }
   virtual Sample operator()(SampleRead sample);
@@ -49,4 +49,4 @@ class MoogLowAliasNonLinearLowPassBlock : public Filter_Base {
 }  // namespace filters
 }  // namespace soundtailor
 
-#endif  // SOUNDTAILOR_SRC_FILTERS_MOOG_LOWALIASNONLINEAR_LOWPASSBLOCK_H_
+#endif  // SOUNDTAILOR_SRC_FILTERS_FIRSTORDER_POLEFIXEDZERO_H_

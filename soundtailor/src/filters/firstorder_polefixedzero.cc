@@ -1,7 +1,7 @@
-/// @file moog_lowaliasnonlinear_lowpassblock.cc
-/// @brief Low Pass (1st order pole-zero filter), base block for Moog filter
+/// @file firstorder_polefixedzero.cc
+/// @brief 1st order pole-zero filter, with a fixed zero
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -20,12 +20,12 @@
 
 #include "soundtailor/src/maths.h"
 
-#include "soundtailor/src/filters/moog_lowaliasnonlinear_lowpassblock.h"
+#include "soundtailor/src/filters/firstorder_polefixedzero.h"
 
 namespace soundtailor {
 namespace filters {
 
-MoogLowAliasNonLinearLowPassBlock::MoogLowAliasNonLinearLowPassBlock()
+FirstOrderPoleFixedZero::FirstOrderPoleFixedZero()
     : Filter_Base(),
       pole_coeff_(0.0f),
       zero_coeff_(0.3f),
@@ -33,17 +33,26 @@ MoogLowAliasNonLinearLowPassBlock::MoogLowAliasNonLinearLowPassBlock()
   // Nothing to do here for now
 }
 
-Sample MoogLowAliasNonLinearLowPassBlock::operator()(SampleRead sample) {
-  const float kHistoryGain(1.0f - pole_coeff_);
-  const float direct = pole_coeff_ * sample;
-  const float out = direct + last_;
+Sample FirstOrderPoleFixedZero::operator()(SampleRead sample) {
+  const Sample direct_v(VectorMath::MulConst(static_cast<float>(pole_coeff_ / 2.0f), sample));
 
-  last_ = direct * (kHistoryGain + zero_coeff_) + kHistoryGain * last_;
+  const float actual_pole_coeff = static_cast<float>(1.0 - pole_coeff_);
+  const float actual_zero_coeff = zero_coeff_;
+  float out_v[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  float last = last_;
 
-  return out;
+  for (unsigned int idx = 0; idx < 4; ++idx) {
+    // @todo(gm) : implement compile-time unrolling
+    const float direct = VectorMath::GetByIndex(direct_v, idx);
+    out_v[idx] = direct + last;
+    last = out_v[idx] * actual_pole_coeff + actual_zero_coeff * direct;
+  }
+  last_ = last;
+
+  return VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]);
 }
 
-void MoogLowAliasNonLinearLowPassBlock::SetParameters(const float frequency,
+void FirstOrderPoleFixedZero::SetParameters(const float frequency,
                                      const float resonance) {
   SOUNDTAILOR_ASSERT(frequency >= Meta().freq_min);
   SOUNDTAILOR_ASSERT(frequency <= Meta().freq_max);
@@ -51,7 +60,7 @@ void MoogLowAliasNonLinearLowPassBlock::SetParameters(const float frequency,
   pole_coeff_ = frequency;
 }
 
-const Filter_Meta& MoogLowAliasNonLinearLowPassBlock::Meta(void) {
+const Filter_Meta& FirstOrderPoleFixedZero::Meta(void) {
   static const Filter_Meta metas(1e-5f,
                                  1.3f,
                                  1.31f,
@@ -63,7 +72,7 @@ const Filter_Meta& MoogLowAliasNonLinearLowPassBlock::Meta(void) {
   return metas;
 }
 
-FILTER_PROCESSBLOCK_IMPLEMENTATION(MoogLowAliasNonLinearLowPassBlock)
+FILTER_PROCESSBLOCK_IMPLEMENTATION(FirstOrderPoleFixedZero)
 
 }  // namespace filters
 }  // namespace soundtailor

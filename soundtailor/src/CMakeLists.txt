@@ -8,6 +8,7 @@ include_directories(
 add_subdirectory(filters)
 add_subdirectory(generators)
 add_subdirectory(modulators)
+add_subdirectory(platform)
 
 # Group sources
 source_group("filters"
@@ -25,12 +26,18 @@ source_group("modulators"
   ${SOUNDTAILOR_MODULATORS_SRC}
   ${SOUNDTAILOR_MODULATORS_HDR}
 )
+source_group("platform"
+  FILES
+  ${SOUNDTAILOR_PLATFORM_SRC}
+  ${SOUNDTAILOR_PLATFORM_HDR}
+)
 
 # Sources
 set(SOUNDTAILOR_SRC
   ${SOUNDTAILOR_FILTERS_SRC}
   ${SOUNDTAILOR_GENERATORS_SRC}
   ${SOUNDTAILOR_MODULATORS_SRC}
+  ${SOUNDTAILOR_PLATFORM_SRC}
 )
 set(SOUNDTAILOR_HDR
   common.h
@@ -39,6 +46,7 @@ set(SOUNDTAILOR_HDR
   ${SOUNDTAILOR_FILTERS_HDR}
   ${SOUNDTAILOR_GENERATORS_HDR}
   ${SOUNDTAILOR_MODULATORS_HDR}
+  ${SOUNDTAILOR_PLATFORM_HDR}
 )
 
 # Target

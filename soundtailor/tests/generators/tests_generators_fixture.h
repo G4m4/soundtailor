@@ -113,14 +113,14 @@ class GeneratorData : public Generator<GeneratorType> {
 /// @return the generator mean for such length
 template <typename TypeGenerator>
 float ComputeMean(TypeGenerator& generator, const unsigned int length) {
-  Sample sum(Fill(0.0f));
+  Sample sum(VectorMath::Fill(0.0f));
   unsigned int sample_idx(0);
   while (sample_idx < length) {
     const Sample sample(generator());
-    sum = Add(sum, sample);
+    sum = VectorMath::Add(sum, sample);
     sample_idx += soundtailor::SampleSize;
   }
-  return AddHorizontal(sum) / static_cast<float>(length);
+  return VectorMath::AddHorizontal(sum) / static_cast<float>(length);
 }
 
 /// @brief Compute the mean power of a signal generator for the given length
@@ -131,15 +131,15 @@ float ComputeMean(TypeGenerator& generator, const unsigned int length) {
 /// @return the generator mean for such length
 template <typename TypeGenerator>
 float ComputePower(TypeGenerator& generator, const unsigned int length) {
-  Sample power(Fill(0.0f));
+  Sample power(VectorMath::Fill(0.0f));
   unsigned int sample_idx(0);
   while (sample_idx < length) {
     const Sample sample(generator());
-    const Sample squared(Mul(sample, sample));
-    power = Add(power, squared);
+    const Sample squared(VectorMath::Mul(sample, sample));
+    power = VectorMath::Add(power, squared);
     sample_idx += soundtailor::SampleSize;
   }
-  return AddHorizontal(power) / static_cast<float>(length);
+  return VectorMath::AddHorizontal(power) / static_cast<float>(length);
 }
 
 /// @brief Compute zero crossings of a signal generator for the given length
@@ -186,12 +186,12 @@ struct IsContinuous {
   ///
   /// @param[in]  input   Sample to be tested
   bool operator()(SampleRead input) {
-    const float before_diff(GetLast(input));
-    const Sample prev(RotateOnRight(input,
+    const float before_diff(VectorMath::GetLast(input));
+    const Sample prev(VectorMath::RotateOnRight(input,
                                     previous_));
-    const Sample after_diff(Sub(input, prev));
+    const Sample after_diff(VectorMath::Sub(input, prev));
     previous_ = before_diff;
-    if (LessThan(threshold_, Abs(after_diff))) {
+    if (VectorMath::LessThan(threshold_, VectorMath::Abs(after_diff))) {
       return false;
     }
     return true;

@@ -143,8 +143,8 @@ class Filter_Base {
   const float* in_ptr(in);  \
   float* out_write(out);  \
   for (unsigned int i(0); i < block_size; i += SampleSize) {  \
-    const float kInput(Fill(in_ptr)); \
-    Store(out_write, static_cast<FilterType*>(this)->operator()(kInput));  \
+    const Sample kInput(VectorMath::Fill(in_ptr)); \
+    VectorMath::Store(out_write, static_cast<FilterType*>(this)->operator()(kInput));  \
     in_ptr += SampleSize; \
     out_write += SampleSize;  \
   } \

@@ -49,8 +49,9 @@ class Oversampler : public Filter_Base {
     const float* in_ptr(in);
     float* out_write(out);
     for (unsigned int i(0); i < block_size; i += SampleSize) {
-      const float kInput(Fill(in_ptr));
-      *out_write = static_cast<Oversampler<FilterType>*>(this)->operator()(kInput);
+      const Sample kInput(VectorMath::Fill(in_ptr));
+      const Sample kOutput(static_cast<Oversampler<FilterType>*>(this)->operator()(kInput));
+      VectorMath::Store(out_write, kOutput);
       in_ptr += SampleSize;
       out_write += SampleSize;
     }

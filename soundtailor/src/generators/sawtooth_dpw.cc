@@ -36,10 +36,10 @@ Sample SawtoothDPW::operator()(void) {
   // Raw sawtooth signal
   const Sample current(sawtooth_gen_());
   // Parabolization
-  const Sample squared(Mul(current, current));
+  const Sample squared(VectorMath::Mul(current, current));
   // Differentiation & Normalization
   const Sample diff(differentiator_(squared));
-  return MulConst(normalization_factor_, diff);
+  return VectorMath::MulConst(normalization_factor_, diff);
 }
 
 void SawtoothDPW::SetPhase(const float phase) {

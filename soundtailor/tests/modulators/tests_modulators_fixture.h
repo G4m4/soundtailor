@@ -92,7 +92,7 @@ class Modulator : public ::testing::Test {
     }
 
     Sample operator()(void) {
-      const Sample input(FillWithFloatGenerator(*modulators_));
+      const Sample input(VectorMath::FillWithFloatGenerator(*modulators_));
       return differentiator_(input);
     }
 

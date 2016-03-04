@@ -98,9 +98,9 @@ TYPED_TEST(Generator, Range) {
     for (unsigned int i(0);
          i < kDataTestSetSize_;
          i += soundtailor::SampleSize) {
-      const Sample sample(Fill(kFreqDistribution_(kRandomGenerator_)));
-      EXPECT_TRUE(GreaterEqual(1.0f, sample));
-      EXPECT_TRUE(LessEqual(-1.0f, sample));
+      const Sample sample(VectorMath::Fill(kFreqDistribution_(kRandomGenerator_)));
+      EXPECT_TRUE(VectorMath::GreaterEqual(1.0f, sample));
+      EXPECT_TRUE(VectorMath::LessEqual(-1.0f, sample));
     }
   }
 }
@@ -121,7 +121,7 @@ TYPED_TEST(Generator, ZeroCrossings) {
 
     const float kEpsilon(1.0f);
     const float kActual(static_cast<float>(ComputeZeroCrossing(generator,
-                                                               kDataLength)));
+                                                               kDataLength, -1.0f)));
 
     EXPECT_NEAR(kSignalDataPeriodsCount_, kActual, kEpsilon);
   }
@@ -171,7 +171,7 @@ TYPED_TEST(Generator, PhaseControl) {
     const float kMaxDelta(4.0f * kFrequency + 5e-5f);
 
     // Creating an history
-    Sample sample(Fill(0.0f));
+    Sample sample(VectorMath::Fill(0.0f));
     for (unsigned int i(0);
          i < kHistoryLength;
          i += soundtailor::SampleSize) {
@@ -183,7 +183,7 @@ TYPED_TEST(Generator, PhaseControl) {
       kTransitionIndex -= 1;
     }
     // Forcing right generator phase
-    const float current_phase(GetByIndex(sample, kTransitionIndex));
+    const float current_phase(VectorMath::GetByIndex(sample, kTransitionIndex));
     generator_right.SetPhase(current_phase);
     // Set phase AFTER frequency allows to check if the transition is OK,
     // whatever the parameterization order
@@ -210,7 +210,7 @@ TYPED_TEST(Generator, BeginsAtZero) {
     // Generating data
     PhaseAccumulator generator;
     generator.SetFrequency(kFrequency);
-    const float first_sample(GetFirst(generator()));
+    const float first_sample(VectorMath::GetFirst(generator()));
     EXPECT_EQ(0.0f, first_sample);
   }  // iterations?
 }
@@ -228,9 +228,9 @@ TYPED_TEST(GeneratorData, Process) {
 
   generator_perblock.ProcessBlock(&this->output_data_[0], this->output_data_.size());
   for (unsigned int i(0); i < kDataTestSetSize_; i += soundtailor::SampleSize) {
-    const Sample kReference(Fill(&this->output_data_[i]));
+    const Sample kReference(VectorMath::Fill(&this->output_data_[i]));
     const Sample kGenerated((generator_persample()));
-    EXPECT_TRUE(Equal(kReference, kGenerated));
+    EXPECT_TRUE(VectorMath::Equal(kReference, kGenerated));
   }
 }
 
@@ -245,10 +245,10 @@ TYPED_TEST(Generator, Perf) {
 
     unsigned int sample_idx(0);
     while (sample_idx < kDataTestSetSize_) {
-      const Sample kCurrent(Fill(kFreqDistribution_(kRandomGenerator_)));
+      const Sample kCurrent(VectorMath::Fill(kFreqDistribution_(kRandomGenerator_)));
       sample_idx += soundtailor::SampleSize;
       // No actual test!
-      EXPECT_TRUE(LessEqual(-2.0f, kCurrent));
+      EXPECT_TRUE(VectorMath::LessEqual(-2.0f, kCurrent));
     }
   }
 }
@@ -265,10 +265,10 @@ TYPED_TEST(GeneratorData, BlockPerf) {
     generator.ProcessBlock(&this->output_data_[0], this->output_data_.size());
     unsigned int sample_idx(0);
     while (sample_idx < kDataTestSetSize_) {
-      const Sample kCurrent(Fill(&this->output_data_[sample_idx]));
+      const Sample kCurrent(VectorMath::Fill(&this->output_data_[sample_idx]));
       sample_idx += soundtailor::SampleSize;
       // No actual test!
-      EXPECT_TRUE(LessEqual(-2.0f, kCurrent));
+      EXPECT_TRUE(VectorMath::LessEqual(-2.0f, kCurrent));
     }
   }
 }

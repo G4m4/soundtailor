@@ -24,7 +24,6 @@
 #include <array>
 
 #include "soundtailor/src/filters/moog_lowaliasnonlinear.h"
-#include "soundtailor/src/filters/moog_lowaliasnonlinear_lowpassblock.h"
 
 namespace soundtailor {
 namespace filters {
@@ -36,15 +35,15 @@ class MoogOversampled : public MoogLowAliasNonLinear {
   virtual ~MoogOversampled() {
     // Nothing to do here for now
   }
+  float operator()(float sample);
   virtual Sample operator()(SampleRead sample);
 
   static const Filter_Meta& Meta(void);
 
   FILTER_PROCESSBLOCK_DEFINITION
  protected:
-  std::array<float, 4> history_;  ///< Filter history (last outputs)
-                      ///< organized as follows:
-                      ///< [y(n) y(n-1) y(n-2) y(n-3)]
+   // @todo(gm) fix alignment, this is a mess
+  alignas(16) float history_[4];  ///< Filter history (last outputs)
 };
 
 }  // namespace filters

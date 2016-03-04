@@ -27,7 +27,8 @@
 namespace soundtailor {
 namespace filters {
 
-/// @brief Chamberlin state variable low pass filter
+/// @brief Same as FirstOrderPoleFixedZero with a different parameterization,
+/// and a different input factor
 class MoogLowPassBlock : public Filter_Base {
  public:
   MoogLowPassBlock();
@@ -35,6 +36,7 @@ class MoogLowPassBlock : public Filter_Base {
     // Nothing to do here for now
   }
   virtual Sample operator()(SampleRead sample);
+  float operator()(float sample);
   virtual void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);

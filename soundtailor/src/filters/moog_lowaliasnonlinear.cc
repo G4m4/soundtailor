@@ -35,10 +35,8 @@ MoogLowAliasNonLinear::MoogLowAliasNonLinear()
   // Nothing to do here for now
 }
 
-Sample MoogLowAliasNonLinear::operator()(SampleRead sample) {
-  const float actual_sample(sample * (0.18f + 0.25f * resonance_));
-  float actual_input(actual_sample - resonance_ * last_);
-
+float MoogLowAliasNonLinear::operator()(float sample) {
+  float actual_input(sample - resonance_ * last_);
   float kCurrentSideFactor(Saturate(last_side_factor_));
 
   last_side_factor_ = actual_input * actual_input;
@@ -46,22 +44,58 @@ Sample MoogLowAliasNonLinear::operator()(SampleRead sample) {
   last_side_factor_ += kCurrentSideFactor * 0.993f;
 
   kCurrentSideFactor = 1.0f
-                        - kCurrentSideFactor
-                        + kCurrentSideFactor * kCurrentSideFactor / 2.0f;
+    - kCurrentSideFactor
+    + kCurrentSideFactor * kCurrentSideFactor / 2.0f;
   actual_input *= kCurrentSideFactor;
 
-  // Todo(gm): find a more efficient way to do that
+  // @todo(gm): find a more efficient way to do that
+  // notice the 1.3 factor
   float tmp_filtered(actual_input);
-  tmp_filtered = filters_[1](filters_[0](tmp_filtered));
+  tmp_filtered = filters_[1](1.3f * filters_[0](1.3f * tmp_filtered));
 
   tmp_filtered = ApplyNonLinearity(tmp_filtered);
 
-  tmp_filtered = filters_[3](filters_[2](tmp_filtered));
+  tmp_filtered = filters_[3](1.3f * filters_[2](1.3f * tmp_filtered));
 
-  const float out(tmp_filtered);
-  last_ = out;
+  last_ = tmp_filtered;
 
-  return out;
+  return tmp_filtered;
+}
+
+Sample MoogLowAliasNonLinear::operator()(SampleRead sample) {
+  const Sample direct_v(VectorMath::MulConst(0.18f + 0.25f * resonance_, sample));
+  float last = last_;
+  float out_v[4];
+  for (int i = 0; i < 4; ++i) {
+    const float current_sample = out_v[i];
+    float actual_input(current_sample - resonance_ * last);
+
+    float kCurrentSideFactor(Saturate(last_side_factor_));
+
+    last_side_factor_ = actual_input * actual_input;
+    last_side_factor_ *= 0.062f;
+    last_side_factor_ += kCurrentSideFactor * 0.993f;
+
+    kCurrentSideFactor = 1.0f
+      - kCurrentSideFactor
+      + kCurrentSideFactor * kCurrentSideFactor / 2.0f;
+    actual_input *= kCurrentSideFactor;
+
+    // @todo(gm): find a more efficient way to do that
+    // notice the 1.3 factor
+    float tmp_filtered(actual_input);
+    tmp_filtered = filters_[1](1.3f * filters_[0](1.3f * tmp_filtered));
+
+    tmp_filtered = ApplyNonLinearity(tmp_filtered);
+
+    tmp_filtered = filters_[3](1.3f * filters_[2](1.3f * tmp_filtered));
+
+    out_v[i] = tmp_filtered;
+    last = tmp_filtered;
+  }
+  last_ = last;
+
+  return VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]);
 }
 
 void MoogLowAliasNonLinear::SetParameters(const float frequency,
@@ -79,18 +113,18 @@ void MoogLowAliasNonLinear::SetParameters(const float frequency,
     + 0.108f * frequency_
     - 0.164f * frequency_ * frequency_
     - 0.069f * frequency_ * frequency_ * frequency_);
-  for (MoogLowAliasNonLinearLowPassBlock& filter : filters_) {
+  for (MoogLowPassBlock& filter : filters_) {
     filter.SetParameters(frequency_, resonance_);
   }
 }
 
-float MoogLowAliasNonLinear::Saturate(Sample sample) {
-  return Min(Max(sample, -1.0f), 1.0f);
+float MoogLowAliasNonLinear::Saturate(float sample) {
+  return Math::Min(Math::Max(sample, -1.0f), 1.0f);
 }
 
-float MoogLowAliasNonLinear::ApplyNonLinearity(Sample sample) {
-  if (LowerEqual(1.0, Abs(sample))) {
-    const Sample kFactor(2.0f / 3.0f);
+float MoogLowAliasNonLinear::ApplyNonLinearity(float sample) {
+  if (1.0 <= Math::Abs(sample)) {
+    const float kFactor(2.0f / 3.0f);
     return kFactor * Saturate(sample);
   } else {
     return sample - sample * sample * sample / 3.0f;

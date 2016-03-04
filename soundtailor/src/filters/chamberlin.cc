@@ -43,13 +43,13 @@ Sample Chamberlin::operator()(SampleRead sample) {
   float out[soundtailor::SampleSize];
   for (unsigned int i(0); i < soundtailor::SampleSize; ++i) {
     lp_ = frequency_ * bp_ + lp_;
-    const float hp(GetByIndex(sample, i) - lp_ - bp_ * damping_);
+    const float hp(VectorMath::GetByIndex(sample, i) - lp_ - bp_ * damping_);
     bp_ = frequency_ * hp + bp_;
 
     out[i] = lp_;
   }
 
-  return Fill(&out[0]);
+  return VectorMath::Fill(&out[0]);
 }
 
 void Chamberlin::SetParameters(const float frequency,

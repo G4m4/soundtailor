@@ -34,12 +34,35 @@ MoogLowPassBlock::MoogLowPassBlock()
 }
 
 Sample MoogLowPassBlock::operator()(SampleRead sample) {
-  const float kGain(pole_coeff_ / 1.3f);
-  const float kHistoryGain(1.0f - pole_coeff_);
-  const float direct = kGain * sample;
-  const float out = direct + last_;
+  const Sample direct_v(VectorMath::MulConst(static_cast<float>(pole_coeff_ / 1.3f), sample));
 
-  last_ = direct * (kHistoryGain + zero_coeff_) + kHistoryGain * last_;
+  const float actual_pole_coeff = static_cast<float>(1.0 - pole_coeff_);
+  const float actual_zero_coeff = zero_coeff_;
+  float out_v[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  float last = last_;
+
+  for (unsigned int idx = 0; idx < 4; ++idx) {
+    // @todo(gm) : implement compile-time unrolling
+    const float direct = VectorMath::GetByIndex(direct_v, idx);
+    out_v[idx] = direct + last;
+    last = out_v[idx] * actual_pole_coeff + actual_zero_coeff * direct;
+  }
+  last_ = last;
+
+  return VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]);
+}
+
+float MoogLowPassBlock::operator()(float sample) {
+  const float direct(static_cast<float>(pole_coeff_ / 1.3f) * sample);
+
+  float last = last_;
+  const float actual_pole_coeff = static_cast<float>(1.0 - pole_coeff_);
+  const float actual_zero_coeff = zero_coeff_;
+
+  const float out = direct + last;
+  last = out * actual_pole_coeff + actual_zero_coeff * direct;
+
+  last_ = last;
 
   return out;
 }

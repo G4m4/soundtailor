@@ -25,7 +25,7 @@
 
 #include "soundtailor/src/common.h"
 #include "soundtailor/src/filters/filter_base.h"
-#include "soundtailor/src/filters/moog_lowaliasnonlinear_lowpassblock.h"
+#include "soundtailor/src/filters/moog_lowpassblock.h"
 
 namespace soundtailor {
 namespace filters {
@@ -37,6 +37,7 @@ class MoogLowAliasNonLinear : public Filter_Base {
   virtual ~MoogLowAliasNonLinear() {
     // Nothing to do here for now
   }
+  float operator()(float sample);
   virtual Sample operator()(SampleRead sample);
   virtual void SetParameters(const float frequency, const float resonance);
 
@@ -45,16 +46,16 @@ class MoogLowAliasNonLinear : public Filter_Base {
   FILTER_PROCESSBLOCK_DEFINITION
  protected:
   // @brief Helper for computing the internal saturation
-  float Saturate(Sample sample);
+  float Saturate(float sample);
   // @brief Helper for computing the internal nonlinearity
-  float ApplyNonLinearity(Sample sample);
+  float ApplyNonLinearity(float sample);
 
   float frequency_;
   float resonance_;
   float last_;
   float last_side_factor_;
 
-  std::array<MoogLowAliasNonLinearLowPassBlock, 4> filters_;
+  std::array<MoogLowPassBlock, 4> filters_;
 };
 
 }  // namespace filters

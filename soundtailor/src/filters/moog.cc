@@ -35,16 +35,21 @@ Moog::Moog()
 }
 
 Sample Moog::operator()(SampleRead sample) {
-  const float actual_input(sample - resonance_ * last_);
-  // Todo(gm): find a more efficient way to do that
-  float tmp_filtered(actual_input);
-  for (MoogLowPassBlock& filter : filters_) {
-    tmp_filtered = filter(tmp_filtered);
+  float out_v[4];
+  for (int i = 0; i < SampleSize; ++i) {
+    // @todo (gm) static unrolling
+    const float current_sample(VectorMath::GetByIndex(sample, i));
+    const float actual_input(current_sample - resonance_ * last_);
+    // Todo(gm): find a more efficient way to do that
+    float tmp_filtered(actual_input);
+    for (MoogLowPassBlock& filter : filters_) {
+      tmp_filtered = filter(tmp_filtered);
+    }
+    last_ = tmp_filtered;
+    out_v[i] = tmp_filtered;
   }
-  const float out(tmp_filtered);
-  last_ = out;
 
-  return out;
+  return VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]);
 }
 
 void Moog::SetParameters(const float frequency, const float resonance) {
