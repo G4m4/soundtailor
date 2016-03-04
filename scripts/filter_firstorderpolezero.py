@@ -62,18 +62,27 @@ class PoleZeroLowPass(filters_common.FilterInterface):
         Actual process function - vectorized version
         '''
         direct_v = filters_common.MulConst(vector, self._coeff / 2.0)
-        oldest_out = direct_v[0] \
-                    + self._last
-        old_out = direct_v[1] \
-                    + oldest_out * (1.0 - self._coeff) + direct_v[0]
-        new_out = direct_v[2] \
-                    + old_out * (1.0 - self._coeff) + direct_v[1]
-        newest_out = direct_v[3] \
-                    + new_out * (1.0 - self._coeff) + direct_v[2]
+        out = [0.0, 0.0, 0.0, 0.0]
+        last = self._last
+        for idx, direct in enumerate(direct_v):
+            out[idx] = direct + last
+            last = out[idx] * (1.0 - self._coeff) + direct
+        self._last = last
 
-        out = (oldest_out, old_out, new_out, newest_out)
+        # actual_coeff = [1.0, 1.0 - self._coeff, 1.0 - self._coeff, 1.0 - self._coeff]
+        # out = direct_v + filters_common.RotateOnRight(direct_v, self._last)
 
-        self._last = newest_out * (1.0 - self._coeff) + direct_v[3]
+        # oldest_out = direct_v[0] \
+        #             + self._last
+        # old_out = direct_v[1] \
+        #             + oldest_out * (1.0 - self._coeff) + direct_v[0]
+        # new_out = direct_v[2] \
+        #             + old_out * (1.0 - self._coeff) + direct_v[1]
+        # newest_out = direct_v[3] \
+        #             + new_out * (1.0 - self._coeff) + direct_v[2]
+        # out = (oldest_out, old_out, new_out, newest_out)
+
+        # self._last = newest_out * (1.0 - self._coeff) + direct_v[3]
 
         return out
 
@@ -108,6 +117,18 @@ class FixedPoleZeroLowPass(PoleZeroLowPass):
 
         return out
 
+    def Process4Samples(self, vector):
+        direct_v = filters_common.MulConst(vector, self._pole_coeff / 2.0)
+        out = [0.0, 0.0, 0.0, 0.0]
+        last = self._last
+        zero_coeff = self._zero_coeff
+        for idx, direct in enumerate(direct_v):
+            out[idx] = direct + last
+            last = out[idx] * (1.0 - self._pole_coeff) + zero_coeff * direct
+        self._last = last
+
+        return out
+
 if __name__ == "__main__":
     '''
     Various tests/sandbox
@@ -131,6 +152,8 @@ if __name__ == "__main__":
     out_data = numpy.zeros(length)
     out_fixed_data = numpy.zeros(length)
     out_data_vectorized = numpy.zeros(length)
+    out_data_fixed = numpy.zeros(length)
+    out_data_fixed_vectorized = numpy.zeros(length)
 
     lowpass = PoleZeroLowPass()
     lowpass.SetParameters(filter_freq, 0.0)
@@ -139,9 +162,15 @@ if __name__ == "__main__":
     fixed_lowpass = FixedPoleZeroLowPass(1.0)
     fixed_lowpass.SetParameters(filter_freq, 0.0)
 
+    moog_fixed_lowpass = FixedPoleZeroLowPass(0.3)
+    moog_fixed_lowpass.SetParameters(filter_freq, 0.0)
+    moog_fixed_lowpass_v = FixedPoleZeroLowPass(0.3)
+    moog_fixed_lowpass_v.SetParameters(filter_freq, 0.0)
+
     for idx, sample in enumerate(in_data):
         out_data[idx] = lowpass.ProcessSample(sample)
         out_fixed_data[idx] = fixed_lowpass.ProcessSample(sample)
+        out_data_fixed[idx] = moog_fixed_lowpass.ProcessSample(sample)
 
     # Vectorized processing
     lowpass_v = PoleZeroLowPass()
@@ -156,16 +185,25 @@ if __name__ == "__main__":
          out_data_vectorized[idx + 1],
          out_data_vectorized[idx + 2],
          out_data_vectorized[idx + 3]) = lowpass_v.Process4Samples(current_vector)
+        (out_data_fixed_vectorized[idx],
+         out_data_fixed_vectorized[idx + 1],
+         out_data_fixed_vectorized[idx + 2],
+         out_data_fixed_vectorized[idx + 3]) = moog_fixed_lowpass_v.Process4Samples(current_vector)
         idx += 4
 
     print(utilities.PrintMetadata(utilities.GetMetadata(out_data - out_data_vectorized)))
-
     print(utilities.PrintMetadata(utilities.GetMetadata(out_data - out_fixed_data)))
 
-    pylab.plot(in_data, label="in")
-    pylab.plot(out_data, label="out")
-    pylab.plot(out_data_vectorized, label="out_vectorized")
-    pylab.plot(out_fixed_data, label="out_fixed")
+    # Check for the vectorized implementation of the fixed zero low pass
+    print(utilities.PrintMetadata(utilities.GetMetadata(out_data_fixed - out_data_fixed_vectorized)))
+
+#     pylab.plot(in_data, label="in")
+#     pylab.plot(out_data, label="out")
+#     pylab.plot(out_data_vectorized, label="out_vectorized")
+#     pylab.plot(out_fixed_data, label="out_fixed")
+#     pylab.plot(out_data_fixed_vectorized, label="out_vectorized")
+#     pylab.plot(out_data_fixed, label="out_fixed")
+
     pylab.legend()
 
     pylab.show()

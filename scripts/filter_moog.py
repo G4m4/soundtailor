@@ -45,41 +45,17 @@ class MoogBaseLowpass(filter_firstorderpolezero.FixedPoleZeroLowPass):
         self._pole_coeff = frequency
 
     def ProcessSample(self, sample):
-        '''
-        Actual process function
-        '''
-        direct = self._pole_coeff / 1.3 * sample
-        out = direct + self._last
+        return super(MoogBaseLowpass, self).ProcessSample(sample * 2.0 / 1.3)
 
-        self._last = out * (1.0 - self._pole_coeff) + self._zero_coeff * direct
+    def Process4Samples(self, vector):
+        return super(MoogBaseLowpass, self).Process4Samples(filters_common.MulConst(vector, 2.0 / 1.3))
 
-        return out
-
-class MoogBaseLowpassVariant(MoogBaseLowpass):
-    '''
-    Variant of the above, for comparison purpose
-    '''
-    def __init__(self):
-        super(MoogBaseLowpassVariant, self).__init__()
-
-    def ProcessSample(self, sample):
-        '''
-        Actual process function
-        '''
-        gain = self._pole_coeff / 1.3
-        history_gain = 1.0 - self._pole_coeff
-
-        direct = gain * sample
-        out = direct + self._last
-
-        self._last = direct * (history_gain + self._zero_coeff) + history_gain * self._last
-
-        return out
 
 class MoogLowAliasNonLinearBaseLowpass(filter_firstorderpolezero.FixedPoleZeroLowPass):
     '''
     Implements a simple 1 pole - 1 zero Low pass, with fixed coeffs tuned
     in order to be part of a bigger Moog filter
+    Same as FixedPoleZeroLowPass but with a different input factor (* 2.0)
     '''
     def __init__(self):
         # The pole coeff will change, only the zero one is fixed here
@@ -95,12 +71,14 @@ class MoogLowAliasNonLinearBaseLowpass(filter_firstorderpolezero.FixedPoleZeroLo
         '''
         Actual process function
         '''
-        direct = self._pole_coeff * sample
-        out = direct + self._last
+        return super(MoogLowAliasNonLinearBaseLowpass, self).ProcessSample(sample * 2.0)
 
-        self._last = out * (1.0 - self._pole_coeff) + self._zero_coeff * direct
+    def Process4Samples(self, vector):
+        '''
+        Actual process function
+        '''
+        return super(MoogLowAliasNonLinearBaseLowpass, self).Process4Samples(filters_common.MulConst(vector, 2.0))
 
-        return out
 
 class Moog(filters_common.FilterInterface):
     '''
@@ -136,7 +114,26 @@ class Moog(filters_common.FilterInterface):
             tmp_filtered = lowpass.ProcessSample(tmp_filtered)
 
         out = tmp_filtered
-        self._last = out
+        self._last = tmp_filtered
+
+        return out
+
+    def Process4Samples(self, vector):
+        """
+        Actual process function
+        """
+        out = [0.0, 0.0, 0.0, 0.0]
+        last = self._last
+        for idx, sample in enumerate(vector):
+            actual_input = sample - self._resonance * last
+            # Todo: find a more elegant way to do that
+            tmp_filtered = actual_input
+            for lowpass in self._filters:
+                tmp_filtered = lowpass.ProcessSample(tmp_filtered)
+
+            out[idx] = tmp_filtered
+            last = tmp_filtered
+        self._last = last
 
         return out
 
@@ -199,7 +196,41 @@ class MoogLowAliasNonLinear(filters_common.FilterInterface):
             tmp_filtered = lowpass.ProcessSample(tmp_filtered)
 
         out = tmp_filtered
-        self._last = out
+        self._last = tmp_filtered
+
+        return out
+
+    def Process4Samples(self, vector):
+        """
+        Actual process function
+        """
+        out = [0.0, 0.0, 0.0, 0.0]
+        direct_v = filters_common.MulConst(vector, 0.18 + 0.25 * self._resonance)
+        last = self._last
+        for idx, sample in enumerate(direct_v):
+            actual_input = sample - self._resonance * last
+            current_side_factor = min(max(self._last_side_factor, -1.0), 1.0)
+
+            self._last_side_factor = actual_input * actual_input
+            self._last_side_factor *= 0.062
+            self._last_side_factor += current_side_factor * 0.993
+
+            current_side_factor = 1.0 - current_side_factor + current_side_factor * current_side_factor / 2.0
+            actual_input *= current_side_factor
+
+            # Todo: find a more elegant way to do that
+            tmp_filtered = actual_input
+            for lowpass in self._filters[0:2]:
+                tmp_filtered = lowpass.ProcessSample(tmp_filtered)
+
+            # Saturation
+            tmp_filtered = self._Saturation(tmp_filtered)
+            for lowpass in self._filters[2:4]:
+                tmp_filtered = lowpass.ProcessSample(tmp_filtered)
+
+            out[idx] = tmp_filtered
+            last = tmp_filtered
+        self._last = last
 
         return out
 
@@ -215,8 +246,20 @@ class MoogLowAliasNonLinearOversampled(MoogLowAliasNonLinear):
         '''
         2x oversampled process function
         '''
-        super(MoogLowAliasNonLinearOversampled, self).ProcessSample(sample)
-        return super(MoogLowAliasNonLinearOversampled, self).ProcessSample(sample)
+        a = super(MoogLowAliasNonLinearOversampled, self).ProcessSample(sample)
+        b = super(MoogLowAliasNonLinearOversampled, self).ProcessSample(sample)
+        return b
+
+    def Process4Samples(self, vector):
+        '''
+        2x oversampled process function
+        '''
+        new_vec_first = numpy.array((vector[0], vector[0], vector[1], vector[1]))
+        new_vec_second = numpy.array((vector[2], vector[2], vector[3], vector[3]))
+        first_half = super(MoogLowAliasNonLinearOversampled, self).Process4Samples(new_vec_first)
+        second_half = super(MoogLowAliasNonLinearOversampled, self).Process4Samples(new_vec_second)
+        return filters_common.Decimate(first_half, second_half)
+
 
 class MoogOversampled(MoogLowAliasNonLinear):
     '''
@@ -224,31 +267,42 @@ class MoogOversampled(MoogLowAliasNonLinear):
     '''
     def __init__(self):
         super(MoogOversampled, self).__init__()
-        self._history = [0.0, 0.0, 0.0]
+        self._filter_output = numpy.array([0.0, 0.0, 0.0, 0.0])
         self._last_out = 0.0
 
     def ProcessSample(self, sample):
         '''
         Actual process function
         '''
+        history_coeffs = numpy.array([0.19, 0.57, 0.57, 0.19])
         out = super(MoogOversampled, self).ProcessSample(sample)
-        self._history[2] = self._history[1]
-        self._history[1] = self._history[0]
-        self._history[0] = out
+        # The following are useless if we use the same input twice
+        # self._filter_output[3] = self._filter_output[2]
+        # self._filter_output[2] = self._filter_output[1]
+        # self._filter_output[1] = self._filter_output[0]
+        # self._filter_output[0] = out
         # 2x oversampled
         out = super(MoogOversampled, self).ProcessSample(sample)
-        tmp = self._history[2]
-        self._history[2] = self._history[1]
-        self._history[1] = self._history[0]
-        self._history[0] = out
+        history = self._filter_output
+        new_history = filters_common.RotateOnRight(history, out)
+        # self._filter_output[3] = self._filter_output[2]
+        # self._filter_output[2] = self._filter_output[1]
+        # self._filter_output[1] = self._filter_output[0]
+        # self._filter_output[0] = out
+        out = numpy.sum(history_coeffs * new_history)
 
-        out = 0.19 * tmp \
-                + 0.57 * self._history[2] \
-                + 0.57 * self._history[1] \
-                + 0.19 * self._history[0]
+        out += self._last_out * -0.52 * 3.0
+        self._filter_output = new_history
+        self._last_out = out
 
-        self._last_out = self._last_out * -0.52 + out
+        return out
 
+    def Process4Samples(self, vector):
+        out = numpy.zeros(len(vector))
+        out[0] = self.ProcessSample(vector[0])
+        out[1] = self.ProcessSample(vector[1])
+        out[2] = self.ProcessSample(vector[2])
+        out[3] = self.ProcessSample(vector[3])
         return out
 
 class MoogMusicDSP(filters_common.FilterInterface):
@@ -525,11 +579,12 @@ if __name__ == "__main__":
     ref_data = ref_data[0:length]
 
     available_filters = [
-#                          MoogLowAliasNonLinearBaseLowpass,
-#                          MoogBaseLowpass,
-#                          Moog,
+                          # MoogLowAliasNonLinearBaseLowpass,
+                          # MoogBaseLowpass,
+                         # Moog,
                          MoogLowAliasNonLinear,
-                         MoogOversampled,
+                         MoogLowAliasNonLinearOversampled,
+                         # MoogOversampled,
 #                          MoogMusicDSP,
 #                          MoogMusicDSPVar1,
 #                          MoogMusicDSPVar2,
@@ -541,13 +596,28 @@ if __name__ == "__main__":
 
     for filter_idx, filter_class in enumerate(available_filters):
         filter_instance = filter_class()
+        filter_instance_v = filter_class()
         filter_instance.SetParameters(filter_freq, resonance)
+        filter_instance_v.SetParameters(filter_freq, resonance)
         # The base lowpass has to be updated with the actual internal values
         for idx, _ in enumerate(in_data):
             out_data[filter_idx][idx] = filter_instance.ProcessSample(in_data[idx])
+        # Check vectorized version
+        squared_diff = 0.0
+        idx = 0
+        while idx < len(in_data) - 4:
+            current_vector = (in_data[idx],
+                              in_data[idx + 1],
+                              in_data[idx + 2],
+                              in_data[idx + 3])
+            current_out = numpy.array(filter_instance_v.Process4Samples(current_vector))
+            cmp = numpy.array(out_data[filter_idx][idx:idx+4])
+            squared_diff += numpy.sum(current_out * current_out - cmp * cmp)
+            idx += 4
         filter_name = str(type(filter_instance))
         pylab.plot(out_data[filter_idx], label="out" + filter_name)
         print(filter_name + utilities.PrintMetadata(utilities.GetMetadata(out_data[filter_idx])))
+        print("Squared diff: " + str(squared_diff))
 
     pylab.plot(in_data, label="in")
 

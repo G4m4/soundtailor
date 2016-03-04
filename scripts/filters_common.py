@@ -85,10 +85,10 @@ def RotateOnRight(vector, value):
     @param    value    value to shift in
     @return    4 samples tuple
     '''
-    return (value,
-            vector[0],
-            vector[1],
-            vector[2])
+    return numpy.array([value,
+                        vector[0],
+                        vector[1],
+                        vector[2]])
 
 def TakeEachRightHalf(left, right):
     '''
@@ -103,6 +103,21 @@ def TakeEachRightHalf(left, right):
     return (left[2],
             left[3],
             right[2],
+            right[3])
+
+def Decimate(left, right):
+    '''
+    Get every other sample in each of the two given vectors:
+    given left = (x0, x1, x2, x3) and right = (y0, y1, y2, y3)
+    it will return (x1, x3, y1, y3)
+
+    @param    left     4 samples tuple
+    @param    right    4 samples tuple
+    @return    4 samples tuple
+    '''
+    return (left[1],
+            left[3],
+            right[1],
             right[3])
 
 def Fill(value):
