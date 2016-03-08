@@ -28,7 +28,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(COMPILER_IS_CLANG
       1)
   message("Compiler detected as Clang")
-elseif (CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(COMPILER_IS_GCC
       1)
   message("Compiler detected as gcc")
