@@ -33,22 +33,6 @@
 
 namespace soundtailor {
 struct StandardVectorMath {
-  /// @brief Fill a whole Sample with the given value
-  ///
-  /// @param[in]  value   Value to be copied through the whole Sample
-  static inline Sample Fill(const float value) {
-    return{ value, value, value, value };
-  }
-
-  /// @brief Fill a whole Sample with the given float array
-  /// beware of the order: SSE is "little-endian" (sort of)
-  ///
-  /// @param[in]  value   Pointer to the float array to be used:
-  ///                     must be SampleSizeBytes long
-  static inline Sample Fill(const float* value) {
-    return{ value[0], value[1], value[2], value[3] };
-  }
-
   /// @brief Fill a whole Sample with all given scalars,
   /// beware of the order: SSE is "little-endian" (sort of)
   ///
@@ -60,7 +44,23 @@ struct StandardVectorMath {
                             const float b,
                             const float c,
                             const float d) {
-    return{ a, b, c, d };
+    return {{ a, b, c, d }};
+  }
+
+  /// @brief Fill a whole Sample with the given value
+  ///
+  /// @param[in]  value   Value to be copied through the whole Sample
+  static inline Sample Fill(const float value) {
+    return Fill( value, value, value, value );
+  }
+
+  /// @brief Fill a whole Sample with the given float array
+  /// beware of the order: SSE is "little-endian" (sort of)
+  ///
+  /// @param[in]  value   Pointer to the float array to be used:
+  ///                     must be SampleSizeBytes long
+  static inline Sample Fill(const float* value) {
+    return Fill( value[0], value[1], value[2], value[3] );
   }
 
   /// @brief Extract one element from a Sample (compile-time version)
