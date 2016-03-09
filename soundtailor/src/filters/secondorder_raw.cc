@@ -74,7 +74,7 @@ Sample SecondOrderRaw::operator()(SampleRead sample) {
 #else
   // @todo(gm) find out what's going wrong above
   float out_v[4];
-  for (int i = 0; i < SampleSize; ++i) {
+  for (unsigned int i = 0; i < SampleSize; ++i) {
     const float current_sample = VectorMath::GetByIndex(sample, i);
     const float out(gain_ * current_sample
                     + history_[0] * coeffs_[0]

@@ -36,7 +36,7 @@ Moog::Moog()
 
 Sample Moog::operator()(SampleRead sample) {
   float out_v[4];
-  for (int i = 0; i < SampleSize; ++i) {
+  for (unsigned int i = 0; i < SampleSize; ++i) {
     // @todo (gm) static unrolling
     const float current_sample(VectorMath::GetByIndex(sample, i));
     const float actual_input(current_sample - resonance_ * last_);

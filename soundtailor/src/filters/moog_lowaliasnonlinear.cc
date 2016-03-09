@@ -67,7 +67,7 @@ Sample MoogLowAliasNonLinear::operator()(SampleRead sample) {
   float last = last_;
   float out_v[4];
   for (int i = 0; i < 4; ++i) {
-    const float current_sample = out_v[i];
+    const float current_sample = VectorMath::GetByIndex(direct_v, i);
     float actual_input(current_sample - resonance_ * last);
 
     float kCurrentSideFactor(Saturate(last_side_factor_));

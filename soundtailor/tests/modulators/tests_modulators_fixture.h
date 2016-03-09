@@ -47,7 +47,7 @@ class Modulator : public ::testing::Test {
 
     kSamplingRate_(96000.0f),
     kMinTime_(0),
-    kMaxTime_(kSamplingRate_),
+    kMaxTime_(static_cast<unsigned int>(kSamplingRate_)),
     kModulatorDataPerfSetSize_(kMaxTime_ * 4),
     kTail_(256),
     kRandomGenerator_(),
