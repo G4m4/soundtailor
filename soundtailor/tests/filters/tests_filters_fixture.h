@@ -51,8 +51,8 @@ class Filter : public ::testing::Test {
     kPassthroughResonance_(FilterType::Meta().res_passthrough),
     kDelay_(FilterType::Meta().output_delay),
     kInverseFilterGain_(1.0f / FilterType::Meta().output_gain),
-    FilterFreqDistribution(FilterType::Meta().freq_min,
-                           FilterType::Meta().freq_max) {
+    FilterFreqDistribution_(FilterType::Meta().freq_min,
+                            FilterType::Meta().freq_max) {
     // Nothing to be done here for now
   }
 
@@ -76,20 +76,19 @@ class Filter : public ::testing::Test {
   /// @brief Inverse of the gain introduced by the filter
   const float kInverseFilterGain_;
   /// @brief Random distribution for filter frequency, within its own bounds
-  std::uniform_real_distribution<float> FilterFreqDistribution;
+  std::uniform_real_distribution<float> FilterFreqDistribution_;
 };
 
 /// @brief Base tests fixture with data
 template <typename FilterType>
 class FilterData : public Filter<FilterType> {
  protected:
-
   FilterData()
-      : output_data_(kDataTestSetSize_),
-    input_data_(kDataTestSetSize_) {
+      : output_data_(this->kDataTestSetSize_),
+    input_data_(this->kDataTestSetSize_) {
     std::generate(input_data_.begin(),
                   input_data_.end(),
-                  std::bind(kNormDistribution_, kRandomGenerator_));
+                  std::bind(this->kNormDistribution_, this->kRandomGenerator_));
   }
 
   virtual ~FilterData() {

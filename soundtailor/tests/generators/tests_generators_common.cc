@@ -26,8 +26,17 @@
 using soundtailor::generators::PhaseAccumulator;
 using soundtailor::generators::Differentiator;
 
+const unsigned int kDataTestSetSize(32768);
+const float kSamplingRate(96000.0f);
+/// @brief Arbitrary lowest allowed fundamental
+const float kMinFundamentalNorm(10.0f / kSamplingRate);
+/// @brief Arbitrary highest allowed fundamental
+// TODO(gm): make this higher
+const float kMaxFundamentalNorm(2000.0f / kSamplingRate);
+
 /// @brief Differentiate a constant, check for null derivative
 TEST(GeneratorsCommon, DifferentiatedConstant) {
+  std::default_random_engine kRandomGenerator;
   // The input is a random value in [-1.0f ; 1.0f]
   const Sample input(VectorMath::Fill(kNormDistribution(kRandomGenerator)));
   Differentiator differentiator;
@@ -43,12 +52,7 @@ TEST(GeneratorsCommon, DifferentiatedConstant) {
 /// @brief Generates a triangle, check for its differentiated output:
 /// it is supposed to be almost null everywhere except at discontinuities
 TEST(GeneratorsCommon, DifferentiatedSawtooth) {
-  /// @brief Arbitrary lowest allowed fundamental
-  const float kMinFundamentalNorm(10.0f / kSamplingRate);
-  /// @brief Arbitrary highest allowed fundamental
-  // TODO(gm): make this higher
-  const float kMaxFundamentalNorm(2000.0f / kSamplingRate);
-
+  std::default_random_engine kRandomGenerator;
   std::uniform_real_distribution<float> kFreqDistribution(kMinFundamentalNorm,
                                                           kMaxFundamentalNorm);
   const float kFrequency(kFreqDistribution(kRandomGenerator));
@@ -73,6 +77,7 @@ TEST(GeneratorsCommon, DifferentiatedSawtooth) {
 
 /// @brief Differentiate random values (performance test)
 TEST(GeneratorsCommon, DifferentiatorPerf) {
+  std::default_random_engine kRandomGenerator;
 
   // Smaller performance test sets in debug
 #if (_BUILD_CONFIGURATION_DEBUG)

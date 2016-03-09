@@ -38,14 +38,14 @@ TYPED_TEST_CASE(GeneratorData, GeneratorTypes);
 
 /// @brief Generates a signal, check for null mean (no DC offset)
 TYPED_TEST(Generator, Mean) {
-  for (unsigned int iterations(0); iterations < kTestIterations_; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations_; ++iterations) {
     IGNORE(iterations);
     // Random normalized frequency
-    const float kFrequency(kFreqDistribution_(kRandomGenerator_));
+    const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
 
     // We are generating complete periods to prevent false positive
     const unsigned int kDataLength(ComputeDataLength(kFrequency,
-                                                     kSignalDataPeriodsCount_));
+                                                     this->kSignalDataPeriodsCount_));
 
     // Generating data
     PhaseAccumulator generator;
@@ -62,15 +62,15 @@ TYPED_TEST(Generator, Mean) {
 
 /// @brief Generates a signal, check for signal power
 TYPED_TEST(Generator, Power) {
-  for (unsigned int iterations(0); iterations < kTestIterations_; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations_; ++iterations) {
     IGNORE(iterations);
 
     // Random normalized frequency
-    const float kFrequency(kFreqDistribution_(kRandomGenerator_));
+    const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
 
     // We are generating complete periods to prevent false positive
     const unsigned int kDataLength(ComputeDataLength(kFrequency,
-                                                     kSignalDataPeriodsCount_));
+                                                     this->kSignalDataPeriodsCount_));
 
     // Generating data
     PhaseAccumulator generator;
@@ -88,17 +88,17 @@ TYPED_TEST(Generator, Power) {
 /// @brief Generates a signal,
 /// check for normalized range (within [-1.0f ; 1.0f])
 TYPED_TEST(Generator, Range) {
-  for (unsigned int iterations(0); iterations < kTestIterations_; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations_; ++iterations) {
     IGNORE(iterations);
 
-    const float kFrequency(kFreqDistribution_(kRandomGenerator_));
+    const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
     PhaseAccumulator generator;
     generator.SetFrequency(kFrequency);
 
     for (unsigned int i(0);
-         i < kDataTestSetSize_;
+         i < this->kDataTestSetSize_;
          i += soundtailor::SampleSize) {
-      const Sample sample(VectorMath::Fill(kFreqDistribution_(kRandomGenerator_)));
+      const Sample sample(VectorMath::Fill(this->kFreqDistribution_(this->kRandomGenerator_)));
       EXPECT_TRUE(VectorMath::GreaterEqual(1.0f, sample));
       EXPECT_TRUE(VectorMath::LessEqual(-1.0f, sample));
     }
@@ -108,14 +108,14 @@ TYPED_TEST(Generator, Range) {
 /// @brief Generates a signal and check for expected zero crossing
 /// according parameterized frequency (1 expected zero crossings per period)
 TYPED_TEST(Generator, ZeroCrossings) {
-  for (unsigned int iterations(0); iterations < kTestIterations_; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations_; ++iterations) {
     IGNORE(iterations);
 
-    const float kFrequency(kFreqDistribution_(kRandomGenerator_));
+    const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
     // Adding half a period makes the test more robusts to few samples shifts
     const unsigned int kDataLength(ComputeDataLength(
                                      kFrequency,
-                                     kSignalDataPeriodsCount_ + 0.5f));
+                                     this->kSignalDataPeriodsCount_ + 0.5f));
     PhaseAccumulator generator;
     generator.SetFrequency(kFrequency);
 
@@ -123,27 +123,27 @@ TYPED_TEST(Generator, ZeroCrossings) {
     const float kActual(static_cast<float>(ComputeZeroCrossing(generator,
                                                                kDataLength, -1.0f)));
 
-    EXPECT_NEAR(kSignalDataPeriodsCount_, kActual, kEpsilon);
+    EXPECT_NEAR(this->kSignalDataPeriodsCount_, kActual, kEpsilon);
   }
 }
 
 /// @brief Generates a signal at each frequency corresponding
 /// to key notes in the available range, check for expected zero crossing
 TYPED_TEST(Generator, Notes) {
-  for (unsigned int key_note(kMinKeyNote_);
-       key_note < kMaxKeyNote_;
+  for (unsigned int key_note(this->kMinKeyNote_);
+       key_note < this->kMaxKeyNote_;
        ++key_note) {
     const float kFrequency(NoteToFrequency(key_note));
-    const unsigned int kDataLength(ComputeDataLength(kFrequency / kSamplingRate_,
-                                                     kSignalDataPeriodsCount_));
+    const unsigned int kDataLength(ComputeDataLength(kFrequency / this->kSamplingRate_,
+                                                     this->kSignalDataPeriodsCount_));
     SawtoothDPW generator;
-    generator.SetFrequency(kFrequency / kSamplingRate_);
+    generator.SetFrequency(kFrequency / this->kSamplingRate_);
 
     // Due to rounding one or even two zero crossings may be lost/added
     const int kEpsilon(2);
     const int kActual(ComputeZeroCrossing(generator, kDataLength));
 
-    EXPECT_NEAR(kSignalDataPeriodsCount_, kActual, kEpsilon);
+    EXPECT_NEAR(this->kSignalDataPeriodsCount_, kActual, kEpsilon);
   }
 }
 
@@ -151,9 +151,9 @@ TYPED_TEST(Generator, Notes) {
 /// for the other half by forcing the second generator phase.
 /// No difference should be perceptible at the transition
 TYPED_TEST(Generator, PhaseControl) {
-  for (unsigned int iterations(0); iterations < kTestIterations_; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations_; ++iterations) {
     IGNORE(iterations);
-    const float kFrequency(kFreqDistribution_(kRandomGenerator_));
+    const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
 
     // The history must be a non-integer number of periods:
     // this prevent having the transition falls on the period beginning/ending
@@ -203,9 +203,9 @@ TYPED_TEST(Generator, PhaseControl) {
 
 /// @brief Check that the first generated sample is always a zero
 TYPED_TEST(Generator, BeginsAtZero) {
-  for (unsigned int iterations(0); iterations < kTestIterations_; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kTestIterations_; ++iterations) {
     IGNORE(iterations);
-    const float kFrequency(kFreqDistribution_(kRandomGenerator_));
+    const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
 
     // Generating data
     PhaseAccumulator generator;
@@ -219,7 +219,7 @@ TYPED_TEST(Generator, BeginsAtZero) {
 /// yield an identical result
 TYPED_TEST(GeneratorData, Process) {
   // Random normalized frequency
-  const float kFrequency(kFreqDistribution_(kRandomGenerator_));
+  const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
 
   PhaseAccumulator generator_perblock;
   PhaseAccumulator generator_persample;
@@ -227,7 +227,7 @@ TYPED_TEST(GeneratorData, Process) {
   generator_persample.SetFrequency(kFrequency);
 
   generator_perblock.ProcessBlock(&this->output_data_[0], this->output_data_.size());
-  for (unsigned int i(0); i < kDataTestSetSize_; i += soundtailor::SampleSize) {
+  for (unsigned int i(0); i < this->kDataTestSetSize_; i += soundtailor::SampleSize) {
     const Sample kReference(VectorMath::Fill(&this->output_data_[i]));
     const Sample kGenerated((generator_persample()));
     EXPECT_TRUE(VectorMath::Equal(kReference, kGenerated));
@@ -236,16 +236,16 @@ TYPED_TEST(GeneratorData, Process) {
 
 /// @brief Generates a signal (performance tests)
 TYPED_TEST(Generator, Perf) {
-  for (unsigned int iterations(0); iterations < kPerfIterations_; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kPerfIterations_; ++iterations) {
     IGNORE(iterations);
 
-    const float kFrequency(kFreqDistribution_(kRandomGenerator_));
+    const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
     PhaseAccumulator generator;
     generator.SetFrequency(kFrequency);
 
     unsigned int sample_idx(0);
-    while (sample_idx < kDataTestSetSize_) {
-      const Sample kCurrent(VectorMath::Fill(kFreqDistribution_(kRandomGenerator_)));
+    while (sample_idx < this->kDataTestSetSize_) {
+      const Sample kCurrent(VectorMath::Fill(this->kFreqDistribution_(this->kRandomGenerator_)));
       sample_idx += soundtailor::SampleSize;
       // No actual test!
       EXPECT_TRUE(VectorMath::LessEqual(-2.0f, kCurrent));
@@ -255,16 +255,16 @@ TYPED_TEST(Generator, Perf) {
 
 /// @brief Generates a signal (block performance tests)
 TYPED_TEST(GeneratorData, BlockPerf) {
-  for (unsigned int iterations(0); iterations < kPerfIterations_; ++iterations) {
+  for (unsigned int iterations(0); iterations < this->kPerfIterations_; ++iterations) {
     IGNORE(iterations);
 
-    const float kFrequency(kFreqDistribution_(kRandomGenerator_));
+    const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
     PhaseAccumulator generator;
     generator.SetFrequency(kFrequency);
 
     generator.ProcessBlock(&this->output_data_[0], this->output_data_.size());
     unsigned int sample_idx(0);
-    while (sample_idx < kDataTestSetSize_) {
+    while (sample_idx < this->kDataTestSetSize_) {
       const Sample kCurrent(VectorMath::Fill(&this->output_data_[sample_idx]));
       sample_idx += soundtailor::SampleSize;
       // No actual test!

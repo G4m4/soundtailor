@@ -40,15 +40,10 @@ using soundtailor::Sample;
 using soundtailor::SampleRead;
 using soundtailor::VectorMath;
 
-static const unsigned int kDataTestSetSize(32768);
-
-/// @brief Base sampling rate unless indicated otherwise
-static const float kSamplingRate(96000.0f);
-
+// Common base random distributions
 static std::uniform_real_distribution<float> kNormDistribution(-1.0f, 1.0f);
 static std::uniform_real_distribution<float> kNormPosDistribution(0.0f, 1.0f);
 static std::bernoulli_distribution kBoolDistribution;
-static std::default_random_engine kRandomGenerator;
 
 /// @brief Helper structure for retrieving zero crossings informations
 template <typename TypeGenerator>

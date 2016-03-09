@@ -32,22 +32,22 @@ TYPED_TEST_CASE(Modulator, ModulatorTypes);
 /// @brief Generates an envelop, check for its range (must be >= 0)
 TYPED_TEST(Modulator, Range) {
   for (unsigned int iterations(0);
-       iterations < kTestIterations_;
+       iterations < this->kTestIterations_;
        ++iterations) {
     IGNORE(iterations);
 
     TypeParam generator;
-    generator.SetParameters(kAttack_,
-                            kDecay_,
-                            kDecay_,
-                            kSustainLevel_);
+    generator.SetParameters(this->kAttack_,
+                            this->kDecay_,
+                            this->kDecay_,
+                            this->kSustainLevel_);
 
     const float kEpsilon(1e-3f);
 
     generator.TriggerOn();
     unsigned int i(0);
     // Attack / Decay / Sustain
-    while (i <= kAttack_ + kDecay_ + kSustain_) {
+    while (i <= this->kAttack_ + this->kDecay_ + this->kSustain_) {
       const float sample(generator());
       EXPECT_LE(0.0f - kEpsilon, sample);
       EXPECT_GE(1.0f + kEpsilon, sample);
@@ -55,11 +55,11 @@ TYPED_TEST(Modulator, Range) {
     }
     // Release + a little bit after that
     generator.TriggerOff();
-    while (i <= kAttack_
-                + kDecay_
-                + kSustain_
-                + kDecay_
-                + kTail_) {
+    while (i <= this->kAttack_
+                + this->kDecay_
+                + this->kSustain_
+                + this->kDecay_
+                + this->kTail_) {
       const float sample(generator());
       EXPECT_LE(0.0f - kEpsilon, sample);
       EXPECT_GE(1.0f + kEpsilon, sample);
@@ -75,24 +75,24 @@ TYPED_TEST(Modulator, Range) {
 /// - when in release samples should be in a continuous downward slope
 TYPED_TEST(Modulator, Timings) {
   for (unsigned int iterations(0);
-       iterations < kTestIterations_;
+       iterations < this->kTestIterations_;
        ++iterations) {
     IGNORE(iterations);
 
     TypeParam generator;
-    generator.SetParameters(kAttack_,
-                            kDecay_,
-                            kDecay_,
-                            kSustainLevel_);
+    generator.SetParameters(this->kAttack_,
+                            this->kDecay_,
+                            this->kDecay_,
+                            this->kSustainLevel_);
 
     generator.TriggerOn();
     std::vector<unsigned int> zero_crossing_indexes;
 
     // TODO(gm): get rid of that
-    Modulator::AdsdFunctor modulators_functor(&generator);
-    ZeroCrossing<Modulator::AdsdFunctor> zero_crossing(modulators_functor, 1.0f);
-    unsigned int kTriggerOnLength(kAttack_ + kDecay_ + kSustain_);
-    unsigned int kTotalLength(kTriggerOnLength + kDecay_ + kTail_);
+    typename Modulator<TypeParam>::AdsdFunctor modulators_functor(&generator);
+    ZeroCrossing<  typename Modulator<TypeParam>::AdsdFunctor> zero_crossing(modulators_functor, 1.0f);
+    unsigned int kTriggerOnLength(this->kAttack_ + this->kDecay_ + this->kSustain_);
+    unsigned int kTotalLength(kTriggerOnLength + this->kDecay_ + this->kTail_);
     // A tiny delay occurs due to differentiation and trigger unevenness
     unsigned int kEpsilon(2);
     unsigned int zero_crossing_idx(
@@ -106,12 +106,12 @@ TYPED_TEST(Modulator, Timings) {
       zero_crossing_idx = zero_crossing.GetNextZeroCrossing(kTotalLength);
       zero_crossing_indexes.push_back(zero_crossing_idx);
     }
-    EXPECT_NEAR(kAttack_, zero_crossing_indexes[0], kEpsilon);
-    EXPECT_NEAR(kAttack_ + kDecay_,
+    EXPECT_NEAR(this->kAttack_, zero_crossing_indexes[0], kEpsilon);
+    EXPECT_NEAR(this->kAttack_ + this->kDecay_,
                 zero_crossing_indexes[1],
                 kEpsilon);
     EXPECT_NEAR(kTriggerOnLength, zero_crossing_indexes[2], kEpsilon);
-    EXPECT_NEAR(kTriggerOnLength + kDecay_,
+    EXPECT_NEAR(kTriggerOnLength + this->kDecay_,
                 zero_crossing_indexes[3],
                 kEpsilon);
   }  // iterations?
@@ -122,22 +122,22 @@ TYPED_TEST(Modulator, Timings) {
 /// With the parameters used here, the slope is still supposed
 /// to be > FLT_EPSILON
 TYPED_TEST(Modulator, LongTimings) {
-  const unsigned int kLongTime(kMaxTime_);
+  const unsigned int kLongTime(this->kMaxTime_);
   const unsigned int kAttack(kLongTime);
   const unsigned int kDecay(kLongTime);
   const unsigned int kSustain(100);
 
   TypeParam generator;
-  generator.SetParameters(kAttack, kDecay, kDecay, kSustainLevel_);
+  generator.SetParameters(kAttack, kDecay, kDecay, this->kSustainLevel_);
 
   generator.TriggerOn();
   std::vector<unsigned int> zero_crossing_indexes;
 
   // TODO(gm): get rid of that
-  Modulator::AdsdFunctor modulators_functor(&generator);
-  ZeroCrossing<Modulator::AdsdFunctor> zero_crossing(modulators_functor);
+  typename Modulator<TypeParam>::AdsdFunctor modulators_functor(&generator);
+  ZeroCrossing<typename Modulator<TypeParam>::AdsdFunctor> zero_crossing(modulators_functor);
   unsigned int kTriggerOnLength(kAttack + kDecay + kSustain);
-  unsigned int kTotalLength(kTriggerOnLength + kDecay + kTail_);
+  unsigned int kTotalLength(kTriggerOnLength + kDecay + this->kTail_);
   // A tiny delay occurs due to differentiation and trigger unevenness
   unsigned int kEpsilon(2);
   unsigned int zero_crossing_idx(
@@ -160,19 +160,19 @@ TYPED_TEST(Modulator, LongTimings) {
 /// @brief Generates an envelop with one or both timing parameters null
 TYPED_TEST(Modulator, NullParameters) {
   for (unsigned int iterations(0);
-       iterations < kTestIterations_;
+       iterations < this->kTestIterations_;
        ++iterations) {
     IGNORE(iterations);
 
     // Random parameters
     // Each parameter has half a chance to be null
-    const unsigned int kAttack(kBoolDistribution(kRandomGenerator)
-                               ? kAttack_ : 0);
-    const unsigned int kDecay(kBoolDistribution(kRandomGenerator)
-                              ? kDecay_ : 0);
+    const unsigned int kAttack(kBoolDistribution(this->kRandomGenerator_)
+                               ? this->kAttack_ : 0);
+    const unsigned int kDecay(kBoolDistribution(this->kRandomGenerator_)
+                              ? this->kDecay_ : 0);
 
     TypeParam generator;
-    generator.SetParameters(kAttack, kDecay, kDecay, kSustainLevel_);
+    generator.SetParameters(kAttack, kDecay, kDecay, this->kSustainLevel_);
 
     const float kEpsilon(1e-3f);
 
@@ -200,15 +200,15 @@ TYPED_TEST(Modulator, NullParameters) {
     if (0 == kDecay) {
       previous = generator();
     }
-    while (i <= kAttack + kDecay + kSustain_) {
+    while (i <= kAttack + kDecay + this->kSustain_) {
       const float sample(generator());
       // A (really tiny) epsilon is required here for imprecisions
       const float kNearEpsilon(1e-6f);
-      EXPECT_NEAR(kSustainLevel_, sample, kNearEpsilon);
+      EXPECT_NEAR(this->kSustainLevel_, sample, kNearEpsilon);
       i += 1;
     }
     generator.TriggerOff();
-    while (i < kAttack + kDecay + kSustain_ + kDecay + kTail_) {
+    while (i < kAttack + kDecay + this->kSustain_ + kDecay + this->kTail_) {
       const float sample(generator());
       EXPECT_LE(0.0f - kEpsilon, sample);
       EXPECT_GE(1.0f + kEpsilon, sample);
@@ -220,7 +220,7 @@ TYPED_TEST(Modulator, NullParameters) {
 /// @brief Generates a "click envelop" - with both timing parameters null
 TYPED_TEST(Modulator, Click) {
   for (unsigned int iterations(0);
-       iterations < kTestIterations_;
+       iterations < this->kTestIterations_;
        ++iterations) {
     IGNORE(iterations);
 
@@ -228,23 +228,23 @@ TYPED_TEST(Modulator, Click) {
     const unsigned int kDecay(0);
 
     TypeParam generator;
-    generator.SetParameters(kAttack, kDecay, kDecay, kSustainLevel_);
+    generator.SetParameters(kAttack, kDecay, kDecay, this->kSustainLevel_);
 
     generator.TriggerOn();
     unsigned int i(1);
     // The first sample is always null!
     IGNORE(generator());
-    while (i <= kSustain_) {
+    while (i <= this->kSustain_) {
       const float sample(generator());
       // A (really tiny) epsilon is required here for imprecisions
       const float kEpsilon(1e-6f);
-      EXPECT_NEAR(kSustainLevel_, sample, kEpsilon);
+      EXPECT_NEAR(this->kSustainLevel_, sample, kEpsilon);
       i += 1;
     }
     generator.TriggerOff();
     // This sample left is due to the release
     IGNORE(generator());
-    while (i <= kSustain_ + kTail_) {
+    while (i <= this->kSustain_ + this->kTail_) {
       const float sample(generator());
       EXPECT_EQ(0.0f, sample);
       i += 1;
@@ -260,26 +260,26 @@ TYPED_TEST(Modulator, Click) {
 /// between two consecutive samples. Nowhere it should be greater!
 TYPED_TEST(Modulator, OutRegularity) {
   for (unsigned int iterations(0);
-       iterations < kTestIterations_;
+       iterations < this->kTestIterations_;
        ++iterations) {
     IGNORE(iterations);
 
     TypeParam generator;
-    generator.SetParameters(kAttack_,
-                            kDecay_,
-                            kDecay_,
-                            kSustainLevel_);
+    generator.SetParameters(this->kAttack_,
+                            this->kDecay_,
+                            this->kDecay_,
+                            this->kSustainLevel_);
 
     generator.TriggerOn();
     unsigned int i(1);
     // A very small epsilon is added for computation/casts imprecisions
     // TODO(gm): this might not be required if all floating point operations
     // were properly understood and managed.
-    const double kMaxDelta(1.0 / std::min(kAttack_, kDecay_) + 1e-7);
+    const double kMaxDelta(1.0 / std::min(this->kAttack_, this->kDecay_) + 1e-7);
     // Envelops should all begin at zero!
     double previous(static_cast<double>(generator()));
     // Checking the whole envelop since clicks may occur anywhere
-    while (i < kAttack_ + kDecay_ + kSustain_) {
+    while (i < this->kAttack_ + this->kDecay_ + this->kSustain_) {
       const double sample(static_cast<double>(generator()));
       const double diff(std::fabs(sample - previous));
       EXPECT_GE(kMaxDelta, diff);
@@ -287,7 +287,7 @@ TYPED_TEST(Modulator, OutRegularity) {
       i += 1;
     }
     generator.TriggerOff();
-    while (i < kAttack_ + kDecay_ + kSustain_ + kDecay_ + kTail_) {
+    while (i < this->kAttack_ + this->kDecay_ + this->kSustain_ + this->kDecay_ + this->kTail_) {
       const double sample(static_cast<double>(generator()));
       const double diff(std::fabs(sample - previous));
       EXPECT_GE(kMaxDelta, diff);
@@ -305,27 +305,27 @@ TYPED_TEST(Modulator, OutRegularity) {
 // when in Release.
 TYPED_TEST(Modulator, Perf) {
   for (unsigned int iterations(0);
-       iterations < kPerfIterations_;
+       iterations < this->kPerfIterations_;
        ++iterations) {
     IGNORE(iterations);
 
     TypeParam generator;
-    generator.SetParameters(kAttack_,
-                            kDecay_,
-                            kDecay_,
-                            kSustainLevel_);
+    generator.SetParameters(this->kAttack_,
+                            this->kDecay_,
+                            this->kDecay_,
+                            this->kSustainLevel_);
 
     generator.TriggerOn();
 
     unsigned int sample_idx(0);
-    while (sample_idx < kAttack_ + kDecay_ + kSustain_) {
+    while (sample_idx < this->kAttack_ + this->kDecay_ + this->kSustain_) {
       const float kCurrent(generator());
       sample_idx += 1;
       // No actual test!
       EXPECT_LE(-1.0f, kCurrent);
     }
     generator.TriggerOff();
-    while (sample_idx < kModulatorDataPerfSetSize_) {
+    while (sample_idx < this->kModulatorDataPerfSetSize_) {
       const float kCurrent(generator());
       sample_idx += 1;
       // No actual test!

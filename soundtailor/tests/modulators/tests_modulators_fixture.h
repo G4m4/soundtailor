@@ -45,8 +45,9 @@ class Modulator : public ::testing::Test {
     kPerfIterations( 128 ),
 #endif  // (_BUILD_CONFIGURATION_DEBUG)
 
+    kSamplingRate_(96000.0f),
     kMinTime_(0),
-    kMaxTime_(static_cast<unsigned int>(kSamplingRate)),
+    kMaxTime_(kSamplingRate_),
     kModulatorDataPerfSetSize_(kMaxTime_ * 4),
     kTail_(256),
     kRandomGenerator_(),
@@ -65,6 +66,7 @@ class Modulator : public ::testing::Test {
 
   const unsigned int kTestIterations_;
   const unsigned int kPerfIterations_;
+  const float kSamplingRate_;
   /// @brief Arbitrary lowest allowed duration
   const unsigned int kMinTime_;
   /// @brief Arbitrary highest allowed duration

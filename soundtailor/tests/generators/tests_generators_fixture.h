@@ -93,7 +93,7 @@ class GeneratorData : public Generator<GeneratorType> {
  protected:
 
   GeneratorData()
-      : output_data_(kDataTestSetSize_)
+      : output_data_(this->kDataTestSetSize_)
   {
     // Nothing to be done here for now
   }
