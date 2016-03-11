@@ -166,10 +166,10 @@ struct StandardVectorMath {
   /// Sgn(0.0) return 1.0f
   static inline Sample SgnNoZero(SampleRead input) {
     return Fill(
-      input.data_[0] > 0.0f ? 1.0f : -1.0f,
-      input.data_[1] > 0.0f ? 1.0f : -1.0f,
-      input.data_[2] > 0.0f ? 1.0f : -1.0f,
-      input.data_[3] > 0.0f ? 1.0f : -1.0f );
+      input.data_[0] >= 0.0f ? 1.0f : -1.0f,
+      input.data_[1] >= 0.0f ? 1.0f : -1.0f,
+      input.data_[2] >= 0.0f ? 1.0f : -1.0f,
+      input.data_[3] >= 0.0f ? 1.0f : -1.0f );
   }
 
   /// @brief Store the given Sample into memory
