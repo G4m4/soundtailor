@@ -51,10 +51,14 @@ struct VectorMath : PlatformVectorMath {
   /// @param[in]  generator   Generator to fill the Sample with
   template <typename TypeGenerator>
   static inline Sample FillWithFloatGenerator(TypeGenerator& generator) {
-    return Fill(generator(),
-                generator(),
-                generator(),
-                generator());
+    const float a(generator());
+    const float b(generator());
+    const float c(generator());
+    const float d(generator());
+    return Fill(a,
+                b,
+                c,
+                d);
   }
 
   /// @brief Fill a whole Sample with incremental values as follows:
