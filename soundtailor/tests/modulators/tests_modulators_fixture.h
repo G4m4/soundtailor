@@ -30,6 +30,8 @@
 #include <functional>
 #include <random>
 
+using soundtailor::StandardMath;
+
 /// @brief Base tests fixture for modulators
 template <typename ModulatorType>
 class Modulator : public ::testing::Test {
@@ -52,9 +54,10 @@ class Modulator : public ::testing::Test {
     kTail_(256),
     kRandomGenerator_(),
     kTimeDistribution_(kMinTime_, kMaxTime_),
-    kAttack_(kTimeDistribution_(kRandomGenerator_)),
-    kDecay_(kTimeDistribution_(kRandomGenerator_)),
-    kSustain_(kTimeDistribution_(kRandomGenerator_)),
+    // Time values are multiple of 4
+    kAttack_(StandardMath::GetMultipleOf4(kTimeDistribution_(kRandomGenerator_))),
+    kDecay_(StandardMath::GetMultipleOf4(kTimeDistribution_(kRandomGenerator_))),
+    kSustain_(StandardMath::GetMultipleOf4(kTimeDistribution_(kRandomGenerator_))),
     kSustainLevel_(kNormPosDistribution(kRandomGenerator_))
   {
     // Nothing to be done here for now

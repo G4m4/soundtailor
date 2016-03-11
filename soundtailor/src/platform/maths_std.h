@@ -41,6 +41,12 @@ struct StandardMath {
   static inline float Abs(const float value) {
     return std::abs(value);
   }
+
+  /// @brief Round the given number down to the greatest smaller multiple of 4
+  /// e.g. 13 => 12, 12 => 12, 11 => 8
+  static inline unsigned int GetMultipleOf4(unsigned int value) {
+    return value - (value % 4);
+  }
 };
 
 typedef StandardMath PlatformMath;

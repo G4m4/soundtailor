@@ -40,7 +40,7 @@ Chamberlin::Chamberlin()
 }
 
 Sample Chamberlin::operator()(SampleRead sample) {
-  float out[soundtailor::SampleSize];
+  alignas(16) float out[soundtailor::SampleSize];
   for (unsigned int i(0); i < soundtailor::SampleSize; ++i) {
     lp_ = frequency_ * bp_ + lp_;
     const float hp(VectorMath::GetByIndex(sample, i) - lp_ - bp_ * damping_);
