@@ -21,8 +21,6 @@
 #ifndef SOUNDTAILOR_SRC_MODULATORS_ADSD_H_
 #define SOUNDTAILOR_SRC_MODULATORS_ADSD_H_
 
-#include <array>
-
 #include "soundtailor/src/common.h"
 #include "soundtailor/src/modulators/envelopgenerator_base.h"
 #include "soundtailor/src/modulators/modulators_common.h"

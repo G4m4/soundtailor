@@ -21,8 +21,6 @@
 #ifndef SOUNDTAILOR_SRC_FILTERS_MOOG_H_
 #define SOUNDTAILOR_SRC_FILTERS_MOOG_H_
 
-#include <array>
-
 #include "soundtailor/src/common.h"
 #include "soundtailor/src/filters/filter_base.h"
 #include "soundtailor/src/filters/moog_lowpassblock.h"
@@ -48,7 +46,7 @@ class Moog : public Filter_Base {
   float resonance_;
   float last_;
 
-  std::array<MoogLowPassBlock, 4> filters_;
+  MoogLowPassBlock filters_[4];
 };
 
 }  // namespace filters

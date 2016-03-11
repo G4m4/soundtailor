@@ -21,8 +21,6 @@
 #ifndef SOUNDTAILOR_SRC_FILTERS_MOOG_LOWALIASNONLINEAR_H_
 #define SOUNDTAILOR_SRC_FILTERS_MOOG_LOWALIASNONLINEAR_H_
 
-#include <array>
-
 #include "soundtailor/src/common.h"
 #include "soundtailor/src/filters/filter_base.h"
 #include "soundtailor/src/filters/moog_lowpassblock.h"
@@ -55,7 +53,7 @@ class MoogLowAliasNonLinear : public Filter_Base {
   float last_;
   float last_side_factor_;
 
-  std::array<MoogLowPassBlock, 4> filters_;
+  MoogLowPassBlock filters_[4];
 };
 
 }  // namespace filters

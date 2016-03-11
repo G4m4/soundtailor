@@ -21,8 +21,6 @@
 #ifndef SOUNDTAILOR_SRC_FILTERS_MOOG_OVERSAMPLED_H_
 #define SOUNDTAILOR_SRC_FILTERS_MOOG_OVERSAMPLED_H_
 
-#include <array>
-
 #include "soundtailor/src/filters/moog_lowaliasnonlinear.h"
 
 namespace soundtailor {

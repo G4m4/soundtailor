@@ -21,8 +21,6 @@
 #ifndef SOUNDTAILOR_SRC_FILTERS_SECONDORDER_RAW_H_
 #define SOUNDTAILOR_SRC_FILTERS_SECONDORDER_RAW_H_
 
-#include <array>
-
 #include "soundtailor/src/common.h"
 #include "soundtailor/src/filters/filter_base.h"
 
@@ -47,7 +45,7 @@ class SecondOrderRaw : public Filter_Base {
   FILTER_PROCESSBLOCK_DEFINITION
  protected:
   float gain_;  ///< Filter gain (b0 coefficient)
-  std::array<float, 4> coeffs_;  ///< Filter coefficients (for zeroes and poles)
+  alignas(16) float coeffs_[4];  ///< Filter coefficients (for zeroes and poles)
                      ///< organized as follows:
                      ///< [b2 b1 -a2 -a1]
   // @todo(gm) fix alignment, this is a mess
