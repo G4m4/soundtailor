@@ -204,11 +204,12 @@ struct IsContinuous {
 /// @brief Compute how many samples are required in order to have exactly
 /// the given number of periods for the given signal frequency
 ///
-/// @param[in]  frequency   Signal frequency
+/// @param[in]  frequency   Signal frequency (normalised)
+/// @param[in]  sampling rate   In Hertz
 /// @param[in]  period_count    Expected number of period (may be non-integer)
 static inline unsigned int ComputeDataLength(const float frequency,
                                              const float period_count) {
-  return static_cast<unsigned int>(std::floor(0.5f * period_count / frequency));
+  return static_cast<unsigned int>(std::floor(period_count / frequency));
 }
 
 #endif  // SOUNDTAILOR_TESTS_GENERATORS_TESTS_GENERATORS_FIXTURES_H_

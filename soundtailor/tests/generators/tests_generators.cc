@@ -48,11 +48,11 @@ TYPED_TEST(Generator, Mean) {
                                                      this->kSignalDataPeriodsCount_));
 
     // Generating data
-    PhaseAccumulator generator;
+    TypeParam generator;
     generator.SetFrequency(kFrequency);
 
     const float kExpected(0.0f);
-    // Epsilon is quite big here, this generator being very crude
+    // Epsilon is quite big here
     const float kEpsilon(1e-1f);
     const float kActual(ComputeMean(generator, kDataLength));
 
@@ -73,12 +73,11 @@ TYPED_TEST(Generator, Power) {
                                                      this->kSignalDataPeriodsCount_));
 
     // Generating data
-    PhaseAccumulator generator;
+    TypeParam generator;
     generator.SetFrequency(kFrequency);
 
     const float kExpected(1.0f / 3.0f);
-    // Very low epsilon with this algorithm!
-    const float kEpsilon(6e-3f);
+    const float kEpsilon(1.7e-2f);
     const float kActual(ComputePower(generator, kDataLength));
 
     EXPECT_NEAR(kExpected, kActual, kEpsilon);
@@ -92,7 +91,7 @@ TYPED_TEST(Generator, Range) {
     IGNORE(iterations);
 
     const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
-    PhaseAccumulator generator;
+    TypeParam generator;
     generator.SetFrequency(kFrequency);
 
     for (unsigned int i(0);
@@ -112,16 +111,20 @@ TYPED_TEST(Generator, ZeroCrossings) {
     IGNORE(iterations);
 
     const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
+    // Taking only half the period count as there are 2 zero crossings per period
     // Adding half a period makes the test more robusts to few samples shifts
     const unsigned int kDataLength(ComputeDataLength(
                                      kFrequency,
-                                     this->kSignalDataPeriodsCount_ + 0.5f));
-    PhaseAccumulator generator;
+                                     this->kSignalDataPeriodsCount_ * 0.5f + 0.5f));
+    TypeParam generator;
     generator.SetFrequency(kFrequency);
+    // Remove first samples
+    const float SgnValueInit(VectorMath::GetLast(generator()) >= 0.0f ? 1.0f : -1.0f);
 
     const float kEpsilon(1.0f);
     const float kActual(static_cast<float>(ComputeZeroCrossing(generator,
-                                                               kDataLength, -1.0f)));
+                                                               kDataLength,
+                                                               SgnValueInit)));
 
     EXPECT_NEAR(this->kSignalDataPeriodsCount_, kActual, kEpsilon);
   }
@@ -134,9 +137,10 @@ TYPED_TEST(Generator, Notes) {
        key_note < this->kMaxKeyNote_;
        ++key_note) {
     const float kFrequency(NoteToFrequency(key_note));
+    // Taking only half the period count as there are 2 zero crossings per period
     const unsigned int kDataLength(ComputeDataLength(kFrequency / this->kSamplingRate_,
-                                                     this->kSignalDataPeriodsCount_));
-    SawtoothDPW generator;
+                                                     this->kSignalDataPeriodsCount_ * 0.5f));
+    TypeParam generator;
     generator.SetFrequency(kFrequency / this->kSamplingRate_);
 
     // Due to rounding one or even two zero crossings may be lost/added
@@ -162,8 +166,8 @@ TYPED_TEST(Generator, PhaseControl) {
                                                         kSignalDataPeriod));
 
     // Generating data
-    PhaseAccumulator generator_left;
-    PhaseAccumulator generator_right;
+    TypeParam generator_left;
+    TypeParam generator_right;
     generator_left.SetFrequency(kFrequency);
     generator_right.SetFrequency(kFrequency);
 
@@ -208,7 +212,7 @@ TYPED_TEST(Generator, BeginsAtZero) {
     const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
 
     // Generating data
-    PhaseAccumulator generator;
+    TypeParam generator;
     generator.SetFrequency(kFrequency);
     const float first_sample(VectorMath::GetFirst(generator()));
     EXPECT_EQ(0.0f, first_sample);
@@ -221,8 +225,8 @@ TYPED_TEST(GeneratorData, Process) {
   // Random normalized frequency
   const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
 
-  PhaseAccumulator generator_perblock;
-  PhaseAccumulator generator_persample;
+  TypeParam generator_perblock;
+  TypeParam generator_persample;
   generator_perblock.SetFrequency(kFrequency);
   generator_persample.SetFrequency(kFrequency);
 
@@ -240,7 +244,7 @@ TYPED_TEST(Generator, Perf) {
     IGNORE(iterations);
 
     const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
-    PhaseAccumulator generator;
+    TypeParam generator;
     generator.SetFrequency(kFrequency);
 
     unsigned int sample_idx(0);
@@ -259,7 +263,7 @@ TYPED_TEST(GeneratorData, BlockPerf) {
     IGNORE(iterations);
 
     const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
-    PhaseAccumulator generator;
+    TypeParam generator;
     generator.SetFrequency(kFrequency);
 
     generator.ProcessBlock(&this->output_data_[0], this->output_data_.size());
