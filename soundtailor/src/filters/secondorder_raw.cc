@@ -41,11 +41,11 @@ Sample SecondOrderRaw::operator()(SampleRead sample) {
   // the Direct Form 2, although usually more efficient, has issues with
   // time-varying parameters
 
-//#if (_USE_SSE)
   // Vector = (x_{n}, x_{n + 1}, x_{n + 2}, x_{n + 3})
   // previous = (x_{n - 1}, x_{n}, x_{n + 1}, x_{n + 2})
   // last = (x_{n - 2}, x_{n - 1}, x_{n}, x_{n + 1})
-#if (_USE_SSE)
+
+#if 1
   const Sample previous(VectorMath::RotateOnRight(sample, history_[1]));
   const Sample last(VectorMath::RotateOnRight(previous, history_[0]));
   const Sample current(VectorMath::MulConst(gain_, sample));
@@ -68,8 +68,8 @@ Sample SecondOrderRaw::operator()(SampleRead sample) {
   const float newest_out(VectorMath::GetByIndex<3>(tmp_sum)
                          + old_out * coeffs_[2]
                          + new_out * coeffs_[3]);
-  const Sample out(VectorMath::Fill(newest_out, new_out, old_out, oldest_out));
-  const Sample history(VectorMath::TakeEachRightHalf(out, sample));
+  const Sample out(VectorMath::Fill(oldest_out, old_out, new_out, newest_out));
+  const Sample history(VectorMath::TakeEachRightHalf(sample, out));
   VectorMath::Store(&history_[0], history);
 #else
   // @todo(gm) find out what's going wrong above
@@ -88,7 +88,7 @@ Sample SecondOrderRaw::operator()(SampleRead sample) {
     out_v[i] = out;
   }
   const Sample out(VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]));
-#endif  // (_USE_SSE)
+#endif  // 1
 
   return out;
 }

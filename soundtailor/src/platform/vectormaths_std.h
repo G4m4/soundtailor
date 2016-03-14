@@ -33,8 +33,7 @@
 
 namespace soundtailor {
 struct StandardVectorMath {
-  /// @brief Fill a whole Sample with all given scalars,
-  /// beware of the order: SSE is "little-endian" (sort of)
+  /// @brief Fill a whole Sample with all given scalars
   ///
   /// @param[in]  a   Last value
   /// @param[in]  b   Second to last value
@@ -125,7 +124,6 @@ struct StandardVectorMath {
   /// @param[in]  input   Sample to be shifted
   /// @param[in]  value   value to be shifted in
   static inline Sample RotateOnRight(SampleRead input, const float value) {
-    // @todo(gm) not on right, change that!
     return Fill(
       value,
       input.data_[0],
@@ -142,7 +140,6 @@ struct StandardVectorMath {
   /// @param[in]  input   Sample to be shifted
   /// @param[in]  value   value to be shifted in
   static inline Sample RotateOnLeft(SampleRead input, const float value) {
-    // @todo(gm) not on left, change that!
     return Fill(
       input.data_[1],
       input.data_[2],

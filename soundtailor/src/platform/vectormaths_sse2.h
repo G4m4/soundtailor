@@ -48,11 +48,11 @@ struct SSE2VectorMath {
   /// @param[in]  value   Pointer to the float array to be used:
   ///                     must be SampleSizeBytes long
   static inline Sample Fill(const float* value) {
-    return _mm_loadu_ps(value);
+    return _mm_load_ps(value);
   }
 
   /// @brief Fill a whole Sample with all given scalars,
-  /// beware of the order!
+  /// beware of the order: SSE is "little-endian" (sort of)
   ///
   /// @param[in]  a   Last value
   /// @param[in]  b   Second to last value
@@ -62,7 +62,7 @@ struct SSE2VectorMath {
                      const float b,
                      const float c,
                      const float d) {
-    return _mm_set_ps(a, b, c, d);
+    return _mm_set_ps(d, c, b, a);
   }
 
   /// @brief Helper union for vectorized type to scalar array conversion
@@ -126,10 +126,10 @@ struct SSE2VectorMath {
   /// @param[in]  value   value to be shifted in
   static inline Sample RotateOnRight(SampleRead input,
                               const float value) {
-    // TODO(gm): clarify left/right stuff since sse vectors order is not trivial
+    // beware of the order: SSE is "little-endian" (sort of)
     const Sample rotated(_mm_castsi128_ps(
       _mm_slli_si128(_mm_castps_si128(input), 4)));
-    return Add(Fill(0.0f, 0.0f, 0.0f, value), rotated);
+    return Add(Fill(value, 0.0f, 0.0f, 0.0f), rotated);
   }
 
   /// @brief Shift to left all elements of the input by 1,
@@ -142,10 +142,10 @@ struct SSE2VectorMath {
   /// @param[in]  value   value to be shifted in
   static inline Sample RotateOnLeft(SampleRead input,
                              const float value) {
-    // TODO(gm): clarify left/right stuff since sse vectors order is not trivial
+    // beware of the order: SSE is "little-endian" (sort of)
     const Sample rotated(_mm_castsi128_ps(
       _mm_srli_si128(_mm_castps_si128(input), 4)));
-    return Add(Fill(value, 0.0f, 0.0f, 0.0f), rotated);
+    return Add(Fill(0.0f, 0.0f, 0.0f, value), rotated);
   }
 
   /// @brief Return the sign of each element of the Sample
@@ -189,8 +189,9 @@ struct SSE2VectorMath {
   /// Given left = (x0, x1, x2, x3) and right = (y0, y1, y2, y3)
   /// it will return (x2, x3, y2, y3)
   static inline Sample TakeEachRightHalf(SampleRead left,
-                                  SampleRead right) {
-    return _mm_shuffle_ps(right, left, _MM_SHUFFLE(3, 2, 3, 2));
+                                         SampleRead right) {
+    // beware of the order: SSE is "little-endian" (sort of)
+    return _mm_shuffle_ps(left, right, _MM_SHUFFLE(3, 2, 3, 2));
   }
 
   /// @brief Revert the given vector values order
