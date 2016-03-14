@@ -1,6 +1,8 @@
 SoundTailor - Sound synthesis algorithms
 ==================================
 
+[![Build Status](https://travis-ci.org/G4m4/soundtailor.svg?branch=master)](https://travis-ci.org/G4m4/soundtailor)
+
 SoundTailor is a library dedicated to sound synthesis algorithms.
 It aims at showing a simple, cross-platform yet efficient implementation of state of the art audio synthesis algorithms.
 
