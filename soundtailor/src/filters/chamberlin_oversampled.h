@@ -37,8 +37,6 @@ class ChamberlinOversampled : public Chamberlin {
   virtual void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);
-
-  FILTER_PROCESSBLOCK_DEFINITION
 };
 
 }  // namespace filters

@@ -41,7 +41,6 @@ class MoogLowAliasNonLinear : public Filter_Base {
 
   static const Filter_Meta& Meta(void);
 
-  FILTER_PROCESSBLOCK_DEFINITION
  protected:
   // @brief Helper for computing the internal saturation
   float Saturate(float sample);

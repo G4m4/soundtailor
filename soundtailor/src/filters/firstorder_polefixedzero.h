@@ -30,7 +30,7 @@ namespace filters {
 /// @brief A simple 1st order lowpass filter with a fixed zero
 class FirstOrderPoleFixedZero : public Filter_Base {
  public:
-   FirstOrderPoleFixedZero();
+  FirstOrderPoleFixedZero();
   virtual ~FirstOrderPoleFixedZero() {
     // Nothing to do here for now
   }
@@ -39,7 +39,6 @@ class FirstOrderPoleFixedZero : public Filter_Base {
 
   static const Filter_Meta& Meta(void);
 
-  FILTER_PROCESSBLOCK_DEFINITION
  protected:
   float pole_coeff_;
   float zero_coeff_;

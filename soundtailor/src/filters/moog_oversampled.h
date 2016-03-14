@@ -38,7 +38,6 @@ class MoogOversampled : public MoogLowAliasNonLinear {
 
   static const Filter_Meta& Meta(void);
 
-  FILTER_PROCESSBLOCK_DEFINITION
  protected:
    // @todo(gm) fix alignment, this is a mess
   alignas(16) float history_[4];  ///< Filter history (last outputs)

@@ -40,7 +40,6 @@ class Moog : public Filter_Base {
 
   static const Filter_Meta& Meta(void);
 
-  FILTER_PROCESSBLOCK_DEFINITION
  protected:
   float frequency_;
   float resonance_;

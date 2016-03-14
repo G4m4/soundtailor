@@ -20,6 +20,7 @@
 
 #include "soundtailor/tests/generators/tests_generators_fixture.h"
 
+#include "soundtailor/src/generators/generator_base.h"
 #include "soundtailor/src/generators/generators_common.h"
 #include "soundtailor/src/generators/sawtooth_dpw.h"
 #include "soundtailor/src/generators/triangle_dpw.h"
@@ -230,7 +231,9 @@ TYPED_TEST(GeneratorData, Process) {
   generator_perblock.SetFrequency(kFrequency);
   generator_persample.SetFrequency(kFrequency);
 
-  generator_perblock.ProcessBlock(&this->output_data_[0], this->output_data_.size());
+  soundtailor::generators::ProcessBlock(&this->output_data_[0],
+                                        this->output_data_.size(),
+                                        generator_perblock);
   for (unsigned int i(0); i < this->kDataTestSetSize_; i += soundtailor::SampleSize) {
     const Sample kReference(VectorMath::Fill(&this->output_data_[i]));
     const Sample kGenerated((generator_persample()));
@@ -266,7 +269,9 @@ TYPED_TEST(GeneratorData, BlockPerf) {
     TypeParam generator;
     generator.SetFrequency(kFrequency);
 
-    generator.ProcessBlock(&this->output_data_[0], this->output_data_.size());
+    soundtailor::generators::ProcessBlock(&this->output_data_[0],
+                                          this->output_data_.size(),
+                                          generator);
     unsigned int sample_idx(0);
     while (sample_idx < this->kDataTestSetSize_) {
       const Sample kCurrent(VectorMath::Fill(&this->output_data_[sample_idx]));

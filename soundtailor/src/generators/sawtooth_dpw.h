@@ -36,8 +36,6 @@ class SawtoothDPW : public TriangleDPW {
   virtual void SetPhase(const float phase);
   virtual void SetFrequency(const float frequency);
   virtual float ProcessParameters(void);
-
-  GENERATOR_PROCESSBLOCK_DEFINITION
 };
 
 }  // namespace generators

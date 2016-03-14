@@ -75,7 +75,5 @@ const Filter_Meta& FirstOrderPoleZero::Meta(void) {
   return metas;
 }
 
-FILTER_PROCESSBLOCK_IMPLEMENTATION(FirstOrderPoleZero)
-
 }  // namespace filters
 }  // namespace soundtailor

@@ -58,12 +58,6 @@ class Generator_Base {
   /// gets inlined if needed
   virtual Sample operator()(void) = 0;
 
-  /// @brief Actual process function for many samples
-  ///
-  /// In a context of dynamic polymorphism this will save you from per-sample
-  /// virtual function calls
-  virtual void ProcessBlock(BlockOut out, unsigned int block_size) = 0;
-
   /// @brief Reset the instance to the given phase - nothing else gets changed
   ///
   /// Phase is normalized - the input value should be in [-1.0f ; 1.0f]
@@ -93,16 +87,21 @@ class Generator_Base {
   virtual float ProcessParameters(void) = 0;
 };
 
-#define GENERATOR_PROCESSBLOCK_DEFINITION    virtual void ProcessBlock(BlockOut out, \
-                                                                       unsigned int block_size);
-
-#define GENERATOR_PROCESSBLOCK_IMPLEMENTATION(GeneratorType)    void GeneratorType::ProcessBlock(BlockOut out, \
-                                                                                                 unsigned int block_size) {  \
-  float* out_write(out);  \
-  for (unsigned int i(0); i < block_size; i += SampleSize) {  \
-    VectorMath::Store(out_write, static_cast<GeneratorType*>(this)->operator()());  \
-    out_write += SampleSize;  \
-  } \
+/// @brief Actual process function for many samples
+///
+/// In a context of dynamic polymorphism this will save you from per-sample
+/// virtual function calls
+/// The compiler should be able to inline it
+/// obviously the instance has to be known at compile time
+template <typename GeneratorType>
+void ProcessBlock(BlockOut out,
+                  unsigned int block_size,
+                  GeneratorType&& instance) {
+  float* out_write(out);
+  for (unsigned int i(0); i < block_size; i += SampleSize) {
+    VectorMath::Store(out_write, instance());
+    out_write += SampleSize;
+  }
 }
 
 }  // namespace generators

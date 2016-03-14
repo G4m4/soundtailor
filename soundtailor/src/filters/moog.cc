@@ -81,7 +81,5 @@ const Filter_Meta& Moog::Meta(void) {
   return metas;
 }
 
-FILTER_PROCESSBLOCK_IMPLEMENTATION(Moog)
-
 }  // namespace filters
 }  // namespace soundtailor

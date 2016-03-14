@@ -20,6 +20,7 @@
 
 #include "soundtailor/tests/filters/tests_filters_fixture.h"
 
+#include "soundtailor/src/filters/filter_base.h"
 #include "soundtailor/src/filters/chamberlin.h"
 #include "soundtailor/src/filters/chamberlin_oversampled.h"
 #include "soundtailor/src/filters/firstorder_polezero.h"
@@ -124,9 +125,11 @@ TYPED_TEST(FilterData, Process) {
   filter_perblock.SetParameters(kFrequency, this->kPassthroughResonance_);
   filter_persample.SetParameters(kFrequency, this->kPassthroughResonance_);
 
-  filter_perblock.ProcessBlock(&this->input_data_[0],
-                               &this->output_data_[0],
-                               this->output_data_.size());
+  soundtailor::filters::ProcessBlock(
+      &this->input_data_[0],
+      &this->output_data_[0],
+      this->output_data_.size(),
+      filter_perblock);
   for (unsigned int i(0); i < this->kDataTestSetSize_; i += soundtailor::SampleSize) {
     const Sample kInput(VectorMath::Fill(&this->input_data_[i]));
     const Sample kReference(VectorMath::Fill(&this->output_data_[i]));
@@ -158,14 +161,15 @@ TYPED_TEST(Filter, Perf) {
 TYPED_TEST(FilterData, BlockPerf) {
   for (unsigned int iterations(0); iterations < this->kPerfIterations_; ++iterations) {
     IGNORE(iterations);
-
     const float kFrequency(this->FilterFreqDistribution_(this->kRandomGenerator_));
     TypeParam filter;
     filter.SetParameters(kFrequency, this->kPassthroughResonance_);
 
-    filter.ProcessBlock(&this->input_data_[0],
-                        &this->output_data_[0],
-                        this->output_data_.size());
+    soundtailor::filters::ProcessBlock(
+        &this->input_data_[0],
+        &this->output_data_[0],
+        this->output_data_.size(),
+        filter);
     unsigned int sample_idx(0);
     while (sample_idx < this->kDataTestSetSize_) {
       const Sample kCurrent(VectorMath::Fill(&this->output_data_[sample_idx]));

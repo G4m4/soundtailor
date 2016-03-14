@@ -42,7 +42,6 @@ class SecondOrderRaw : public Filter_Base {
 
   static const Filter_Meta& Meta(void);
 
-  FILTER_PROCESSBLOCK_DEFINITION
  protected:
   float gain_;  ///< Filter gain (b0 coefficient)
   alignas(16) float coeffs_[4];  ///< Filter coefficients (for zeroes and poles)

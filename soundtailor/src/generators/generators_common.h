@@ -37,7 +37,6 @@ class PhaseAccumulator : public Generator_Base {
   virtual void SetFrequency(const float frequency);
   virtual float ProcessParameters(void);
 
-  GENERATOR_PROCESSBLOCK_DEFINITION
  protected:
   Sample phase_;  ///< Instantaneous phase of the generator
 
