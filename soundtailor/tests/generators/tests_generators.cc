@@ -249,7 +249,7 @@ TYPED_TEST(Generator, Perf) {
 
     unsigned int sample_idx(0);
     while (sample_idx < this->kDataTestSetSize_) {
-      const Sample kCurrent(VectorMath::Fill(this->kFreqDistribution_(this->kRandomGenerator_)));
+      const Sample kCurrent(generator());
       sample_idx += soundtailor::SampleSize;
       // No actual test!
       EXPECT_TRUE(VectorMath::LessEqual(-2.0f, kCurrent));

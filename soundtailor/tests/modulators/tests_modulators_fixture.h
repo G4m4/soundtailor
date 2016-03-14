@@ -44,7 +44,7 @@ class Modulator : public ::testing::Test {
 #if (_BUILD_CONFIGURATION_DEBUG)
     kPerfIterations_( 1 ),
 #else  // (_BUILD_CONFIGURATION_DEBUG)
-    kPerfIterations( 128 ),
+    kPerfIterations_( 128 ),
 #endif  // (_BUILD_CONFIGURATION_DEBUG)
 
     kSamplingRate_(96000.0f),
