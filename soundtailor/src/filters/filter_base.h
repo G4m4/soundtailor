@@ -25,6 +25,7 @@
 #define SOUNDTAILOR_SRC_FILTERS_FILTER_BASE_H_
 
 #include "soundtailor/src/common.h"
+#include "soundtailor/src/maths.h"
 
 namespace soundtailor {
 namespace filters {
