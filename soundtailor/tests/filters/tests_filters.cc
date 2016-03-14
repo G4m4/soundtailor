@@ -25,6 +25,7 @@
 #include "soundtailor/src/filters/chamberlin_oversampled.h"
 #include "soundtailor/src/filters/firstorder_polezero.h"
 #include "soundtailor/src/filters/firstorder_polefixedzero.h"
+#include "soundtailor/src/filters/gain.h"
 #include "soundtailor/src/filters/moog.h"
 #include "soundtailor/src/filters/moog_lowaliasnonlinear.h"
 #include "soundtailor/src/filters/moog_lowpassblock.h"
@@ -36,6 +37,7 @@ using soundtailor::filters::Chamberlin;
 using soundtailor::filters::ChamberlinOversampled;
 using soundtailor::filters::FirstOrderPoleZero;
 using soundtailor::filters::FirstOrderPoleFixedZero;
+using soundtailor::filters::Gain;
 using soundtailor::filters::Moog;
 using soundtailor::filters::MoogLowAliasNonLinear;
 using soundtailor::filters::MoogLowPassBlock;
@@ -48,6 +50,7 @@ typedef ::testing::Types<Chamberlin,
                          ChamberlinOversampled,
                          FirstOrderPoleZero,
                          FirstOrderPoleFixedZero,
+                         Gain,
                          Moog,
                          //MoogLowAliasNonLinear,
                          MoogLowPassBlock,
