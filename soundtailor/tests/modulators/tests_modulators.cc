@@ -31,6 +31,7 @@ using soundtailor::generators::Differentiator;
 typedef ::testing::Types<Adsd> ModulatorTypes;
 
 TYPED_TEST_CASE(Modulator, ModulatorTypes);
+TYPED_TEST_CASE(ModulatorData, ModulatorTypes);
 
 /// @brief Generates an envelop, check for its range (must be >= 0)
 TYPED_TEST(Modulator, Range) {
@@ -311,6 +312,37 @@ TYPED_TEST(Modulator, OutRegularity) {
   }  // iterations?
 }
 
+/// @brief Check that both per-sample and per-block generation methods
+/// yield an identical result
+TYPED_TEST(ModulatorData, Process) {
+  TypeParam generator_perblock;
+  TypeParam generator_persample;
+  // Random parameters
+  // Each parameter has half a chance to be null
+  const unsigned int kAttack(kBoolDistribution(this->kRandomGenerator_)
+                             ? this->kAttack_ : 0);
+  const unsigned int kDecay(kBoolDistribution(this->kRandomGenerator_)
+                            ? this->kDecay_ : 0);
+  generator_perblock.SetParameters(kAttack,
+                                   kDecay,
+                                   kDecay,
+                                   this->kSustainLevel_);
+  generator_persample.SetParameters(kAttack,
+                                    kDecay,
+                                    kDecay,
+                                    this->kSustainLevel_);
+  generator_perblock.TriggerOn();
+  generator_persample.TriggerOn();
+
+  soundtailor::generators::ProcessBlock(&this->output_data_[0],
+                                        this->output_data_.size(),
+                                        generator_perblock);
+  for (unsigned int i(0); i < this->kModulatorDataPerfSetSize_; i += soundtailor::SampleSize) {
+    const Sample kReference(VectorMath::Fill(&this->output_data_[i]));
+    const Sample kGenerated((generator_persample()));
+    EXPECT_TRUE(VectorMath::Equal(kReference, kGenerated));
+  }
+}
 
 /// @brief Generates an envelop (performance test)
 // Here the tested length cannot be longer in release configuration,
@@ -353,4 +385,35 @@ TYPED_TEST(Modulator, Perf) {
       EXPECT_TRUE(lower_bound);
     }
   }  // iterations?
+}
+
+/// @brief Generates an envelop (block performance tests)
+TYPED_TEST(ModulatorData, BlockPerf) {
+  for (unsigned int iterations(0); iterations < this->kPerfIterations_; ++iterations) {
+    IGNORE(iterations);
+
+    TypeParam generator;
+    // Random parameters
+    // Each parameter has half a chance to be null
+    const unsigned int kAttack(kBoolDistribution(this->kRandomGenerator_)
+                               ? this->kAttack_ : 0);
+    const unsigned int kDecay(kBoolDistribution(this->kRandomGenerator_)
+                              ? this->kDecay_ : 0);
+    generator.SetParameters(kAttack,
+                            kDecay,
+                            kDecay,
+                            this->kSustainLevel_);
+    generator.TriggerOn();
+
+    soundtailor::generators::ProcessBlock(&this->output_data_[0],
+                                          this->output_data_.size(),
+                                          generator);
+    unsigned int sample_idx(0);
+    while (sample_idx < this->kModulatorDataPerfSetSize_) {
+      const Sample kCurrent(VectorMath::Fill(&this->output_data_[sample_idx]));
+      sample_idx += soundtailor::SampleSize;
+      // No actual test!
+      EXPECT_TRUE(VectorMath::LessEqual(-2.0f, kCurrent));
+    }
+  }
 }

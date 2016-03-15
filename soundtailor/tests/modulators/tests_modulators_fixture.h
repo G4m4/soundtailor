@@ -110,4 +110,21 @@ class Modulator : public ::testing::Test {
   };
 };
 
+/// @brief Base tests fixture data
+template <typename ModulatorType>
+class ModulatorData : public Modulator<ModulatorType> {
+protected:
+
+  ModulatorData()
+    : output_data_(this->kModulatorDataPerfSetSize_) {
+    // Nothing to be done here for now
+  }
+
+  virtual ~ModulatorData() {
+    // Nothing to be done here for now
+  }
+
+  std::vector<float> output_data_;
+};
+
 #endif  // SOUNDTAILOR_TESTS_MODULATORS_TESTS_MODULATORS_FIXTURES_H_
