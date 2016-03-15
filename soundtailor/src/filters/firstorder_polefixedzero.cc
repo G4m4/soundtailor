@@ -52,6 +52,21 @@ Sample FirstOrderPoleFixedZero::operator()(SampleRead sample) {
   return VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]);
 }
 
+float FirstOrderPoleFixedZero::operator()(float sample) {
+  const float direct(static_cast<float>(pole_coeff_ / 2.0f) * sample);
+
+  const float actual_pole_coeff = static_cast<float>(1.0 - pole_coeff_);
+  const float actual_zero_coeff = zero_coeff_;
+  float out = 0.0f;
+  float last = last_;
+
+  out = direct + last;
+  last = out * actual_pole_coeff + actual_zero_coeff * direct;
+  last_ = last;
+
+  return out;
+}
+
 void FirstOrderPoleFixedZero::SetParameters(const float frequency,
                                      const float resonance) {
   SOUNDTAILOR_ASSERT(frequency >= Meta().freq_min);

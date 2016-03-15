@@ -36,7 +36,7 @@ float MoogOversampled::operator()(float sample) {
   MoogLowAliasNonLinear::operator()(sample);
   // 2x oversampled
   const float kOut(MoogLowAliasNonLinear::operator()(sample));
-  const Sample kHistory(VectorMath::Fill(history_[0], history_[1], history_[2], history_[3]));
+  const Sample kHistory(VectorMath::Fill(&history_[0]));
   const Sample kNewHistory(VectorMath::RotateOnRight(kHistory, kOut));
   const float kTemp(VectorMath::AddHorizontal(VectorMath::Mul(kNewHistory, kHistoryCoeffs)));
 

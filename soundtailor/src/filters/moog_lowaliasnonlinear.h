@@ -23,7 +23,7 @@
 
 #include "soundtailor/src/common.h"
 #include "soundtailor/src/filters/filter_base.h"
-#include "soundtailor/src/filters/moog_lowpassblock.h"
+#include "soundtailor/src/filters/firstorder_polefixedzero.h"
 
 namespace soundtailor {
 namespace filters {
@@ -52,7 +52,7 @@ class MoogLowAliasNonLinear : public Filter_Base {
   float last_;
   float last_side_factor_;
 
-  MoogLowPassBlock filters_[4];
+  FirstOrderPoleFixedZero filters_[4];
 };
 
 }  // namespace filters

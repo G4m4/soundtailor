@@ -291,7 +291,7 @@ class MoogOversampled(MoogLowAliasNonLinear):
         # self._filter_output[0] = out
         out = numpy.sum(history_coeffs * new_history)
 
-        out += self._last_out * -0.52 * 3.0
+        out += self._last_out * -0.52
         self._filter_output = new_history
         self._last_out = out
 
@@ -584,7 +584,7 @@ if __name__ == "__main__":
                          # Moog,
                          MoogLowAliasNonLinear,
                          MoogLowAliasNonLinearOversampled,
-                         # MoogOversampled,
+                         MoogOversampled,
 #                          MoogMusicDSP,
 #                          MoogMusicDSPVar1,
 #                          MoogMusicDSPVar2,

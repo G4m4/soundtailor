@@ -82,13 +82,13 @@ Sample MoogLowAliasNonLinear::operator()(SampleRead sample) {
     actual_input *= kCurrentSideFactor;
 
     // @todo(gm): find a more efficient way to do that
-    // notice the 1.3 factor
+    // notice the 2.0 factor
     float tmp_filtered(actual_input);
-    tmp_filtered = filters_[1](1.3f * filters_[0](1.3f * tmp_filtered));
+    tmp_filtered = filters_[1](2.0f * filters_[0](2.0f * tmp_filtered));
 
     tmp_filtered = ApplyNonLinearity(tmp_filtered);
 
-    tmp_filtered = filters_[3](1.3f * filters_[2](1.3f * tmp_filtered));
+    tmp_filtered = filters_[3](2.0f * filters_[2](2.0f * tmp_filtered));
 
     out_v[i] = tmp_filtered;
     last = tmp_filtered;
@@ -113,7 +113,7 @@ void MoogLowAliasNonLinear::SetParameters(const float frequency,
     + 0.108f * frequency_
     - 0.164f * frequency_ * frequency_
     - 0.069f * frequency_ * frequency_ * frequency_);
-  for (MoogLowPassBlock& filter : filters_) {
+  for (FirstOrderPoleFixedZero& filter : filters_) {
     filter.SetParameters(frequency_, resonance_);
   }
 }
