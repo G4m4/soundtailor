@@ -39,7 +39,8 @@ class Adsd : public EnvelopGenerator_Base {
 
   virtual void TriggerOff(void);
 
-  virtual float operator()(void);
+  float ComputeOneSample(void);
+  virtual Sample operator()(void);
 
   /// Note that the release here is not used since this is a ADSD:
   /// the decay setting also sets the release

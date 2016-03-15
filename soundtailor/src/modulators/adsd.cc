@@ -57,7 +57,7 @@ void Adsd::TriggerOff(void) {
   actual_release_ = cursor_ + decay_;
 }
 
-float Adsd::operator()(void) {
+float Adsd::ComputeOneSample(void) {
   // TODO(gm): vectorize this function
   const float out(static_cast<float>(current_value_));
   cursor_ += 1;
@@ -104,6 +104,16 @@ float Adsd::operator()(void) {
   }  // switch(current_section_)
 
   return out;
+}
+
+Sample Adsd::operator()() {
+  float out_v[4];
+  for (unsigned int i = 0; i < SampleSize; ++i) {
+    // @todo (gm) static unrolling
+    out_v[i] = this->ComputeOneSample();
+  }
+
+  return VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]);
 }
 
 void Adsd::SetParameters(const unsigned int attack,

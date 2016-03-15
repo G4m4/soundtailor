@@ -66,7 +66,7 @@ class EnvelopGenerator_Base {
   /// Process is done per-sample for flexibility purpose, beware of not having
   /// one of this called per-sample! Check in the final code that it actually
   /// gets inlined if needed
-  virtual float operator()(void) = 0;
+  virtual Sample operator()(void) = 0;
 
   /// @brief Set the envelop generator parameters,
   /// common to all generators implementations

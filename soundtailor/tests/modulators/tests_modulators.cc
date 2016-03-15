@@ -21,8 +21,11 @@
 #include "soundtailor/tests/modulators/tests_modulators_fixture.h"
 
 #include "soundtailor/src/modulators/adsd.h"
+#include "soundtailor/src/generators/generators_common.h"
 
 using soundtailor::modulators::Adsd;
+// For testing purpose only
+using soundtailor::generators::Differentiator;
 
 /// @brief All tested types
 typedef ::testing::Types<Adsd> ModulatorTypes;
@@ -48,10 +51,12 @@ TYPED_TEST(Modulator, Range) {
     unsigned int i(0);
     // Attack / Decay / Sustain
     while (i <= this->kAttack_ + this->kDecay_ + this->kSustain_) {
-      const float sample(generator());
-      EXPECT_LE(0.0f - kEpsilon, sample);
-      EXPECT_GE(1.0f + kEpsilon, sample);
-      i += 1;
+      const Sample sample(generator());
+      const bool lower_bound(soundtailor::VectorMath::LessEqual(0.0f - kEpsilon, sample));
+      const bool upper_bound(soundtailor::VectorMath::GreaterEqual(1.0f + kEpsilon, sample));
+      EXPECT_TRUE(lower_bound);
+      EXPECT_TRUE(upper_bound);
+      i += soundtailor::SampleSize;
     }
     // Release + a little bit after that
     generator.TriggerOff();
@@ -60,10 +65,12 @@ TYPED_TEST(Modulator, Range) {
                 + this->kSustain_
                 + this->kDecay_
                 + this->kTail_) {
-      const float sample(generator());
-      EXPECT_LE(0.0f - kEpsilon, sample);
-      EXPECT_GE(1.0f + kEpsilon, sample);
-      i += 1;
+      const Sample sample(generator());
+      const bool lower_bound(soundtailor::VectorMath::LessEqual(0.0f - kEpsilon, sample));
+      const bool upper_bound(soundtailor::VectorMath::GreaterEqual(1.0f + kEpsilon, sample));
+      EXPECT_TRUE(lower_bound);
+      EXPECT_TRUE(upper_bound);
+      i += soundtailor::SampleSize;
     }
   }  // iterations?
 }
@@ -178,41 +185,46 @@ TYPED_TEST(Modulator, NullParameters) {
 
     generator.TriggerOn();
     unsigned int i(1);
-    float previous(generator());
+    Differentiator differentiator;
     while (i <= kAttack) {
-      const float sample(generator());
-      EXPECT_LE(previous, sample);
-      previous = sample;
-      i += 1;
+      const Sample diff(differentiator(generator()));
+      const bool is_increasing(soundtailor::VectorMath::LessEqual(0.0f, diff));
+      EXPECT_TRUE(is_increasing);
+      i += soundtailor::SampleSize;
     }
     // If the attack is null, then we have to ignore its "click".
     if (0 == kAttack) {
-      previous = generator();
+      differentiator(generator());
+    } else {
+      // It might happen that the decreasing stage is 1 sample off
+      const Sample diff_initial(differentiator(generator()));
+      EXPECT_GE(0.0f, VectorMath::GetByIndex<1>(diff_initial));
+      EXPECT_GE(0.0f, VectorMath::GetByIndex<2>(diff_initial));
+      EXPECT_GE(0.0f, VectorMath::GetByIndex<3>(diff_initial));
+      i += soundtailor::SampleSize;
     }
     while (i <= kAttack + kDecay) {
-      const float sample(generator());
-      // TODO(gm): this epsilon should not be here, remove it
-      EXPECT_GE(previous + 1e-6f, sample);
-      previous = sample;
-      i += 1;
+      const Sample diff(differentiator(generator()));
+      const bool is_decreasing(soundtailor::VectorMath::GreaterEqual(0.0f, diff));
+      EXPECT_TRUE(is_decreasing);
+      i += soundtailor::SampleSize;
     }
-    // If the decay is null, then we have to ignore its "click".
-    if (0 == kDecay) {
-      previous = generator();
-    }
-    while (i <= kAttack + kDecay + this->kSustain_) {
-      const float sample(generator());
+    while (i < kAttack + kDecay + this->kSustain_ + soundtailor::SampleSize - 1) {
       // A (really tiny) epsilon is required here for imprecisions
       const float kNearEpsilon(1e-6f);
-      EXPECT_NEAR(this->kSustainLevel_, sample, kNearEpsilon);
-      i += 1;
+      const bool is_near(soundtailor::VectorMath::IsNear(
+        soundtailor::VectorMath::Fill(this->kSustainLevel_), generator(), kNearEpsilon));
+      EXPECT_TRUE(is_near);
+      i += soundtailor::SampleSize;
     }
     generator.TriggerOff();
     while (i < kAttack + kDecay + this->kSustain_ + kDecay + this->kTail_) {
-      const float sample(generator());
-      EXPECT_LE(0.0f - kEpsilon, sample);
-      EXPECT_GE(1.0f + kEpsilon, sample);
-      i += 1;
+      const Sample sample(generator());
+      const bool lower_bound(soundtailor::VectorMath::LessEqual(0.0f - kEpsilon, sample));
+      const bool upper_bound(soundtailor::VectorMath::GreaterEqual(1.0f + kEpsilon, sample));
+      EXPECT_TRUE(lower_bound);
+      EXPECT_TRUE(upper_bound);
+      i += soundtailor::SampleSize;
     }
   }  // iterations?
 }
@@ -235,19 +247,23 @@ TYPED_TEST(Modulator, Click) {
     // The first sample is always null!
     IGNORE(generator());
     while (i <= this->kSustain_) {
-      const float sample(generator());
+      const Sample sample(generator());
       // A (really tiny) epsilon is required here for imprecisions
       const float kEpsilon(1e-6f);
-      EXPECT_NEAR(this->kSustainLevel_, sample, kEpsilon);
-      i += 1;
+      const bool is_near(soundtailor::VectorMath::IsNear(
+        soundtailor::VectorMath::Fill(this->kSustainLevel_), sample, kEpsilon));
+      EXPECT_TRUE(is_near);
+      i += soundtailor::SampleSize;
     }
     generator.TriggerOff();
     // This sample left is due to the release
     IGNORE(generator());
     while (i <= this->kSustain_ + this->kTail_) {
-      const float sample(generator());
-      EXPECT_EQ(0.0f, sample);
-      i += 1;
+      const float kEpsilon(1e-6f);
+      const bool is_null(soundtailor::VectorMath::IsNear(
+        soundtailor::VectorMath::Fill(0.0f), generator(), kEpsilon));
+      EXPECT_TRUE(is_null);
+      i += soundtailor::SampleSize;
     }
   }  // iterations?
 }
@@ -275,30 +291,28 @@ TYPED_TEST(Modulator, OutRegularity) {
     // A very small epsilon is added for computation/casts imprecisions
     // TODO(gm): this might not be required if all floating point operations
     // were properly understood and managed.
-    const double kMaxDelta(1.0 / std::min(this->kAttack_, this->kDecay_) + 1e-7);
+    const float kMaxDelta(static_cast<float>(1.0 / std::min(this->kAttack_, this->kDecay_) + 1e-7));
     // Envelops should all begin at zero!
-    double previous(static_cast<double>(generator()));
+    Differentiator differentiator;
     // Checking the whole envelop since clicks may occur anywhere
     while (i < this->kAttack_ + this->kDecay_ + this->kSustain_) {
-      const double sample(static_cast<double>(generator()));
-      const double diff(std::fabs(sample - previous));
-      EXPECT_GE(kMaxDelta, diff);
-      previous = sample;
-      i += 1;
+      const Sample diff(differentiator(generator()));
+      const bool is_small(soundtailor::VectorMath::GreaterEqual(kMaxDelta, diff));
+      EXPECT_TRUE(is_small);
+      i += soundtailor::SampleSize;
     }
     generator.TriggerOff();
     while (i < this->kAttack_ + this->kDecay_ + this->kSustain_ + this->kDecay_ + this->kTail_) {
-      const double sample(static_cast<double>(generator()));
-      const double diff(std::fabs(sample - previous));
-      EXPECT_GE(kMaxDelta, diff);
-      previous = sample;
-      i += 1;
+      const Sample diff(differentiator(generator()));
+      const bool is_small(soundtailor::VectorMath::GreaterEqual(kMaxDelta, diff));
+      EXPECT_TRUE(is_small);
+      i += soundtailor::SampleSize;
     }
   }  // iterations?
 }
 
 
-/// @brief Generates an envelopm (performance test)
+/// @brief Generates an envelop (performance test)
 // Here the tested length cannot be longer in release configuration,
 // because it would then only test the performance on the envelop tail!
 // That's why we are using a "kModulatorPerfIterations", adding iterations
@@ -310,26 +324,33 @@ TYPED_TEST(Modulator, Perf) {
     IGNORE(iterations);
 
     TypeParam generator;
-    generator.SetParameters(this->kAttack_,
-                            this->kDecay_,
-                            this->kDecay_,
+    // Random parameters
+    // Each parameter has half a chance to be null
+    const unsigned int kAttack(kBoolDistribution(this->kRandomGenerator_)
+                               ? this->kAttack_ : 0);
+    const unsigned int kDecay(kBoolDistribution(this->kRandomGenerator_)
+                              ? this->kDecay_ : 0);
+    generator.SetParameters(kAttack,
+                            kDecay,
+                            kDecay,
                             this->kSustainLevel_);
-
     generator.TriggerOn();
 
     unsigned int sample_idx(0);
     while (sample_idx < this->kAttack_ + this->kDecay_ + this->kSustain_) {
-      const float kCurrent(generator());
-      sample_idx += 1;
+      const Sample kCurrent(generator());
+      sample_idx += soundtailor::SampleSize;
       // No actual test!
-      EXPECT_LE(-1.0f, kCurrent);
+      const bool lower_bound(soundtailor::VectorMath::LessEqual(-1.0f, kCurrent));
+      EXPECT_TRUE(lower_bound);
     }
     generator.TriggerOff();
     while (sample_idx < this->kModulatorDataPerfSetSize_) {
-      const float kCurrent(generator());
-      sample_idx += 1;
+      const Sample kCurrent(generator());
+      sample_idx += soundtailor::SampleSize;
       // No actual test!
-      EXPECT_LE(-1.0f, kCurrent);
+      const bool lower_bound(soundtailor::VectorMath::LessEqual(-1.0f, kCurrent));
+      EXPECT_TRUE(lower_bound);
     }
   }  // iterations?
 }
