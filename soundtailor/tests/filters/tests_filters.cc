@@ -52,9 +52,9 @@ typedef ::testing::Types<Chamberlin,
                          FirstOrderPoleFixedZero,
                          Gain,
                          Moog,
-                         //MoogLowAliasNonLinear,
+                         MoogLowAliasNonLinear,
                          MoogLowPassBlock,
-                         //MoogOversampled,
+                         MoogOversampled,
                          Oversampler<SecondOrderRaw>,
                          SecondOrderRaw> FilterTypes;
 
@@ -62,10 +62,13 @@ typedef ::testing::Types<Chamberlin,
 // @todo(gm) Chamberlin filter supports passthrough with a one-sample delay!
 // @todo(gm) Passthrough issues with Oversampler, see #23
 // @todo(gm) check FirstOrderPoleFixedZero, although not too much hope there...
-typedef ::testing::Types<ChamberlinOversampled,
+typedef ::testing::Types<Chamberlin,
+                         ChamberlinOversampled,
                          FirstOrderPoleZero,
+                         Gain,
                          Moog,
                          MoogLowPassBlock,
+                         Oversampler<SecondOrderRaw>,
                          SecondOrderRaw> PassthroughFilterTypes;
 
 TYPED_TEST_CASE(Filter, FilterTypes);
@@ -190,16 +193,22 @@ TYPED_TEST(FilterPassThrough, Passthrough) {
 
   filter.SetParameters(this->kPassthroughFrequency_, this->kPassthroughResonance_);
 
-  Sample diff_mean(VectorMath::Fill(0.0f));
-  for (unsigned int i(0);
-       i < this->kDataTestSetSize_;
-       i += soundtailor::SampleSize) {
-    const Sample input(VectorMath::Fill(this->kNormDistribution_(this->kRandomGenerator_)));
-    const Sample filtered(VectorMath::MulConst(this->kInverseFilterGain_, filter(input)));
-    diff_mean = VectorMath::Add(diff_mean, VectorMath::Sub(filtered, input));
+  soundtailor::filters::ProcessBlock(
+    &this->input_data_[0],
+    &this->output_data_[0],
+    this->output_data_.size(),
+    filter);
+  float sum(0.0f);
+  unsigned int input_idx(0);
+  unsigned int output_idx(this->kDelay_);
+  while (Math::Max(input_idx, output_idx) < this->kDataTestSetSize_) {
+    // scalar codepath as we don't want to deal with alignment
+    sum += this->kInverseFilterGain_ * this->input_data_[input_idx] - this->output_data_[output_idx];
+    input_idx += 1;
+    output_idx += 1;
   }
   const float kExpected(0.0f);
-  const float kActual(VectorMath::AddHorizontal(diff_mean));
+  const float kActual(sum);
   const float kEpsilon(2e-6f * this->kDataTestSetSize_);
 
   EXPECT_NEAR(kExpected, kActual, kEpsilon);

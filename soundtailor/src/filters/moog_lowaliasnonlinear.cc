@@ -138,8 +138,8 @@ const Filter_Meta& MoogLowAliasNonLinear::Meta(void) {
                                  0.0f,
                                  0.0f,
                                  3.9999f,
-                                 1,
-                                 1.0f);
+                                 0,
+                                 2.0f);
   return metas;
 }
 

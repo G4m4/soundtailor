@@ -69,7 +69,7 @@ const Filter_Meta& MoogOversampled::Meta(void) {
                                  0.0f,
                                  3.9999f,
                                  0,
-                                 1.0f);
+                                 2.0f);
   return metas;
 }
 

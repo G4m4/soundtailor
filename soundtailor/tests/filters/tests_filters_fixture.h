@@ -101,7 +101,7 @@ class FilterData : public Filter<FilterType> {
 
 /// @brief Base tests fixture for all filters able to be passthrough
 template <typename FilterType>
-class FilterPassThrough : public Filter<FilterType> {
+class FilterPassThrough : public FilterData<FilterType> {
 };
 
 #endif  // SOUNDTAILOR_TESTS_FILTERS_TESTS_FILTERS_FIXTURES_H_
