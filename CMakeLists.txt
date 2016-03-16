@@ -242,12 +242,13 @@ endif (SYSTEM_IS_MACOSX)
 
 
 # Google Test framework
+# Not using FindGTest script as we want to build the library as well
 if (SOUNDTAILOR_HAS_GTEST)
   # GTest path may be defined from an outside CMake file,
   # if this is used as an external library
   if(NOT EXISTS ${GTEST_DIR})
     set(GTEST_DIR
-      ${CMAKE_CURRENT_SOURCE_DIR}/externals/gtest
+      ${CMAKE_CURRENT_SOURCE_DIR}/externals/gtest/googletest
     )
     set(GTEST_BUILD_DIR
       ${CMAKE_CURRENT_BINARY_DIR}/gtest
