@@ -76,6 +76,7 @@ float Adsd::ComputeOneSample(void) {
     case(kDecay): {
       if (cursor_ > actual_decay_) {
         current_section_ = GetNextSection(current_section_);
+        // This might create a tiny jump due to floating point wobble
         current_value_ = static_cast<float>(sustain_level_);
       } else {
         current_value_ += current_increment_;

@@ -206,7 +206,8 @@ TYPED_TEST(Modulator, NullParameters) {
     }
     while (i <= kAttack + kDecay) {
       const Sample diff(differentiator(generator()));
-      const bool is_decreasing(soundtailor::VectorMath::GreaterEqual(0.0f, diff));
+      // Small epsilon in case of a tiny jump from the current to the sustain value
+      const bool is_decreasing(soundtailor::VectorMath::GreaterEqual(1e-7f, diff));
       EXPECT_TRUE(is_decreasing);
       i += soundtailor::SampleSize;
     }
