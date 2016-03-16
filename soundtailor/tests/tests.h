@@ -36,6 +36,7 @@
 using soundtailor::IGNORE;
 
 // Using declarations for soundtailor maths stuff
+using soundtailor::Math;
 using soundtailor::Sample;
 using soundtailor::SampleRead;
 using soundtailor::VectorMath;

@@ -29,12 +29,13 @@
 
 namespace soundtailor {
 struct StandardMath {
-
-  static inline float Min(const float A, const float B) {
+  template <typename T>
+  static inline T Min(const T A, const T B) {
     return std::min(A, B);
   }
 
-  static inline float Max(const float A, const float B) {
+  template <typename T>
+  static inline T Max(const T A, const T B) {
     return std::max(A, B);
   }
 
