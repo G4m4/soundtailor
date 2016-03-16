@@ -120,7 +120,7 @@ if __name__ == "__main__":
     length = 512
     resonance = 0.7
 
-    in_data = utilities.GenerateData(200, 2000, length, sampling_freq)
+    in_data = utilities.GenerateChirpData(200, 2000, length, sampling_freq)
 
     out_data = numpy.zeros(length)
     out_data_vectorized = numpy.zeros(length)

@@ -106,7 +106,7 @@ if __name__ == "__main__":
     filter_freq /= sampling_freq
     resonance = 1.0
 
-    in_data = utilities.GenerateData(100, 2000, length, sampling_freq)
+    in_data = utilities.GenerateChirpData(100, 2000, length, sampling_freq)
     generator = generator_sawtoothdpw.SawtoothDPW(sampling_freq)
     generator.SetFrequency(freq)
     for idx, _ in enumerate(in_data):

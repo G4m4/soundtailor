@@ -32,19 +32,30 @@ import time
 from scipy import signal
 from scipy.io.wavfile import write
 
-def GenerateData(freq_low, freq_high, length, sampling_freq):
+def GenerateChirpData(freq_low, freq_high, length, sampling_freq):
     '''
     Simple chirp synthesis
     '''
     end_time_s = float(length) / sampling_freq
 
-    time = numpy.arange(0,
-                        end_time_s,
-                        1.0 / sampling_freq)
-    return signal.chirp(t = time,
+    sampled_time = numpy.arange(0,
+                                end_time_s,
+                                1.0 / sampling_freq)
+    return signal.chirp(t = sampled_time,
                         f0 = freq_low,
                         t1 = end_time_s,
                         f1 = freq_high)
+
+def GenerateSquareData(freq, length, sampling_freq):
+    '''
+    Simple square signal synthesis
+    '''
+    end_time_s = float(length) / sampling_freq
+
+    sampled_time = numpy.arange(0,
+                                end_time_s,
+                                1.0 / sampling_freq)
+    return signal.square(sampled_time * 2 * numpy.pi * freq)
 
 def GetMetadata(signal):
     '''
@@ -61,7 +72,7 @@ def GetMetadata(signal):
             ("Max: ", numpy.max(signal)),
             ("Mean: ", numpy.mean(signal)),
             ("Var: ", numpy.var(signal)),
-            ("RMS: ", numpy.sqrt(numpy.sum(signal ** 2) / len(signal))))
+            ("Power: ", numpy.sum(signal ** 2) / len(signal)))
 
 def PrintMetadata(metadatas):
     '''
@@ -118,3 +129,6 @@ def PrintTiming(func):
         return res
 
     return wrapper
+
+def GetPredictedLength(normalised_freq, periods_count):
+    return numpy.int_(numpy.floor(periods_count / normalised_freq))

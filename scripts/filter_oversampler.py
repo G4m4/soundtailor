@@ -72,7 +72,7 @@ if __name__ == "__main__":
     length = 512
     resonance = 0.7
 
-    in_data = utilities.GenerateData(200, 4000, length, sampling_freq)
+    in_data = utilities.GenerateChirpData(200, 4000, length, sampling_freq)
     in_data = 2.0 * numpy.random.rand(length) - 1.0
 
     out_data = numpy.zeros(length)
