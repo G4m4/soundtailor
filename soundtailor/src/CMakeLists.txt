@@ -43,6 +43,7 @@ set(SOUNDTAILOR_HDR
   common.h
   configuration.h
   maths.h
+  utilities.h
   ${SOUNDTAILOR_FILTERS_HDR}
   ${SOUNDTAILOR_GENERATORS_HDR}
   ${SOUNDTAILOR_MODULATORS_HDR}

@@ -126,27 +126,6 @@ class Filter_Base {
   virtual void SetParameters(const float frequency, const float resonance) = 0;
 };
 
-/// @brief Actual process function for many samples
-///
-/// In a context of dynamic polymorphism this will save you from per-sample
-/// virtual function calls
-/// The compiler should be able to inline it
-/// obviously the instance has to be known at compile time
-template <typename FilterType>
-void ProcessBlock(BlockIn in,
-                  BlockOut out,
-                  unsigned int block_size,
-                  FilterType&& filter_instance) {
-  const float* in_ptr(in);
-  float* out_write(out);
-  for (unsigned int i(0); i < block_size; i += SampleSize) {
-    const Sample kInput(VectorMath::Fill(in_ptr));
-    VectorMath::Store(out_write, filter_instance(kInput));
-    in_ptr += SampleSize;
-    out_write += SampleSize;
-  }
-}
-
 }  // namespace filters
 }  // namespace soundtailor
 

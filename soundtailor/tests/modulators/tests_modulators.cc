@@ -335,9 +335,9 @@ TYPED_TEST(ModulatorData, Process) {
   generator_perblock.TriggerOn();
   generator_persample.TriggerOn();
 
-  soundtailor::generators::ProcessBlock(&this->output_data_[0],
-                                        this->output_data_.size(),
-                                        generator_perblock);
+  soundtailor::ProcessBlock(&this->output_data_[0],
+                            this->output_data_.size(),
+                            generator_perblock);
   for (unsigned int i(0); i < this->kModulatorDataPerfSetSize_; i += soundtailor::SampleSize) {
     const Sample kReference(VectorMath::Fill(&this->output_data_[i]));
     const Sample kGenerated((generator_persample()));
@@ -406,9 +406,9 @@ TYPED_TEST(ModulatorData, BlockPerf) {
                             this->kSustainLevel_);
     generator.TriggerOn();
 
-    soundtailor::generators::ProcessBlock(&this->output_data_[0],
-                                          this->output_data_.size(),
-                                          generator);
+    soundtailor::ProcessBlock(&this->output_data_[0],
+                              this->output_data_.size(),
+                              generator);
     unsigned int sample_idx(0);
     while (sample_idx < this->kModulatorDataPerfSetSize_) {
       const Sample kCurrent(VectorMath::Fill(&this->output_data_[sample_idx]));

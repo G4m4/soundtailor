@@ -20,7 +20,6 @@
 
 #include "soundtailor/tests/filters/tests_filters_fixture.h"
 
-#include "soundtailor/src/filters/filter_base.h"
 #include "soundtailor/src/filters/chamberlin.h"
 #include "soundtailor/src/filters/chamberlin_oversampled.h"
 #include "soundtailor/src/filters/firstorder_polezero.h"
@@ -131,7 +130,7 @@ TYPED_TEST(FilterData, Process) {
   filter_perblock.SetParameters(kFrequency, this->kPassthroughResonance_);
   filter_persample.SetParameters(kFrequency, this->kPassthroughResonance_);
 
-  soundtailor::filters::ProcessBlock(
+  soundtailor::ProcessBlock(
       &this->input_data_[0],
       &this->output_data_[0],
       this->output_data_.size(),
@@ -171,7 +170,7 @@ TYPED_TEST(FilterData, BlockPerf) {
     TypeParam filter;
     filter.SetParameters(kFrequency, this->kPassthroughResonance_);
 
-    soundtailor::filters::ProcessBlock(
+    soundtailor::ProcessBlock(
         &this->input_data_[0],
         &this->output_data_[0],
         this->output_data_.size(),
@@ -193,7 +192,7 @@ TYPED_TEST(FilterPassThrough, Passthrough) {
 
   filter.SetParameters(this->kPassthroughFrequency_, this->kPassthroughResonance_);
 
-  soundtailor::filters::ProcessBlock(
+  soundtailor::ProcessBlock(
     &this->input_data_[0],
     &this->output_data_[0],
     this->output_data_.size(),

@@ -88,23 +88,6 @@ class Generator_Base {
   virtual float ProcessParameters(void) = 0;
 };
 
-/// @brief Actual process function for many samples
-///
-/// In a context of dynamic polymorphism this will save you from per-sample
-/// virtual function calls
-/// The compiler should be able to inline it
-/// obviously the instance has to be known at compile time
-template <typename GeneratorType>
-void ProcessBlock(BlockOut out,
-                  unsigned int block_size,
-                  GeneratorType&& instance) {
-  float* out_write(out);
-  for (unsigned int i(0); i < block_size; i += SampleSize) {
-    VectorMath::Store(out_write, instance());
-    out_write += SampleSize;
-  }
-}
-
 }  // namespace generators
 }  // namespace soundtailor
 

@@ -32,6 +32,7 @@
 #include "soundtailor/src/common.h"
 #include "soundtailor/src/configuration.h"
 #include "soundtailor/src/maths.h"
+#include "soundtailor/src/utilities.h"
 
 using soundtailor::IGNORE;
 
