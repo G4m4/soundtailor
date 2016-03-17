@@ -62,6 +62,9 @@ class EnvelopGenerator_Base {
 
   /// @brief Actual process function for one sample:
   /// output one sample of the envelop
+  virtual float ComputeOneSample(void) = 0;
+
+  /// @brief Vectorized version of the above
   ///
   /// Process is done per-sample for flexibility purpose, beware of not having
   /// one of this called per-sample! Check in the final code that it actually
