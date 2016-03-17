@@ -55,6 +55,8 @@ add_library(soundtailor_lib
   ${SOUNDTAILOR_HDR}
 )
 
+if (COMPILER_IS_GCC)
 add_compiler_flags(soundtailor_lib "-Weffc++")
+endif (COMPILER_IS_GCC)
 
 set_target_mt(soundtailor_lib)
