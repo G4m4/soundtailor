@@ -56,6 +56,17 @@ template<typename Type> void IGNORE(const Type&) {}
   #define SOUNDTAILOR_ASSERT(_condition_) {::soundtailor::ASSUME((_condition_));}
 #endif
 
+/// @brief Indicates that the decorated reference is not aliased
+#ifndef RESTRICT
+  #if(_COMPILER_MSVC)
+    #define RESTRICT __restrict
+  #elif(_COMPILER_GCC)
+    #define RESTRICT __restrict__
+  #else
+    #define RESTRICT
+  #endif  // _COMPILER_ ?
+#endif  // RESTRICT ?
+
 /// @brief "Sample" type - actually, this is the data computed at each "tick";
 /// If using vectorization it will be longer than 1 audio sample
 #if (_USE_SSE)
