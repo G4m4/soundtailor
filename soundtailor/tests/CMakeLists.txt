@@ -37,6 +37,7 @@ set(SOUNDTAILOR_TESTS_SRC
     ${SOUNDTAILOR_TESTS_MODULATORS_SRC}
 )
 set(SOUNDTAILOR_TESTS_HDR
+    analysis.h
     tests.h
 )
 

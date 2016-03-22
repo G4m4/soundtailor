@@ -34,6 +34,8 @@
 #include "soundtailor/src/maths.h"
 #include "soundtailor/src/utilities.h"
 
+#include "soundtailor/tests/analysis.h"
+
 using soundtailor::IGNORE;
 
 // Using declarations for soundtailor maths stuff
@@ -41,64 +43,11 @@ using soundtailor::Math;
 using soundtailor::Sample;
 using soundtailor::SampleRead;
 using soundtailor::VectorMath;
+using soundtailor::ZeroCrossing;
 
 // Common base random distributions
 static std::uniform_real_distribution<float> kNormDistribution(-1.0f, 1.0f);
 static std::uniform_real_distribution<float> kNormPosDistribution(0.0f, 1.0f);
 static std::bernoulli_distribution kBoolDistribution;
-
-/// @brief Helper structure for retrieving zero crossings informations
-template <typename TypeGenerator>
-struct ZeroCrossing {
-  explicit ZeroCrossing(TypeGenerator& generator,
-                        const float previous_sgn = 1.0f)
-      : generator_(generator),
-        previous_sgn_(previous_sgn),
-        cursor_(0) {
-    // Nothing to do here
-  }
-
-  /// @brief Get next zero crossing absolute index
-  unsigned int GetNextZeroCrossing(unsigned int max_length) {
-    while (cursor_ < max_length) {
-      int index_zc(GetZeroCrossingRelative(generator_()));
-      if (index_zc >= 0) {
-        const unsigned int out(index_zc + cursor_);
-        cursor_ += soundtailor::SampleSize;
-        return out;
-      }
-      cursor_ += soundtailor::SampleSize;
-    }
-    return max_length;
-  }
-
-  unsigned int Cursor(void) {
-    return cursor_;
-  }
-
- private:
-  /// @brief Actual zero crossing detection method
-  ///
-  /// Beware, it cannot detect zero crossings closer than 4 samples!
-  /// TODO(gm): Fix it
-  ///
-  /// @return the (relative) index of the next zero crossing, or -1
-  int GetZeroCrossingRelative(Sample input) {
-    const Sample sign_v(VectorMath::SgnNoZero(input));
-    for (unsigned int index(0); index < soundtailor::SampleSize; index += 1) {
-      const float current_sgn(VectorMath::GetByIndex(sign_v, index));
-      if (previous_sgn_ != current_sgn) {
-        previous_sgn_ = current_sgn;
-        return index;
-      }
-      previous_sgn_ = current_sgn;
-    }
-    return -1;
-  }
-
-  TypeGenerator generator_;
-  float previous_sgn_;
-  unsigned int cursor_;
-};
 
 #endif  // SOUNDTAILOR_TESTS_TESTS_H_
