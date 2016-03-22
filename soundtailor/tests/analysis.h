@@ -80,6 +80,95 @@ private:
   unsigned int cursor_;
 };
 
+/// @brief Compute the mean value of a signal generator for the given length
+///
+/// @param[in]    generator      Generator to compute value from
+/// @param[in]    length         Sample length
+///
+/// @return the generator mean for such length
+template <typename TypeGenerator>
+float ComputeMean(TypeGenerator& generator, const unsigned int length) {
+  Sample sum(VectorMath::Fill(0.0f));
+  unsigned int sample_idx(0);
+  while (sample_idx < length) {
+    const Sample sample(generator());
+    sum = VectorMath::Add(sum, sample);
+    sample_idx += soundtailor::SampleSize;
+  }
+  return VectorMath::AddHorizontal(sum) / static_cast<float>(length);
+}
+
+/// @brief Compute the mean power of a signal generator for the given length
+///
+/// @param[in]    generator      Generator to compute value from
+/// @param[in]    length         Sample length
+///
+/// @return the generator mean for such length
+template <typename TypeGenerator>
+float ComputePower(TypeGenerator& generator, const unsigned int length) {
+  Sample power(VectorMath::Fill(0.0f));
+  unsigned int sample_idx(0);
+  while (sample_idx < length) {
+    const Sample sample(generator());
+    const Sample squared(VectorMath::Mul(sample, sample));
+    power = VectorMath::Add(power, squared);
+    sample_idx += soundtailor::SampleSize;
+  }
+  return VectorMath::AddHorizontal(power) / static_cast<float>(length);
+}
+
+/// @brief Compute zero crossings of a signal generator for the given length
+///
+/// @param[in]  generator   Generator to compute value from
+/// @param[in]  length    Sample length
+/// @param[in]  initial_sgn   Initial generator sign, useful for generators
+///                           beginning at 0 and decreasing (Triangle DPW...)
+///
+/// @return zero crossings occurence for such length
+template <typename TypeGenerator>
+int ComputeZeroCrossing(TypeGenerator& generator,
+                        const unsigned int length,
+                        const float initial_sgn = 1.0f) {
+  ZeroCrossing<TypeGenerator> zero_crossing(generator, initial_sgn);
+  int out(0);
+  unsigned int zero_crossing_idx(zero_crossing.GetNextZeroCrossing(length));
+  while (zero_crossing_idx < length) {
+    out += 1;
+    zero_crossing_idx = zero_crossing.GetNextZeroCrossing(length);
+  }
+  return out;
+}
+
+/// @brief Helper structure for checking a signal continuity
+struct IsContinuous {
+  /// @brief Default constructor
+  ///
+  /// @param[in]  threshold   Max difference between two consecutive samples
+  /// @param[in]  previous   First sample initialization
+  IsContinuous(const float threshold, const float previous)
+      : threshold_(threshold),
+        previous_(previous) {
+    SOUNDTAILOR_ASSERT(threshold >= 0.0f);
+  }
+
+  /// @brief Check next sample continuity
+  ///
+  /// @param[in]  input   Sample to be tested
+  bool operator()(SampleRead input) {
+    const float before_diff(VectorMath::GetLast(input));
+    const Sample prev(VectorMath::RotateOnRight(input, previous_));
+    const Sample after_diff(VectorMath::Sub(input, prev));
+    previous_ = before_diff;
+    if (VectorMath::LessThan(threshold_, VectorMath::Abs(after_diff))) {
+      return false;
+    }
+    return true;
+  }
+
+  float threshold_;
+  float previous_;
+};
+
 }  // namespace soundtailor
 
 #endif  // SOUNDTAILOR_TESTS_ANALYSIS_H_

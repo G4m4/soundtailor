@@ -43,6 +43,11 @@ using soundtailor::Math;
 using soundtailor::Sample;
 using soundtailor::SampleRead;
 using soundtailor::VectorMath;
+
+using soundtailor::ComputeMean;
+using soundtailor::ComputePower;
+using soundtailor::ComputeZeroCrossing;
+using soundtailor::IsContinuous;
 using soundtailor::ZeroCrossing;
 
 // Common base random distributions
