@@ -41,7 +41,7 @@ template<typename Type> void IGNORE(const Type&) {}
 /// @brief Assume that the following condition is always true
 /// (on some compilers, allows optimization)
 #if(_COMPILER_MSVC)
-  static inline void ASSUME(const bool condition) {_assume(condition);}
+  static inline void ASSUME(const bool condition) {__assume(condition);}
 #elif(_COMPILER_GCC)
   static inline void ASSUME(const bool condition) {if (!(condition)) __builtin_unreachable();}
 #else
@@ -81,10 +81,10 @@ template<typename Type> void IGNORE(const Type&) {}
 typedef const Sample SampleRead;
 
 /// @brief Type for block input parameter
-typedef const float* const BlockIn;
+typedef const float* RESTRICT const BlockIn;
 
 /// @brief Type for block output parameter
-typedef float* const BlockOut;
+typedef float* RESTRICT const BlockOut;
 
 /// @brief "Sample" type size in bytes
 static const unsigned int SampleSizeBytes(sizeof(Sample));
