@@ -42,6 +42,20 @@ const double Pi = 3.14159265358979;
 
 // Standard math functions are wrapped here
 struct Math : PlatformMath {
+  template <typename T>
+  static inline T Min(const T A, const T B) {
+    return A > B ? B : A;
+  }
+
+  template <typename T>
+  static inline T Max(const T A, const T B) {
+    return A > B ? A : B;
+  }
+
+  template <typename T>
+  static inline T Clamp(const T value, const T min, const T max) {
+    return Max(Min(value, max), min);
+  }
 };
 
 struct VectorMath : PlatformVectorMath {
