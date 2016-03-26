@@ -38,6 +38,7 @@ set(SOUNDTAILOR_TESTS_SRC
 )
 set(SOUNDTAILOR_TESTS_HDR
     analysis.h
+    debug.h
     tests.h
 )
 
