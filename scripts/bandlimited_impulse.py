@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-'''
+"""
 @file bandlimited_impulse.py
 @brief Bandlimited impulse generation
 @author gm
-@copyright gm 2014
+@copyright gm 2016
 
 This file is part of SoundTailor
 
@@ -19,7 +19,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 '''
 Note that all of this mimics C++ code for testing/prototyping purpose.
@@ -28,6 +28,7 @@ Hence it may not really seems "pythonic" and not intended to be in any way.
 
 import numpy
 
+
 def GenerateBLI(sampling_rate = 48000.0,
                 cutoff = 15000.0,
                 length = 4,
@@ -35,9 +36,9 @@ def GenerateBLI(sampling_rate = 48000.0,
                 beta = 8.3,
                 apodization_factor = 0.5,
                 apodization_beta = 0.5):
-    '''
-    Generate a bandlimited impulse
-    '''
+    """
+    Generates a bandlimited impulse
+    """
     kEpsilon = 1e-7
     points_count = ppiv * length
     xaxis = numpy.linspace(0.0, points_count, points_count)
@@ -56,16 +57,18 @@ def GenerateBLI(sampling_rate = 48000.0,
 
     return bli_data
 
+
 def GenerateBLSawtoothSegment(sampling_rate = 48000.0,
-                                cutoff = 15000.0,
-                                length = 4,
-                                ppiv = 2700,
-                                beta = 8.3,
-                                apodization_factor = 0.5,
-                                apodization_beta = 0.5):
-    '''
-    Generate a bandlimited sawtooth segment
-    '''
+                              cutoff = 15000.0,
+                              length = 4,
+                              ppiv = 2700,
+                              beta = 8.3,
+                              apodization_factor = 0.5,
+                              apodization_beta = 0.5):
+    """
+    Generates a bandlimited sawtooth segment
+    Beware: generates the left half segment only due to symmetry!
+    """
     saw_data = GenerateBLI(sampling_rate,
                            cutoff,
                            length,
@@ -78,10 +81,10 @@ def GenerateBLSawtoothSegment(sampling_rate = 48000.0,
     # Cumulative sum & normalization
     saw_data = numpy.cumsum(saw_data)
     saw_data = 2.0 * saw_data / saw_data[points_count - 1]
-    saw_data[numpy.floor(points_count / 2) :] = saw_data[numpy.floor(points_count / 2) :] - 2.0
-    saw_data = saw_data / numpy.max(saw_data)
+    saw_data[numpy.floor(points_count / 2):] = saw_data[numpy.floor(points_count / 2):] - 2.0
+    saw_data /= numpy.max(saw_data)
 
-    return saw_data
+    return saw_data[0:points_count / 2]
 
 if __name__ == "__main__":
     '''
@@ -92,8 +95,8 @@ if __name__ == "__main__":
     view_beginning = 0
     view_length = 4 * 2700
 
-    pylab.plot(GenerateBLI()[view_beginning:view_beginning + view_length], label = "blimpulse")
-    pylab.plot(GenerateBLSawtoothSegment()[view_beginning:view_beginning + view_length], label = "blsaw")
+    pylab.plot(GenerateBLI()[view_beginning:view_beginning + view_length], label="blimpulse")
+    pylab.plot(GenerateBLSawtoothSegment()[view_beginning:view_beginning + view_length], label="blsaw")
 
     pylab.legend()
     pylab.show()
