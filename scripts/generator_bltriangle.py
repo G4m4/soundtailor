@@ -1,0 +1,140 @@
+#!/usr/bin/env python
+"""
+@file generator_bltriangle.py
+@brief Bandlimited triangle generation
+@author gm
+@copyright gm 2016
+
+This file is part of SoundTailor
+
+SoundTailor is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SoundTailor is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+'''
+Note that all of this mimics C++ code for testing/prototyping purpose.
+Hence it may not really seems "pythonic" and not intended to be in any way.
+'''
+
+from bandlimited_impulse import GenerateBLSawtoothIntegrate
+from generators_common import GeneratorInterface, PhaseAccumulator, IncrementAndWrap
+
+
+class BLTriangle(GeneratorInterface):
+    """
+    Implements a triangle signal generator based on BLIT algorithm
+    """
+    def __init__(self, sampling_rate, ppiv=2700):
+        super(BLTriangle, self).__init__(sampling_rate)
+        self._table = GenerateBLSawtoothIntegrate(sampling_rate=sampling_rate, length = 4, ppiv=ppiv)
+        self._halfM = len(self._table)
+        self._sawtooth_gen = PhaseAccumulator(sampling_rate)
+        self._alpha = 0.0
+        self._frequency = 0.0
+        self._phi = 0.0
+        self._update = True
+
+    def SetPhase(self, phase):
+        pass
+
+    def SetFrequency(self, frequency):
+        self._sawtooth_gen.SetFrequency(frequency)
+        self._frequency = frequency
+
+    def SetPulseWidth(self, pulse_width):
+        phase1 = 0.0
+        self._gen1.SetPhase(phase1)
+        offset = pulse_width * 1.0
+        self._gen2.SetPhase(phase1 + offset)
+        self._update = True
+
+    def _read_table(self, value):
+        abs_value = numpy.abs(value)
+        sign_value = numpy.sign(value)
+        if abs_value < self._alpha:
+            relative_index = int(numpy.round(self._halfM * abs_value / self._alpha))
+            index = numpy.minimum(self._halfM - relative_index, self._halfM - 1)
+            if index > self._halfM / 2:
+                read = self._table[self._halfM - index]
+            else:
+                read = self._table[index]
+            # print(str(self) + str(value) + " " + str(relative_index) + " " + str(index) + "->" + str(read))
+            return read
+        else:
+            return 0.0
+
+    def ProcessSample(self):
+        self._ProcessParameters()
+        tmp = self._sawtooth_gen.ProcessSample()
+        A = IncrementAndWrap(tmp, self._phi)
+        B = IncrementAndWrap(tmp, 1.0)
+        C = 2 * numpy.abs(A) - 1.0
+        D = self._read_table(A)
+        E = self._read_table(B)
+
+        normalised_freq = 2 * self._frequency / self._sampling_rate
+        F = C - D * normalised_freq + E * normalised_freq
+
+        return numpy.clip(F, -1.0, 1.0)
+
+    def _ProcessParameters(self):
+        if self._update:
+            self._alpha = self._sampling_rate * 4 / self._frequency
+            self._update = False
+
+if __name__ == "__main__":
+    import numpy
+    import pylab
+    import utilities
+
+    sampling_freq = 48000
+    # Prime, as close as possible to the upper bound of 4kHz
+    freq = 3989.0
+    length = 120
+
+    # Change phase
+    generated_data = numpy.zeros(length)
+    ref_data = numpy.zeros(length)
+    low_res_data = numpy.zeros(length)
+
+    generator_ref = BLTriangle(sampling_freq)
+    generator_ref.SetFrequency(freq)
+    generator_low_res = BLTriangle(sampling_freq, ppiv=256)
+    generator_low_res.SetFrequency(freq)
+    for idx in range(length):
+        ref_data[idx] = generator_ref.ProcessSample()
+        low_res_data[idx] = generator_low_res.ProcessSample()
+
+    generator_left = BLTriangle(sampling_freq)
+    generator_left.SetFrequency(freq)
+    for idx in range(length / 2):
+        generated_data[idx] = generator_left.ProcessSample()
+
+    generator_right = BLTriangle(sampling_freq)
+    generator_right.SetPhase(generated_data[length / 2 - 1])
+    generator_right.SetFrequency(freq)
+    generator_right.ProcessSample()
+    for idx in range(length / 2, length):
+        generated_data[idx] = generator_right.ProcessSample()
+
+    print(utilities.PrintMetadata(utilities.GetMetadata(ref_data)))
+    # print(utilities.PrintMetadata(utilities.GetMetadata(ref_data - low_res_data)))
+
+    # pylab.plot(generator_ref._table, label = "table")
+    pylab.plot(ref_data, label = "triangle")
+    # pylab.plot(ref_data - low_res_data, label = "diff")
+
+    pylab.legend()
+    pylab.show()
+
+    utilities.WriteWav(ref_data, "bl_triangle", sampling_freq)

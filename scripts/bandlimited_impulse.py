@@ -86,6 +86,25 @@ def GenerateBLSawtoothSegment(sampling_rate = 48000.0,
 
     return saw_data[0:points_count / 2]
 
+
+def GenerateBLSawtoothIntegrate(sampling_rate = 48000.0,
+                                cutoff = 15000.0,
+                                length = 4,
+                                ppiv = 2700,
+                                beta = 8.3,
+                                apodization_factor = 0.5,
+                                apodization_beta = 0.5):
+    """
+    Generates the integration of a bandlimited sawtooth segment
+    Beware: generates the left half segment only due to symmetry!
+    """
+    out = GenerateBLSawtoothSegment(sampling_rate, cutoff, length, ppiv, beta, apodization_factor, apodization_beta)
+    out = numpy.cumsum(out)
+    out /= numpy.max(out)
+
+    return out
+
+
 if __name__ == "__main__":
     '''
     Various tests/sandbox
