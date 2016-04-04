@@ -28,20 +28,16 @@ namespace soundtailor {
 namespace filters {
 
 /// @brief Simplest possible filter: a normalized gain
-class Gain : public Filter_Base {
+class Gain {
  public:
    Gain();
 
-  virtual ~Gain() {
-    // Nothing to do here for now
-  }
-
-  virtual Sample operator()(SampleRead sample);
-  virtual void SetParameters(const float frequency, const float resonance);
+  Sample operator()(SampleRead sample);
+  void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);
 
- protected:
+ private:
   float gain_;  ///< Filter gain
 };
 

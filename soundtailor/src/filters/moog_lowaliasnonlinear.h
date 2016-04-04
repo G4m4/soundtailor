@@ -1,7 +1,7 @@
 /// @file moog_lowaliasnonlinear.h
 /// @brief Implementation of a Moog Low-Alias nonlinear filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -29,30 +29,27 @@ namespace soundtailor {
 namespace filters {
 
 /// @brief MoogLowAliasNonLinear low pass filter
-class MoogLowAliasNonLinear : public Filter_Base {
+class MoogLowAliasNonLinear {
  public:
   MoogLowAliasNonLinear();
-  virtual ~MoogLowAliasNonLinear() {
-    // Nothing to do here for now
-  }
+
   float operator()(float sample);
-  virtual Sample operator()(SampleRead sample);
-  virtual void SetParameters(const float frequency, const float resonance);
+  Sample operator()(SampleRead sample);
+  void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);
 
- protected:
+ private:
   // @brief Helper for computing the internal saturation
   float Saturate(float sample);
   // @brief Helper for computing the internal nonlinearity
   float ApplyNonLinearity(float sample);
 
+  alignas(16) FirstOrderPoleFixedZero filters_[4];
   float frequency_;
   float resonance_;
   float last_;
   float last_side_factor_;
-
-  FirstOrderPoleFixedZero filters_[4];
 };
 
 }  // namespace filters

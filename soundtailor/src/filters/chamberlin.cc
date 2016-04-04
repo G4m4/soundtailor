@@ -1,7 +1,7 @@
 /// @file chamberlin.cc
 /// @brief Low Pass filter using a Chamberlin state variable filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -31,8 +31,7 @@ namespace soundtailor {
 namespace filters {
 
 Chamberlin::Chamberlin()
-    : Filter_Base(),
-      lp_(0.0f),
+    : lp_(0.0f),
       bp_(0.0f),
       frequency_(0.0f),
       damping_(0.0f) {

@@ -28,19 +28,17 @@ namespace soundtailor {
 namespace filters {
 
 /// @brief A simple 1st order lowpass filter with a fixed zero
-class FirstOrderPoleFixedZero : public Filter_Base {
+class FirstOrderPoleFixedZero {
  public:
   FirstOrderPoleFixedZero();
-  virtual ~FirstOrderPoleFixedZero() {
-    // Nothing to do here for now
-  }
-  virtual Sample operator()(SampleRead sample);
+
+  Sample operator()(SampleRead sample);
   float operator()(float sample);
-  virtual void SetParameters(const float frequency, const float resonance);
+  void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);
 
- protected:
+ private:
   float pole_coeff_;
   float zero_coeff_;
   float last_;

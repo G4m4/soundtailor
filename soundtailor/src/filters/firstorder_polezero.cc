@@ -1,7 +1,7 @@
 /// @file firstorder_polezero.cc
 /// @brief Low Pass using a simple 1st order pole-zero filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -29,8 +29,7 @@ namespace soundtailor {
 namespace filters {
 
 FirstOrderPoleZero::FirstOrderPoleZero()
-    : Filter_Base(),
-      coeff_(0.0),
+    : coeff_(0.0),
       last_(0.0f) {
   // Nothing to do here for now
 }

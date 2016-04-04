@@ -25,8 +25,7 @@ namespace soundtailor {
 namespace filters {
 
 Gain::Gain()
-    : Filter_Base(),
-      gain_(0.0f) {
+    : gain_(0.0f) {
   // Nothing to do here for now
 }
 

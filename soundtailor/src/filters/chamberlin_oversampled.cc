@@ -1,7 +1,7 @@
 /// @file chamberlingoversampled.cc
 /// @brief Oversampled version of the Chamberlin state variable filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -31,27 +31,18 @@ namespace soundtailor {
 namespace filters {
 
 ChamberlinOversampled::ChamberlinOversampled()
-    : Chamberlin() {
+    : filter_() {
   // Nothing to do here for now
 }
 
 Sample ChamberlinOversampled::operator()(SampleRead sample) {
-  Chamberlin::operator()(sample);
-  return Chamberlin::operator()(sample);
+  filter_(sample);
+  return filter_(sample);
 }
 
 void ChamberlinOversampled::SetParameters(const float frequency,
-                               const float resonance) {
-  SOUNDTAILOR_ASSERT(frequency >= Meta().freq_min);
-  SOUNDTAILOR_ASSERT(frequency <= Meta().freq_max);
-  SOUNDTAILOR_ASSERT(resonance >= Meta().res_min);
-  SOUNDTAILOR_ASSERT(resonance <= Meta().res_max);
-  // Stability assertion
-  SOUNDTAILOR_ASSERT(frequency * frequency
-                     + 2.0f * resonance * frequency < 4.0f);
-
-  damping_ = std::min(resonance, 2.0f - frequency);
-  frequency_ = frequency * (1.22f - 0.22f * frequency * damping_);
+                                          const float resonance) {
+  return filter_.SetParameters(frequency, resonance);
 }
 
 const Filter_Meta& ChamberlinOversampled::Meta(void) {

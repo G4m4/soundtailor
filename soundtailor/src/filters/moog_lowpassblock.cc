@@ -1,7 +1,7 @@
 /// @file moog_lowpassblock.cc
 /// @brief Low Pass (1st order pole-zero filter), base block for Moog filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -26,8 +26,7 @@ namespace soundtailor {
 namespace filters {
 
 MoogLowPassBlock::MoogLowPassBlock()
-    : Filter_Base(),
-      pole_coeff_(0.0f),
+    : pole_coeff_(0.0f),
       zero_coeff_(0.3f),
       last_(0.0f) {
   // Nothing to do here for now

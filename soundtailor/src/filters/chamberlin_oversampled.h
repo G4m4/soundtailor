@@ -1,7 +1,7 @@
 /// @file chamberlingoversampled.h
 /// @brief Oversampled version of the Chamberlin state variable filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -27,16 +27,17 @@ namespace soundtailor {
 namespace filters {
 
 /// @brief Oversampled Chamberlin state variable low pass filter
-class ChamberlinOversampled : public Chamberlin {
+class ChamberlinOversampled {
  public:
   ChamberlinOversampled();
-  virtual ~ChamberlinOversampled() {
-    // Nothing to do here for now
-  }
-  virtual Sample operator()(SampleRead sample);
-  virtual void SetParameters(const float frequency, const float resonance);
+
+  Sample operator()(SampleRead sample);
+  void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);
+
+private:
+  alignas(16) Chamberlin filter_;
 };
 
 }  // namespace filters

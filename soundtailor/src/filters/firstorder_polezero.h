@@ -1,7 +1,7 @@
 /// @file firstorder_polezero.h
 /// @brief Low Pass using a simple 1st order pole-zero filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -28,18 +28,16 @@ namespace soundtailor {
 namespace filters {
 
 /// @brief 1st order pole-zero low pass filter
-class FirstOrderPoleZero : public Filter_Base {
+class FirstOrderPoleZero {
  public:
   FirstOrderPoleZero();
-  virtual ~FirstOrderPoleZero() {
-    // Nothing to do here for now
-  }
-  virtual Sample operator()(SampleRead sample);
-  virtual void SetParameters(const float frequency, const float resonance);
+
+  Sample operator()(SampleRead sample);
+  void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);
 
- protected:
+ private:
   double coeff_;
   float last_;
 };

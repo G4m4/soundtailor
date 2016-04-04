@@ -1,7 +1,7 @@
 /// @file moog_oversampled.h
 /// @brief Implementation of a properly oversampled Moog filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -27,20 +27,20 @@ namespace soundtailor {
 namespace filters {
 
 /// @brief MoogOversampled low pass filter
-class MoogOversampled : public MoogLowAliasNonLinear {
+class MoogOversampled {
  public:
   MoogOversampled();
-  virtual ~MoogOversampled() {
-    // Nothing to do here for now
-  }
+
   float operator()(float sample);
-  virtual Sample operator()(SampleRead sample);
+  Sample operator()(SampleRead sample);
+  void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);
 
- protected:
-   // @todo(gm) fix alignment, this is a mess
+ private:
+  alignas(16) MoogLowAliasNonLinear filter_;
   alignas(16) float history_[4];  ///< Filter history (last outputs)
+  float last_;
 };
 
 }  // namespace filters

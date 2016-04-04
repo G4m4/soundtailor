@@ -1,7 +1,7 @@
 /// @file secondorder_raw.cc
 /// @brief Low Pass filter using a simple ("raw") 2nd order implementation
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -29,8 +29,7 @@ namespace soundtailor {
 namespace filters {
 
 SecondOrderRaw::SecondOrderRaw()
-    : Filter_Base(),
-      gain_(0.0f),
+    : gain_(0.0f),
       coeffs_{ 0.0f, 0.0f, 0.0f, 0.0f },
       history_{ 0.0f, 0.0f, 0.0f, 0.0f } {
   // Nothing to do here for now

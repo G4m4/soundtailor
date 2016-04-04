@@ -1,7 +1,7 @@
 /// @file moog_oversampled.cc
 /// @brief Implementation of a properly oversampled Moog filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -26,16 +26,17 @@ namespace soundtailor {
 namespace filters {
 
 MoogOversampled::MoogOversampled()
-    : MoogLowAliasNonLinear(),
-    history_{0.0f, 0.0f, 0.0f, 0.0f} {
+    : filter_(),
+      history_{0.0f, 0.0f, 0.0f, 0.0f},
+      last_(0.0f) {
   // Nothing to do here for now
 }
 
 float MoogOversampled::operator()(float sample) {
   const Sample kHistoryCoeffs(VectorMath::Fill( 0.19f, 0.57f, 0.57f, 0.19f ));
-  MoogLowAliasNonLinear::operator()(sample);
+  filter_(sample);
   // 2x oversampled
-  const float kOut(MoogLowAliasNonLinear::operator()(sample));
+  const float kOut(filter_(sample));
   const Sample kHistory(VectorMath::Fill(&history_[0]));
   const Sample kNewHistory(VectorMath::RotateOnRight(kHistory, kOut));
   const float kTemp(VectorMath::AddHorizontal(VectorMath::Mul(kNewHistory, kHistoryCoeffs)));
@@ -59,6 +60,11 @@ Sample MoogOversampled::operator()(SampleRead sample) {
 
   const Sample out(VectorMath::Fill(out_v[0], out_v[1], out_v[2], out_v[3]));
   return out;
+}
+
+void MoogOversampled::SetParameters(const float frequency,
+                                    const float resonance) {
+  filter_.SetParameters(frequency, resonance);
 }
 
 const Filter_Meta& MoogOversampled::Meta(void) {

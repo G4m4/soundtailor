@@ -1,7 +1,7 @@
 /// @file moog.cc
 /// @brief Implementation of a Moog filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -26,11 +26,10 @@ namespace soundtailor {
 namespace filters {
 
 Moog::Moog()
-    : Filter_Base(),
+    : filters_(),
       frequency_(0.0f),
       resonance_(0.0f),
-      last_(0.0f),
-      filters_() {
+      last_(0.0f) {
   // Nothing to do here for now
 }
 

@@ -1,7 +1,7 @@
 /// @file oversampler.h
 /// @brief A wrapper for naive filter oversampling
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -28,24 +28,20 @@ namespace filters {
 
 /// @brief Oversample a filter by repeated calls to its process function
 template <typename FilterType>
-class Oversampler : public Filter_Base {
+class Oversampler {
  public:
   Oversampler()
     :  filter_(FilterType()) {
   // Nothing to do here for now
   }
 
-  virtual ~Oversampler() {
-    // Nothing to do here for now
-  }
-
-  virtual Sample operator()(SampleRead sample) {
+  Sample operator()(SampleRead sample) {
     // The oversampling order should be a (template) argument
     filter_(sample);
     return filter_(sample);
   }
 
-  virtual void ProcessBlock(BlockIn in, BlockOut out, unsigned int block_size) {
+  void ProcessBlock(BlockIn in, BlockOut out, unsigned int block_size) {
     const float* in_ptr(in);
     float* out_write(out);
     for (unsigned int i(0); i < block_size; i += SampleSize) {
@@ -57,7 +53,7 @@ class Oversampler : public Filter_Base {
     }
   }
 
-  virtual void SetParameters(const float frequency, const float resonance) {
+  void SetParameters(const float frequency, const float resonance) {
     filter_.SetParameters(frequency, resonance);
   }
 
@@ -77,7 +73,7 @@ class Oversampler : public Filter_Base {
     return metas;
   }
 
- protected:
+ private:
   FilterType filter_;
 };
 

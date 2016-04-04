@@ -1,7 +1,7 @@
 /// @file moog_lowaliasnonlinear.cc
 /// @brief Implementation of a Moog Low-Alias nonlinear filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -26,8 +26,7 @@ namespace soundtailor {
 namespace filters {
 
 MoogLowAliasNonLinear::MoogLowAliasNonLinear()
-    : Filter_Base(),
-      frequency_(0.0f),
+    : frequency_(0.0f),
       resonance_(0.0f),
       last_(0.0f),
       last_side_factor_(0.0f),

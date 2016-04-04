@@ -1,7 +1,7 @@
 /// @file secondorder_raw.h
 /// @brief Low Pass filter using a simple ("raw") 2nd order implementation
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -29,20 +29,16 @@ namespace filters {
 
 /// @brief 2nd order low pass filter
 /// using the most simple (and computationally efficient) implementation
-class SecondOrderRaw : public Filter_Base {
+class SecondOrderRaw {
  public:
   SecondOrderRaw();
 
-  virtual ~SecondOrderRaw() {
-    // Nothing to do here for now
-  }
-
-  virtual Sample operator()(SampleRead sample);
-  virtual void SetParameters(const float frequency, const float resonance);
+  Sample operator()(SampleRead sample);
+  void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);
 
- protected:
+ private:
   float gain_;  ///< Filter gain (b0 coefficient)
   alignas(16) float coeffs_[4];  ///< Filter coefficients (for zeroes and poles)
                      ///< organized as follows:

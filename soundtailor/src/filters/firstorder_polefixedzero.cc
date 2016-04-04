@@ -26,8 +26,7 @@ namespace soundtailor {
 namespace filters {
 
 FirstOrderPoleFixedZero::FirstOrderPoleFixedZero()
-    : Filter_Base(),
-      pole_coeff_(0.0f),
+    : pole_coeff_(0.0f),
       zero_coeff_(0.3f),
       last_(0.0f) {
   // Nothing to do here for now

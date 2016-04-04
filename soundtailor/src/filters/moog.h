@@ -1,7 +1,7 @@
 /// @file moog.h
 /// @brief Implementation of a Moog filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -29,23 +29,21 @@ namespace soundtailor {
 namespace filters {
 
 /// @brief Moog low pass filter
-class Moog : public Filter_Base {
+class Moog {
  public:
   Moog();
-  virtual ~Moog() {
-    // Nothing to do here for now
-  }
-  virtual Sample operator()(SampleRead sample);
-  virtual void SetParameters(const float frequency, const float resonance);
+
+  Sample operator()(SampleRead sample);
+  void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);
 
- protected:
+ private:
+  alignas(16) MoogLowPassBlock filters_[4];
+
   float frequency_;
   float resonance_;
   float last_;
-
-  MoogLowPassBlock filters_[4];
 };
 
 }  // namespace filters

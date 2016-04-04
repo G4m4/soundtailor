@@ -1,7 +1,7 @@
 /// @file moog_lowpassblock.h
 /// @brief Low Pass (1st order pole-zero filter), base block for Moog filter
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -29,19 +29,17 @@ namespace filters {
 
 /// @brief Same as FirstOrderPoleFixedZero with a different parameterization,
 /// and a different input factor
-class MoogLowPassBlock : public Filter_Base {
+class MoogLowPassBlock {
  public:
   MoogLowPassBlock();
-  virtual ~MoogLowPassBlock() {
-    // Nothing to do here for now
-  }
-  virtual Sample operator()(SampleRead sample);
+
+  Sample operator()(SampleRead sample);
   float operator()(float sample);
-  virtual void SetParameters(const float frequency, const float resonance);
+  void SetParameters(const float frequency, const float resonance);
 
   static const Filter_Meta& Meta(void);
 
- protected:
+ private:
   float pole_coeff_;
   float zero_coeff_;
   float last_;
