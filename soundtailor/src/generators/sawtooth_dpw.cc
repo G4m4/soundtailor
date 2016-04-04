@@ -1,7 +1,7 @@
 /// @file sawtooth_dpw.cc
 /// @brief Sawtooth signal generator using DPW algorithm - implementation
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -25,7 +25,9 @@ namespace soundtailor {
 namespace generators {
 
 SawtoothDPW::SawtoothDPW(const float phase)
-    : TriangleDPW(phase) {
+    : sawtooth_gen_(),
+      differentiator_(),
+      normalization_factor_(0.0f) {
   SOUNDTAILOR_ASSERT(phase <= 1.0f);
   SOUNDTAILOR_ASSERT(phase >= -1.0f);
   SetPhase(phase);

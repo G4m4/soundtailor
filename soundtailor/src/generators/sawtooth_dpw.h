@@ -1,7 +1,7 @@
 /// @file sawtooth_dpw.h
 /// @brief Sawtooth signal generator using DPW algorithm
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -22,20 +22,26 @@
 #define SOUNDTAILOR_SRC_GENERATORS_SAWTOOTH_DPW_H_
 
 #include "soundtailor/src/common.h"
-#include "soundtailor/src/generators/triangle_dpw.h"
+#include "soundtailor/src/generators/generators_common.h"
 
 namespace soundtailor {
 namespace generators {
 
 /// @brief Sawtooth signal generator
 /// using Differentiated Parabolic Wave (DPW) algorithm
-class SawtoothDPW : public TriangleDPW {
+class SawtoothDPW {
  public:
   explicit SawtoothDPW(const float phase = 0.0f);
-  virtual Sample operator()(void);
-  virtual void SetPhase(const float phase);
-  virtual void SetFrequency(const float frequency);
-  virtual float ProcessParameters(void);
+
+  Sample operator()(void);
+  void SetPhase(const float phase);
+  void SetFrequency(const float frequency);
+  float ProcessParameters(void);
+
+private:
+  PhaseAccumulator sawtooth_gen_;  //< Internal basic sawtooth signal generator
+  Differentiator differentiator_;  //< Internal basic differentiator
+  float normalization_factor_;  //< To be applied on the signal after synthesis
 };
 
 }  // namespace generators

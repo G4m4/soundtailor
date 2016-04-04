@@ -22,25 +22,22 @@
 #define SOUNDTAILOR_SRC_GENERATORS_GENERATORS_COMMON_H_
 
 #include "soundtailor/src/common.h"
-#include "soundtailor/src/generators/generator_base.h"
 
 namespace soundtailor {
 namespace generators {
 
 /// @brief Basic sawtooth signal generator
 /// Generates a lot of aliasing, not to be used straight to audio
-class PhaseAccumulator : public Generator_Base {
+class PhaseAccumulator {
  public:
   explicit PhaseAccumulator(const float phase = 0.0f);
-  virtual Sample operator()(void);
-  virtual void SetPhase(const float phase);
-  virtual void SetFrequency(const float frequency);
-  virtual float ProcessParameters(void);
-
- protected:
-  Sample phase_;  ///< Instantaneous phase of the generator
+  Sample operator()(void);
+  void SetPhase(const float phase);
+  void SetFrequency(const float frequency);
+  float ProcessParameters(void);
 
  private:
+  Sample phase_;  ///< Instantaneous phase of the generator
   Sample increment_;  ///< Increment to be accumulated at each iteration
 };
 

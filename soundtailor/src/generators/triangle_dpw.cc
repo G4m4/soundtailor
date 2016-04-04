@@ -1,7 +1,7 @@
 /// @file triangle_dpw.cc
 /// @brief Triangle signal generator using DPW algorithm - implementation
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -28,8 +28,7 @@ namespace soundtailor {
 namespace generators {
 
 TriangleDPW::TriangleDPW(const float phase)
-    : Generator_Base(phase),
-      sawtooth_gen_(),
+    : sawtooth_gen_(),
       differentiator_(),
       normalization_factor_(0.0f) {
   SOUNDTAILOR_ASSERT(phase <= 1.0f);

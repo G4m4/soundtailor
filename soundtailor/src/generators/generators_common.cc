@@ -24,11 +24,8 @@
 namespace soundtailor {
 namespace generators {
 
-// PhaseAccumulator
-
 PhaseAccumulator::PhaseAccumulator(const float phase)
-    : Generator_Base(phase),
-      phase_(VectorMath::Fill(phase)),
+    : phase_(VectorMath::Fill(phase)),
       increment_(VectorMath::Fill(0.0f)) {
   SOUNDTAILOR_ASSERT(phase <= 1.0f);
   SOUNDTAILOR_ASSERT(phase >= -1.0f);

@@ -1,7 +1,7 @@
 /// @file triangle_dpw.h
 /// @brief Triangle signal generator using DPW algorithm
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -29,18 +29,16 @@ namespace generators {
 
 /// @brief Triangle signal generator
 /// using Differentiated Parabolic Wave (DPW) algorithm
-class TriangleDPW : public Generator_Base {
+class TriangleDPW {
  public:
   explicit TriangleDPW(const float phase = 0.0f);
-  virtual ~TriangleDPW() {
-    // Nothing to do here for now
-  }
-  virtual Sample operator()(void);
-  virtual void SetPhase(const float phase);
-  virtual void SetFrequency(const float frequency);
-  virtual float ProcessParameters(void);
 
- protected:
+  Sample operator()(void);
+  void SetPhase(const float phase);
+  void SetFrequency(const float frequency);
+  float ProcessParameters(void);
+
+ private:
   PhaseAccumulator sawtooth_gen_;  //< Internal basic sawtooth signal generator
   Differentiator differentiator_;  //< Internal basic differentiator
   float normalization_factor_;  //< To be applied on the signal after synthesis
