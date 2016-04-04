@@ -1,7 +1,7 @@
 /// @file adsd.h
 /// @brief Envelop generator using Attack-Decay-Sustain-Decay (ADSD) model
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -22,7 +22,6 @@
 #define SOUNDTAILOR_SRC_MODULATORS_ADSD_H_
 
 #include "soundtailor/src/common.h"
-#include "soundtailor/src/modulators/envelopgenerator_base.h"
 #include "soundtailor/src/modulators/modulators_common.h"
 
 namespace soundtailor {
@@ -30,24 +29,22 @@ namespace modulators {
 
 /// @brief 2nd order low pass filter
 /// using the most simple (and computationally efficient) implementation
-class Adsd : public EnvelopGenerator_Base {
+class Adsd {
  public:
   Adsd();
-  virtual ~Adsd();
 
-  virtual void TriggerOn(void);
+  void TriggerOn(void);
+  void TriggerOff(void);
 
-  virtual void TriggerOff(void);
-
-  virtual float ComputeOneSample(void);
-  virtual Sample operator()(void);
+  float ComputeOneSample(void);
+  Sample operator()(void);
 
   /// Note that the release here is not used since this is a ADSD:
   /// the decay setting also sets the release
-  virtual void SetParameters(const unsigned int attack,
-                             const unsigned int decay,
-                             const unsigned int release,
-                             const float sustain_level);
+  void SetParameters(const unsigned int attack,
+                     const unsigned int decay,
+                     const unsigned int release,
+                     const float sustain_level);
 
   Section GetCurrentSection(void) const;
 

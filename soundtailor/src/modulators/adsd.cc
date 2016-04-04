@@ -1,7 +1,7 @@
 /// @file adsd.cc
 /// @brief Envelop generator using Attack-Decay-Sustain-Decay (ADSD) model
 /// @author gm
-/// @copyright gm 2014
+/// @copyright gm 2016
 ///
 /// This file is part of SoundTailor
 ///
@@ -38,9 +38,6 @@ Adsd::Adsd()
       decay_(0),
       actual_decay_(0),
       actual_release_(0) {
-  // Nothing to do here for now
-}
-Adsd::~Adsd() {
   // Nothing to do here for now
 }
 
