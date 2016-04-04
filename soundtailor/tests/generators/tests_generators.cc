@@ -38,6 +38,7 @@ TYPED_TEST_CASE(GeneratorData, GeneratorTypes);
 
 /// @brief Generates a signal, check for null mean (no DC offset)
 TYPED_TEST(Generator, Mean) {
+  testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "Instance size : %d\n", sizeof(TypeParam));
   for (unsigned int iterations(0); iterations < this->kTestIterations_; ++iterations) {
     IGNORE(iterations);
     // Random normalized frequency

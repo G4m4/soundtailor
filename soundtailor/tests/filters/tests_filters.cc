@@ -77,6 +77,7 @@ TYPED_TEST_CASE(FilterPassThrough, PassthroughFilterTypes);
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)
 TYPED_TEST(Filter, ZeroOutputMean) {
+  testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "Instance size : %d\n", sizeof(TypeParam));
   for (unsigned int iterations(0); iterations < this->kTestIterations_; ++iterations) {
     IGNORE(iterations);
 

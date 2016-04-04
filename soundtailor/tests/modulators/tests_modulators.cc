@@ -35,6 +35,7 @@ TYPED_TEST_CASE(ModulatorData, ModulatorTypes);
 
 /// @brief Generates an envelop, check for its range (must be >= 0)
 TYPED_TEST(Modulator, Range) {
+  testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "Instance size : %d\n", sizeof(TypeParam));
   for (unsigned int iterations(0);
        iterations < this->kTestIterations_;
        ++iterations) {
