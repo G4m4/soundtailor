@@ -90,7 +90,7 @@ def GenerateBLSawtoothSegment(sampling_rate = 48000.0,
 def GenerateBLSawtoothIntegrate(sampling_rate = 48000.0,
                                 cutoff = 15000.0,
                                 length = 4,
-                                ppiv = 2700,
+                                ppiv = 256,
                                 beta = 8.3,
                                 apodization_factor = 0.5,
                                 apodization_beta = 0.5):
@@ -105,6 +105,20 @@ def GenerateBLSawtoothIntegrate(sampling_rate = 48000.0,
     return out
 
 
+class BLPostFilter(object):
+    """
+    High frequency booster filter for band limited generators
+    """
+    def __init__(self):
+        self._last = 1.0
+
+    def process_sample(self, sample):
+        out = sample - 0.35 * self._last
+        # out *= (3.0 / 10.0)
+        self._last = out
+
+        return out
+
 if __name__ == "__main__":
     '''
     Various tests/sandbox
@@ -114,8 +128,13 @@ if __name__ == "__main__":
     view_beginning = 0
     view_length = 4 * 2700
 
-    pylab.plot(GenerateBLI()[view_beginning:view_beginning + view_length], label="blimpulse")
-    pylab.plot(GenerateBLSawtoothSegment()[view_beginning:view_beginning + view_length], label="blsaw")
+    bli_data = GenerateBLI()
+    blsawtooth_segment_data = GenerateBLSawtoothSegment()
+    blsawtooth_integrate_data = GenerateBLSawtoothIntegrate()
+    pylab.plot(bli_data[view_beginning:view_beginning + view_length], label="blimpulse")
+    pylab.plot(blsawtooth_segment_data[view_beginning:view_beginning + view_length], label="blsaw")
+    pylab.plot(blsawtooth_integrate_data[view_beginning:view_beginning + view_length], label="blsaw_integration")
+
 
     pylab.legend()
     pylab.show()

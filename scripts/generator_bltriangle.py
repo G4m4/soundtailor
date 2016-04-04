@@ -26,7 +26,7 @@ Note that all of this mimics C++ code for testing/prototyping purpose.
 Hence it may not really seems "pythonic" and not intended to be in any way.
 '''
 
-from bandlimited_impulse import GenerateBLSawtoothIntegrate
+from bandlimited_impulse import GenerateBLSawtoothIntegrate, BLPostFilter
 from generators_common import GeneratorInterface, PhaseAccumulator, IncrementAndWrap
 
 
@@ -34,7 +34,7 @@ class BLTriangle(GeneratorInterface):
     """
     Implements a triangle signal generator based on BLIT algorithm
     """
-    def __init__(self, sampling_rate, ppiv=2700):
+    def __init__(self, sampling_rate, with_postfilter=True, ppiv=2700):
         super(BLTriangle, self).__init__(sampling_rate)
         self._table = GenerateBLSawtoothIntegrate(sampling_rate=sampling_rate, length = 4, ppiv=ppiv)
         self._halfM = len(self._table)
@@ -43,6 +43,8 @@ class BLTriangle(GeneratorInterface):
         self._frequency = 0.0
         self._phi = 0.0
         self._update = True
+        if with_postfilter:
+            self._post_filter = BLPostFilter()
 
     def SetPhase(self, phase):
         pass
@@ -85,7 +87,13 @@ class BLTriangle(GeneratorInterface):
         normalised_freq = 2 * self._frequency / self._sampling_rate
         F = C - D * normalised_freq + E * normalised_freq
 
-        return numpy.clip(F, -1.0, 1.0)
+        # out = numpy.clip(F, -1.0, 1.0)
+        out = F
+
+        if hasattr(self, '_post_filter'):
+            return self._post_filter.process_sample(out)
+        else:
+            return out
 
     def _ProcessParameters(self):
         if self._update:
@@ -105,14 +113,18 @@ if __name__ == "__main__":
     # Change phase
     generated_data = numpy.zeros(length)
     ref_data = numpy.zeros(length)
+    nopostfilter_data = numpy.zeros(length)
     low_res_data = numpy.zeros(length)
 
     generator_ref = BLTriangle(sampling_freq)
     generator_ref.SetFrequency(freq)
+    generator_nopostfilter = BLTriangle(sampling_freq, False)
+    generator_nopostfilter.SetFrequency(freq)
     generator_low_res = BLTriangle(sampling_freq, ppiv=256)
     generator_low_res.SetFrequency(freq)
     for idx in range(length):
         ref_data[idx] = generator_ref.ProcessSample()
+        nopostfilter_data[idx] = generator_nopostfilter.ProcessSample()
         low_res_data[idx] = generator_low_res.ProcessSample()
 
     generator_left = BLTriangle(sampling_freq)
@@ -132,6 +144,7 @@ if __name__ == "__main__":
 
     # pylab.plot(generator_ref._table, label = "table")
     pylab.plot(ref_data, label = "triangle")
+    pylab.plot(nopostfilter_data, label = "triangle_nopf")
     # pylab.plot(ref_data - low_res_data, label = "diff")
 
     pylab.legend()

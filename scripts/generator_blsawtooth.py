@@ -28,7 +28,7 @@ Hence it may not really seems "pythonic" and not intended to be in any way.
 
 import numpy
 
-from bandlimited_impulse import GenerateBLSawtoothSegment
+from bandlimited_impulse import GenerateBLSawtoothSegment, BLPostFilter
 from generators_common import GeneratorInterface, PhaseAccumulator, IncrementAndWrap
 
 
@@ -36,7 +36,7 @@ class BLSawtooth(GeneratorInterface):
     """
     Implements a sawtooth signal generator based on BLIT algorithm
     """
-    def __init__(self, sampling_rate):
+    def __init__(self, sampling_rate, with_postfilter=True):
         super(BLSawtooth, self).__init__(sampling_rate)
         self._table = GenerateBLSawtoothSegment(sampling_rate=sampling_rate, length = 4)
         self._halfM = len(self._table)
@@ -50,6 +50,9 @@ class BLSawtooth(GeneratorInterface):
         self.debug_C = 0.0
         self.SetPhase(1.0)
         self.ProcessSample()
+        if with_postfilter:
+            self._post_filter = BLPostFilter()
+
         print(self._halfM)
 
     def SetPhase(self, phase):
@@ -84,7 +87,10 @@ class BLSawtooth(GeneratorInterface):
         self.debug_B = B
         self.debug_C = C
 
-        return out
+        if hasattr(self, '_post_filter'):
+            return self._post_filter.process_sample(out)
+        else:
+            return out
 
     def _ProcessParameters(self):
         if self._update:
@@ -99,26 +105,40 @@ if __name__ == "__main__":
     import numpy
     import pylab
     import utilities
+    from scipy.signal import freqz
 
     sampling_freq = 48000
     # Prime, as close as possible to the upper bound of 4kHz
     freq = 3989.0
-    length = 120
+    length = 12000
 
     # Change phase
     generated_data = numpy.zeros(length)
     ref_data = numpy.zeros(length)
+    nopostfilter_data = numpy.zeros(length)
     tmp_A = numpy.zeros(length)
     tmp_B = numpy.zeros(length)
     tmp_C = numpy.zeros(length)
 
     generator_ref = BLSawtooth(sampling_freq)
     generator_ref.SetFrequency(freq)
+    generator_nopostfilter = BLSawtooth(sampling_freq, False)
+    generator_nopostfilter.SetFrequency(freq)
     for idx in range(length):
         ref_data[idx] = generator_ref.ProcessSample()
+        nopostfilter_data[idx] = generator_nopostfilter.ProcessSample()
         tmp_A[idx] = generator_ref.debug_A
         tmp_B[idx] = generator_ref.debug_B
         tmp_C[idx] = generator_ref.debug_C
+
+    # filter = BLPostFilter()
+    # test_data = numpy.zeros(length)
+    # in_data = 2.0 * numpy.random.rand(length) - 1.0
+    # for idx in range(length):
+    #     value = in_data[idx]
+    #     test_data[idx] = filter.process_sample(value)
+    # pylab.plot(in_data, label="in")
+    # pylab.plot(test_data)
 
     generator_left = BLSawtooth(sampling_freq)
     generator_left.SetFrequency(freq)
@@ -134,13 +154,15 @@ if __name__ == "__main__":
 
     print(utilities.PrintMetadata(utilities.GetMetadata(ref_data)))
 
-    # pylab.plot(generator_ref._table, label = "table")
-    pylab.plot(ref_data, label = "sawtooth")
-    pylab.plot(tmp_A, label = "A")
-    pylab.plot(tmp_B, label = "B")
-    pylab.plot(tmp_C, label = "C")
+    # pylab.plot(generator_ref._table, label="table")
+    pylab.plot(ref_data, label="sawtooth")
+    pylab.plot(nopostfilter_data, label="sawtooth_nopf")
+    # pylab.plot(tmp_A, label="A")
+    # pylab.plot(tmp_B, label="B")
+    # pylab.plot(tmp_C, label="C")
 
     pylab.legend()
     pylab.show()
 
-    utilities.WriteWav(ref_data, "sawtooth_gen", sampling_freq)
+    utilities.WriteWav(ref_data / numpy.max(numpy.abs(ref_data)), "sawtooth_gen", sampling_freq)
+    utilities.WriteWav(nopostfilter_data / numpy.max(numpy.abs(nopostfilter_data)), "sawtooth_gen_nopf", sampling_freq)
