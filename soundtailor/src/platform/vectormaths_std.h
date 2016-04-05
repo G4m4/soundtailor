@@ -39,17 +39,17 @@ struct StandardVectorMath {
   /// @param[in]  b   Second to last value
   /// @param[in]  c   Second value
   /// @param[in]  d   First value
-  static inline Sample Fill(const float a,
-                            const float b,
-                            const float c,
-                            const float d) {
+  static inline Sample Fill(float a,
+                            float b,
+                            float c,
+                            float d) {
     return {{ a, b, c, d }};
   }
 
   /// @brief Fill a whole Sample with the given value
   ///
   /// @param[in]  value   Value to be copied through the whole Sample
-  static inline Sample Fill(const float value) {
+  static inline Sample Fill(float value) {
     return Fill( value, value, value, value );
   }
 
@@ -58,7 +58,7 @@ struct StandardVectorMath {
   ///
   /// @param[in]  value   Pointer to the float array to be used:
   ///                     must be SampleSizeBytes long
-  static inline Sample Fill(const float* value) {
+  static inline Sample Fill(BlockIn value) {
     return Fill( value[0], value[1], value[2], value[3] );
   }
 
@@ -123,7 +123,7 @@ struct StandardVectorMath {
   ///
   /// @param[in]  input   Sample to be shifted
   /// @param[in]  value   value to be shifted in
-  static inline Sample RotateOnRight(SampleRead input, const float value) {
+  static inline Sample RotateOnRight(SampleRead input, float value) {
     return Fill(
       value,
       input.data_[0],
@@ -139,7 +139,7 @@ struct StandardVectorMath {
   ///
   /// @param[in]  input   Sample to be shifted
   /// @param[in]  value   value to be shifted in
-  static inline Sample RotateOnLeft(SampleRead input, const float value) {
+  static inline Sample RotateOnLeft(SampleRead input, float value) {
     return Fill(
       input.data_[1],
       input.data_[2],
