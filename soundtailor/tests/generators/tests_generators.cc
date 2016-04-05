@@ -21,15 +21,18 @@
 #include "soundtailor/tests/generators/tests_generators_fixture.h"
 
 #include "soundtailor/src/generators/generators_common.h"
+#include "soundtailor/src/generators/sawtooth_blit.h"
 #include "soundtailor/src/generators/sawtooth_dpw.h"
 #include "soundtailor/src/generators/triangle_dpw.h"
 
 using soundtailor::generators::PhaseAccumulator;
+using soundtailor::generators::SawtoothBLIT;
 using soundtailor::generators::SawtoothDPW;
 using soundtailor::generators::TriangleDPW;
 
 /// @brief All tested types
 typedef ::testing::Types<PhaseAccumulator,
+                         SawtoothBLIT,
                          SawtoothDPW,
                          TriangleDPW> GeneratorTypes;
 
@@ -78,7 +81,7 @@ TYPED_TEST(Generator, Power) {
     generator.SetFrequency(kFrequency);
 
     const float kExpected(1.0f / 3.0f);
-    const float kEpsilon(1.7e-2f);
+    const float kEpsilon(2.5e-2f);
     const float kActual(ComputePower(generator, kDataLength));
 
     EXPECT_NEAR(kExpected, kActual, kEpsilon);
