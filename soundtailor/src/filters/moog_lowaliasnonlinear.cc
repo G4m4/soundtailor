@@ -26,11 +26,11 @@ namespace soundtailor {
 namespace filters {
 
 MoogLowAliasNonLinear::MoogLowAliasNonLinear()
-    : frequency_(0.0f),
+    : filters_(),
+      frequency_(0.0f),
       resonance_(0.0f),
       last_(0.0f),
-      last_side_factor_(0.0f),
-      filters_() {
+      last_side_factor_(0.0f) {
   // Nothing to do here for now
 }
 
