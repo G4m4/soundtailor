@@ -39,7 +39,10 @@ class SecondOrderRaw {
   static const Filter_Meta& Meta(void);
 
  private:
-  float gain_;  ///< Filter gain (b0 coefficient)
+  // The following is explicitly expanded into a full 128b register;
+  // for alignment reasons the remaining 96b would be wasted anyway
+  // Keep that in mind if refactoring
+  alignas(16) Sample gain_;  ///< Filter gain (b0 coefficient)
   alignas(16) float coeffs_[4];  ///< Filter coefficients (for zeroes and poles)
                      ///< organized as follows:
                      ///< [b2 b1 -a2 -a1]
