@@ -71,8 +71,10 @@ template<typename Type> void IGNORE(const Type&) {}
 /// If using vectorization it will be longer than 1 audio sample
 #if (_USE_SSE)
   typedef __m128 Sample;
+  typedef __m128i IntVec;
 #else
   struct Sample { float data_[4]; };
+  struct IntVec { int data_[4]; };
 #endif  // (_USE_SSE)
 
 /// @brief Type for Sample parameter "read only":

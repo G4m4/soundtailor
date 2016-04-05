@@ -46,6 +46,14 @@ struct StandardVectorMath {
     return {{ a, b, c, d }};
   }
 
+  /// @brief Fill a whole int vector with all given integers
+  static inline IntVec Fill(int a,
+                            int b,
+                            int c,
+                            int d) {
+    return {{ a, b, c, d }};
+  }
+
   /// @brief Fill a whole Sample with the given value
   ///
   /// @param[in]  value   Value to be copied through the whole Sample
@@ -68,6 +76,12 @@ struct StandardVectorMath {
   // TODO(gm): faster _mm_store_ss specialization
   template<unsigned i>
   static float GetByIndex(SampleRead input) {
+    return input.data_[i];
+  }
+
+  /// @brief Integer version of the above
+  template<unsigned i>
+  static int GetByIndex(IntVec input) {
     return input.data_[i];
   }
 
@@ -351,6 +365,23 @@ struct StandardVectorMath {
       && threshold == input.data_[1]
       && threshold == input.data_[2]
       && threshold == input.data_[3];
+  }
+
+  /// @brief Beware, not an actual bitwise AND! More like a "float select"
+  static inline Sample ExtractValueFromMask(SampleRead value, SampleRead mask) {
+    return Fill(
+      mask.data_[0] == 0xffffffff ? value.data_[0] : 0.0f,
+      mask.data_[1] == 0xffffffff ? value.data_[1] : 0.0f,
+      mask.data_[2] == 0xffffffff ? value.data_[2] : 0.0f,
+      mask.data_[3] == 0xffffffff ? value.data_[3] : 0.0f);
+  }
+
+  static inline IntVec TruncToInt(SampleRead float_value) {
+    return Fill(
+      static_cast<int>(float_value.data_[0]),
+      static_cast<int>(float_value.data_[1]),
+      static_cast<int>(float_value.data_[2]),
+      static_cast<int>(float_value.data_[3]));
   }
 };
 

@@ -70,6 +70,11 @@ struct SSE2VectorMath {
     Sample sample_v;  ///< Vectorized type
     float sample[soundtailor::SampleSize];  ///< Array of scalars
   } ConverterFloatScalarVector;
+  /// @brief Helper union for vectorized integer type to scalar array conversion
+  typedef union {
+    IntVec sample_v;  ///< Vectorized type
+    int sample[soundtailor::SampleSize];  ///< Array of scalars
+  } ConverterIntScalarVector;
 
   /// @brief Extract one element from a Sample (compile-time version)
   ///
@@ -78,6 +83,14 @@ struct SSE2VectorMath {
   template<unsigned i>
   static float GetByIndex(SampleRead input) {
     ConverterFloatScalarVector converter;
+    converter.sample_v = input;
+    return converter.sample[i];
+  }
+
+  /// @brief Integer version of the above
+  template<unsigned i>
+  static int GetByIndex(IntVec input) {
+    ConverterIntScalarVector converter;
     converter.sample_v = input;
     return converter.sample[i];
   }
@@ -321,6 +334,15 @@ struct SSE2VectorMath {
   static inline bool Equal(float threshold, SampleRead input) {
     const Sample test_result(Equal(Fill(threshold), input));
     return IsMaskFull(test_result);
+  }
+
+  /// @brief Beware, not an actual bitwise AND! More like a "float select"
+  static inline Sample ExtractValueFromMask(SampleRead value, SampleRead mask) {
+    return _mm_and_ps(left, right);
+  }
+
+  static inline IntVec TruncToInt(SampleRead float_value) {
+    return _mm_cvttps_epi32(float_value);
   }
 };
 
