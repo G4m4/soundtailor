@@ -132,3 +132,18 @@ def PrintTiming(func):
 
 def GetPredictedLength(normalised_freq, periods_count):
     return numpy.int_(numpy.floor(periods_count / normalised_freq))
+
+
+def write_c_array(data, filepath):
+    """Write data as a text string usable as a C array declaration
+    """
+    from os import SEEK_END
+    output_file = open(filepath, 'w')
+    try:
+        for idx, value in enumerate(data):
+            output_file.write("%ef,\n" % value)
+    finally:
+        # Erase the extra comma and line ending at the end
+        output_file.seek(-3, SEEK_END)
+        output_file.truncate()
+        output_file.close()

@@ -124,6 +124,7 @@ if __name__ == "__main__":
     Various tests/sandbox
     '''
     import pylab
+    from utilities import write_c_array
 
     view_beginning = 0
     view_length = 4 * 2700
@@ -135,6 +136,18 @@ if __name__ == "__main__":
     pylab.plot(blsawtooth_segment_data[view_beginning:view_beginning + view_length], label="blsaw")
     pylab.plot(blsawtooth_integrate_data[view_beginning:view_beginning + view_length], label="blsaw_integration")
 
+    write_c_array(blsawtooth_segment_data, "../soundtailor/src/generators/blsawtooth_segment.inc")
+    write_c_array(blsawtooth_integrate_data, "../soundtailor/src/generators/blsawtooth_integration.inc")
+
+    # length = 120
+    # post_filter = BLPostFilter()
+    # test_data = numpy.zeros(length)
+    # in_data = 2.0 * numpy.random.rand(length) - 1.0
+    # for idx in range(length):
+    #     value = in_data[idx]
+    #     test_data[idx] = post_filter.process_sample(value)
+    # pylab.plot(in_data, label="in")
+    # pylab.plot(test_data, label="out")
 
     pylab.legend()
     pylab.show()
