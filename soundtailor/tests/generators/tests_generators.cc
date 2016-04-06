@@ -23,11 +23,13 @@
 #include "soundtailor/src/generators/generators_common.h"
 #include "soundtailor/src/generators/sawtooth_blit.h"
 #include "soundtailor/src/generators/sawtooth_dpw.h"
+#include "soundtailor/src/generators/square_blit.h"
 #include "soundtailor/src/generators/triangle_dpw.h"
 
 using soundtailor::generators::PhaseAccumulator;
 using soundtailor::generators::SawtoothBLIT;
 using soundtailor::generators::SawtoothDPW;
+using soundtailor::generators::SquareBLIT;
 using soundtailor::generators::TriangleDPW;
 
 /// @brief All tested types
@@ -76,6 +78,10 @@ TYPED_TEST(Generator, Mean) {
 template<class GeneratorType>
 float GetExpectedPower(void) {
   return 1.0f / 3.0f;
+};
+template<>
+float GetExpectedPower<SquareBLIT>(void)  {
+  return 1.0f;
 };
 
 /// @brief Generates a signal, check for signal power
