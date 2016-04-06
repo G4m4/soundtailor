@@ -105,6 +105,12 @@ class GeneratorData : public Generator<GeneratorType> {
   std::vector<float> output_data_;
 };
 
+/// @brief Tests fixture for generators able to output zero
+// @todo(gm) get rid of that by using generators policies
+template <typename GeneratorType>
+class GeneratorWithZero : public Generator<GeneratorType> {
+};
+
 /// @brief Compute the frequency of a given piano key (A4 = 440Hz)
 static inline float NoteToFrequency(const unsigned int key_number) {
   const float exponent((static_cast<float>(key_number) - 69.0f) / 12.0f);

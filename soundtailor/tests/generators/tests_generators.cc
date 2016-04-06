@@ -31,12 +31,20 @@ using soundtailor::generators::SawtoothDPW;
 using soundtailor::generators::TriangleDPW;
 
 /// @brief All tested types
-typedef ::testing::Types<PhaseAccumulator,
-                         SawtoothBLIT,
-                         SawtoothDPW,
-                         TriangleDPW> GeneratorTypes;
+typedef ::testing::Types<
+    PhaseAccumulator,
+    SawtoothBLIT,
+    SawtoothDPW,
+    TriangleDPW> GeneratorTypes;
+
+typedef ::testing::Types<
+    PhaseAccumulator,
+    SawtoothBLIT,
+    SawtoothDPW,
+    TriangleDPW> GeneratorWithZeroTypes;
 
 TYPED_TEST_CASE(Generator, GeneratorTypes);
+TYPED_TEST_CASE(GeneratorWithZero, GeneratorWithZeroTypes);
 TYPED_TEST_CASE(GeneratorData, GeneratorTypes);
 
 /// @brief Generates a signal, check for null mean (no DC offset)
@@ -64,6 +72,12 @@ TYPED_TEST(Generator, Mean) {
   }  // iterations?
 }
 
+// @todo(gm) get rid of that when using generator policies
+template<class GeneratorType>
+float GetExpectedPower(void) {
+  return 1.0f / 3.0f;
+};
+
 /// @brief Generates a signal, check for signal power
 TYPED_TEST(Generator, Power) {
   for (unsigned int iterations(0); iterations < this->kTestIterations_; ++iterations) {
@@ -80,8 +94,8 @@ TYPED_TEST(Generator, Power) {
     TypeParam generator;
     generator.SetFrequency(kFrequency);
 
-    const float kExpected(1.0f / 3.0f);
-    const float kEpsilon(2.5e-2f);
+    const float kExpected(GetExpectedPower<TypeParam>());
+    const float kEpsilon(5.0e-2f);
     const float kActual(ComputePower(generator, kDataLength));
 
     EXPECT_NEAR(kExpected, kActual, kEpsilon);
@@ -210,7 +224,7 @@ TYPED_TEST(Generator, PhaseControl) {
 }
 
 /// @brief Check that the first generated sample is always a zero
-TYPED_TEST(Generator, BeginsAtZero) {
+TYPED_TEST(GeneratorWithZero, BeginsAtZero) {
   for (unsigned int iterations(0); iterations < this->kTestIterations_; ++iterations) {
     IGNORE(iterations);
     const float kFrequency(this->kFreqDistribution_(this->kRandomGenerator_));
