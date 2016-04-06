@@ -33,9 +33,9 @@ from scipy import signal
 from scipy.io.wavfile import write
 
 def GenerateChirpData(freq_low, freq_high, length, sampling_freq):
-    '''
+    """
     Simple chirp synthesis
-    '''
+    """
     end_time_s = float(length) / sampling_freq
 
     sampled_time = numpy.arange(0,
@@ -46,16 +46,30 @@ def GenerateChirpData(freq_low, freq_high, length, sampling_freq):
                         t1 = end_time_s,
                         f1 = freq_high)
 
+
 def GenerateSquareData(freq, length, sampling_freq):
-    '''
+    """
     Simple square signal synthesis
-    '''
+    """
     end_time_s = float(length) / sampling_freq
 
     sampled_time = numpy.arange(0,
                                 end_time_s,
                                 1.0 / sampling_freq)
     return signal.square(sampled_time * 2 * numpy.pi * freq)
+
+
+def GenerateSawtoothData(freq, length, sampling_freq):
+    """
+    Simple sawtooth signal synthesis
+    """
+    end_time_s = float(length) / sampling_freq
+
+    sampled_time = numpy.arange(0,
+                                end_time_s,
+                                1.0 / sampling_freq)
+    return signal.sawtooth(sampled_time * 2 * numpy.pi * freq)
+
 
 def GetMetadata(signal):
     '''

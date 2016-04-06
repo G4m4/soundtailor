@@ -79,7 +79,7 @@ class BLTriangle(GeneratorInterface):
         self._ProcessParameters()
         tmp = self._sawtooth_gen.ProcessSample()
         A = IncrementAndWrap(tmp, self._phi)
-        B = IncrementAndWrap(tmp, 1.0)
+        B = IncrementAndWrap(A, 1.0)
         C = 2 * numpy.abs(A) - 1.0
         D = self._read_table(A)
         E = self._read_table(B)
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     sampling_freq = 48000
     # Prime, as close as possible to the upper bound of 4kHz
     freq = 3989.0
-    length = 120
+    length = 240
 
     # Change phase
     generated_data = numpy.zeros(length)
@@ -144,10 +144,12 @@ if __name__ == "__main__":
 
     # pylab.plot(generator_ref._table, label = "table")
     pylab.plot(ref_data, label = "triangle")
-    pylab.plot(nopostfilter_data, label = "triangle_nopf")
+    # pylab.plot(nopostfilter_data, label = "triangle_nopf")
+    pylab.plot(generated_data, label = "pieces_data")
     # pylab.plot(ref_data - low_res_data, label = "diff")
 
     pylab.legend()
     pylab.show()
 
     utilities.WriteWav(ref_data, "bl_triangle", sampling_freq)
+    utilities.WriteWav(generated_data, "bl_triangle_phase", sampling_freq)

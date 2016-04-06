@@ -51,22 +51,23 @@ class GeneratorInterface(object):
     def _ProcessParameters(self):
         raise Exception("'Pure virtual' function called!")
 
+
 def IncrementAndWrap(input_sample, increment):
-    '''
+    """
     Helper function: increment the input and wraps it into [-1.0 ; 1.0[
     The input is supposed not to be negative
-    '''
+    """
     output = input_sample + increment
-    if (output > 1.0):
+    if output > 1.0:
         output -= 2.0
     return output
 
+
 class PhaseAccumulator(GeneratorInterface):
-    '''
+    """
     Implements a naive sawtooth generator by phase accumulation
-    '''
+    """
     def __init__(self, sampling_rate):
-        #New-style upper class invokation
         super(PhaseAccumulator, self).__init__(sampling_rate)
         self._increment = 0.0
         self._current = 0.0
@@ -74,6 +75,7 @@ class PhaseAccumulator(GeneratorInterface):
         self._update = False
 
     def SetPhase(self, phase):
+        self._ProcessParameters()
         self._current = phase
 
     def SetFrequency(self, frequency):
@@ -113,22 +115,33 @@ if __name__ == "__main__":
     '''
     import numpy
     import pylab
+    from utilities import GenerateSawtoothData
 
-    freq = 0.00179174564 * 48000
-    sampling_freq = 48000
-    length = 1024
+    freq = 3989.0
+    sampling_freq = 48000.0
+    length = 64
 
     # Change phase
+    ref_data = numpy.zeros(length)
+    base_data = GenerateSawtoothData(freq, length, sampling_freq)
     generated_data = numpy.zeros(length)
+
+    generator_ref = PhaseAccumulator(sampling_freq)
+    generator_ref.SetFrequency(freq)
+    generator_ref.SetPhase(-1.0)
+    for idx in range(length):
+        ref_data[idx] = generator_ref.ProcessSample()
 
     generator_left = PhaseAccumulator(sampling_freq)
     generator_left.SetFrequency(freq)
+    generator_left.SetPhase(-1.0)
     for idx in range(length / 2):
         generated_data[idx] = generator_left.ProcessSample()
 
     generator_right = PhaseAccumulator(sampling_freq)
-    generator_right.SetPhase(generated_data[length / 2 - 1])
     generator_right.SetFrequency(freq)
+    generator_right.SetPhase(generated_data[length / 2 - 1])
+    generator_right.ProcessSample()
     for idx in range(length / 2, length):
         generated_data[idx] = generator_right.ProcessSample()
 
@@ -137,6 +150,9 @@ if __name__ == "__main__":
     for idx, sample in enumerate(generated_data):
         diff_data[idx] = differentiator.ProcessSample(sample)
 
-    pylab.plot(generated_data)
-    pylab.plot(diff_data)
+    pylab.plot(ref_data, label="ref")
+    pylab.plot(base_data, label="base_data")
+    pylab.plot(generated_data, label="pieces_data")
+    pylab.plot(diff_data, label="diff")
+    pylab.legend()
     pylab.show()

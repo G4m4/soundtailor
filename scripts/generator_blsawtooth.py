@@ -104,17 +104,18 @@ if __name__ == "__main__":
     '''
     import numpy
     import pylab
-    import utilities
+    from utilities import GenerateSawtoothData, GetMetadata, PrintMetadata, WriteWav
     from scipy.signal import freqz
 
     sampling_freq = 48000
     # Prime, as close as possible to the upper bound of 4kHz
     freq = 3989.0
-    length = 12000
+    length = 120
 
     # Change phase
     generated_data = numpy.zeros(length)
     ref_data = numpy.zeros(length)
+    base_data = GenerateSawtoothData(freq, length, sampling_freq)
     nopostfilter_data = numpy.zeros(length)
     tmp_A = numpy.zeros(length)
     tmp_B = numpy.zeros(length)
@@ -131,15 +132,6 @@ if __name__ == "__main__":
         tmp_B[idx] = generator_ref.debug_B
         tmp_C[idx] = generator_ref.debug_C
 
-    # filter = BLPostFilter()
-    # test_data = numpy.zeros(length)
-    # in_data = 2.0 * numpy.random.rand(length) - 1.0
-    # for idx in range(length):
-    #     value = in_data[idx]
-    #     test_data[idx] = filter.process_sample(value)
-    # pylab.plot(in_data, label="in")
-    # pylab.plot(test_data)
-
     generator_left = BLSawtooth(sampling_freq)
     generator_left.SetFrequency(freq)
     for idx in range(length / 2):
@@ -152,11 +144,13 @@ if __name__ == "__main__":
     for idx in range(length / 2, length):
         generated_data[idx] = generator_right.ProcessSample()
 
-    print(utilities.PrintMetadata(utilities.GetMetadata(ref_data)))
+    print(PrintMetadata(GetMetadata(ref_data)))
 
     # pylab.plot(generator_ref._table, label="table")
     pylab.plot(ref_data, label="sawtooth")
+    pylab.plot(base_data, label="sawtooth_base")
     pylab.plot(nopostfilter_data, label="sawtooth_nopf")
+    pylab.plot(generated_data, label="pieces_data")
     # pylab.plot(tmp_A, label="A")
     # pylab.plot(tmp_B, label="B")
     # pylab.plot(tmp_C, label="C")
@@ -164,5 +158,6 @@ if __name__ == "__main__":
     pylab.legend()
     pylab.show()
 
-    utilities.WriteWav(ref_data / numpy.max(numpy.abs(ref_data)), "sawtooth_gen", sampling_freq)
-    utilities.WriteWav(nopostfilter_data / numpy.max(numpy.abs(nopostfilter_data)), "sawtooth_gen_nopf", sampling_freq)
+    WriteWav(ref_data / numpy.max(numpy.abs(ref_data)), "sawtooth_gen", sampling_freq)
+    WriteWav(nopostfilter_data / numpy.max(numpy.abs(nopostfilter_data)), "sawtooth_gen_nopf", sampling_freq)
+    WriteWav(generated_data / numpy.max(numpy.abs(generated_data)), "sawtooth_phase", sampling_freq)

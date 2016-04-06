@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-@file generator_blpulse.py
-@brief Bandlimited pulse generation
+@file generator_blsquare.py
+@brief Bandlimited square generation
 @author gm
 @copyright gm 2016
 
@@ -28,41 +28,35 @@ Hence it may not really seems "pythonic" and not intended to be in any way.
 
 from bandlimited_impulse import BLPostFilter
 from generator_blsawtooth import BLSawtooth
-from generators_common import GeneratorInterface
+from generators_common import GeneratorInterface, IncrementAndWrap
 
 
-class BLPulse(GeneratorInterface):
+class BLSquare(GeneratorInterface):
     """
-    Implements a band limited variable pulse width signal generator
+    Implements a band limited square signal generator
+    Basically a fixed width pulse generator allowing to explore specific optimizations and features
     """
-    def __init__(self, sampling_rate, with_postfilter=True):
-        super(BLPulse, self).__init__(sampling_rate)
+    def __init__(self, sampling_rate, with_postfilter=False):
+        super(BLSquare, self).__init__(sampling_rate)
         self._gen1 = BLSawtooth(sampling_rate, False)
         self._gen2 = BLSawtooth(sampling_rate, False)
+        self.SetPhase(0.0)
         if with_postfilter:
             self._post_filter = BLPostFilter()
 
     def SetPhase(self, phase):
         self._gen1.SetPhase(phase)
-        self._gen2.SetPhase(phase)
+        self._gen2.SetPhase(IncrementAndWrap(phase, 1.0))
 
     def SetFrequency(self, frequency):
         self._gen1.SetFrequency(frequency)
         self._gen2.SetFrequency(frequency)
 
-    def SetPulseWidth(self, pulse_width):
-        phase1 = self._gen1.ProcessSample()
-        self._gen1.SetPhase(phase1)
-        offset = pulse_width * 1.0
-        self._gen2.SetPhase(phase1 + offset)
-        self._update = True
-        self.ProcessSample()
-
     def ProcessSample(self):
         out1 = self._gen1.ProcessSample()
         out2 = self._gen2.ProcessSample()
 
-        out = 0.5 * (out1 - out2)
+        out = out1 - out2
 
         if hasattr(self, '_post_filter'):
             return self._post_filter.process_sample(out)
@@ -77,46 +71,44 @@ if __name__ == "__main__":
     sampling_freq = 48000
     # Prime, as close as possible to the upper bound of 4kHz
     freq = 3989.0
-    length = GetPredictedLength(freq / sampling_freq, 8)
-    pulse_width = 0.5
+    length = GetPredictedLength(freq / sampling_freq, 3)
+    length = 120
 
     # Change phase
     generated_data = numpy.zeros(length)
     ref_data = numpy.zeros(length)
+    # -1 factor to start at 0
+    base_data = -1.0 * GenerateSquareData(freq, length, sampling_freq)
     nopostfilter_data = numpy.zeros(length)
 
-    generator_ref = BLPulse(sampling_freq)
-    generator_ref.SetPulseWidth(pulse_width)
+    generator_ref = BLSquare(sampling_freq)
     generator_ref.SetFrequency(freq)
-    generator_nopostfilter = BLPulse(sampling_freq, False)
-    generator_nopostfilter.SetPulseWidth(pulse_width)
+    generator_nopostfilter = BLSquare(sampling_freq, False)
     generator_nopostfilter.SetFrequency(freq)
     for idx in range(length):
         ref_data[idx] = generator_ref.ProcessSample()
         nopostfilter_data[idx] = generator_nopostfilter.ProcessSample()
 
-    generator_left = BLPulse(sampling_freq)
-    generator_left.SetPulseWidth(pulse_width)
+    generator_left = BLSquare(sampling_freq)
     generator_left.SetFrequency(freq)
     for idx in range(length / 2):
         generated_data[idx] = generator_left.ProcessSample()
 
-    generator_right = BLPulse(sampling_freq)
-    generator_right.SetPhase(generated_data[length / 2 - 1])
-    generator_right.SetPulseWidth(pulse_width)
+    generator_right = BLSquare(sampling_freq)
     generator_right.SetFrequency(freq)
-    generator_right.ProcessSample()
+    generator_right.SetPhase(generated_data[length / 2 - 1])
     for idx in range(length / 2, length):
         generated_data[idx] = generator_right.ProcessSample()
 
     print(PrintMetadata(GetMetadata(ref_data)))
 
     # pylab.plot(generator_ref._table, label = "table")
-    pylab.plot(ref_data, label = "pulse")
+    pylab.plot(ref_data, label = "square")
+    pylab.plot(base_data, label = "square_base")
     pylab.plot(generated_data, label = "pieces_data")
-    # pylab.plot(nopostfilter_data, label="pulse_nopf")
+    # pylab.plot(nopostfilter_data, label="square_nopf")
 
     pylab.legend()
     pylab.show()
 
-    WriteWav(ref_data, "bl_pulse", sampling_freq)
+    WriteWav(ref_data, "bl_square", sampling_freq)
