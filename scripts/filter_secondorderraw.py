@@ -114,26 +114,30 @@ if __name__ == "__main__":
     import numpy
     import pylab
     import utilities
+    from scipy.io.wavfile import read
 
-    freq = 1000.0
-    sampling_freq = 48000.0
-    length = 512
+    sampling_freq = 96000.0
+    freq = 0.407282233
+    length = 16384
     resonance = 0.7
 
     in_data = utilities.GenerateChirpData(200, 2000, length, sampling_freq)
+
+    (_, in_data) = read("in_data.wav")
+    in_data = numpy.array(list(in_data),dtype='float') / numpy.max(in_data)
 
     out_data = numpy.zeros(length)
     out_data_vectorized = numpy.zeros(length)
 
     lowpass = SecondOrderRaw()
-    lowpass.SetParameters(0.2, resonance)
+    lowpass.SetParameters(freq, resonance)
 
     for idx, _ in enumerate(in_data):
         out_data[idx] = lowpass.ProcessSample(in_data[idx])
 
     # Vectorized processing
     lowpass_v = SecondOrderRaw()
-    lowpass_v.SetParameters(0.2, resonance)
+    lowpass_v.SetParameters(freq, resonance)
     idx = 0
     while idx < len(in_data):
         current_vector = (in_data[idx],
@@ -146,8 +150,10 @@ if __name__ == "__main__":
          out_data_vectorized[idx + 3]) = lowpass_v.Process4Samples(current_vector)
         idx += 4
 
+    test_data = numpy.greater_equal(numpy.abs(out_data), 2.0 * numpy.ones(length))
     pylab.plot(in_data, label="in")
     pylab.plot(out_data, label="out")
     pylab.plot(out_data_vectorized, label="out_v")
+    print(numpy.sum(test_data))
     pylab.legend()
     pylab.show()

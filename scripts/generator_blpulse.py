@@ -28,8 +28,7 @@ Hence it may not really seems "pythonic" and not intended to be in any way.
 
 from bandlimited_impulse import BLPostFilter
 from generator_blsawtooth import BLSawtooth
-from generators_common import GeneratorInterface
-
+from generators_common import GeneratorInterface, IncrementAndWrap
 
 class BLPulse(GeneratorInterface):
     """
@@ -54,7 +53,7 @@ class BLPulse(GeneratorInterface):
         phase1 = self._gen1.ProcessSample()
         self._gen1.SetPhase(phase1)
         offset = pulse_width * 1.0
-        self._gen2.SetPhase(phase1 + offset)
+        self._gen2.SetPhase(IncrementAndWrap(phase1, offset))
         self._update = True
         self.ProcessSample()
 

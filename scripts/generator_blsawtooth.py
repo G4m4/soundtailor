@@ -44,19 +44,19 @@ class BLSawtooth(GeneratorInterface):
         self._frequency = 0.0
         self._update = False
         self._alpha = 1.0
-        self._N = 1.0
+        self._phi = 0.0
         self.debug_A = 0.0
         self.debug_B = 0.0
         self.debug_C = 0.0
-        self.SetPhase(1.0)
-        self.ProcessSample()
         if with_postfilter:
             self._post_filter = BLPostFilter()
 
         print(self._halfM)
 
     def SetPhase(self, phase):
-        self._sawtooth_gen.SetPhase(phase)
+        self._phi = phase
+        if hasattr(self, '_post_filter'):
+            self._post_filter.set_last(0.0)
 
     def SetFrequency(self, frequency):
         self._frequency = frequency
@@ -67,10 +67,11 @@ class BLSawtooth(GeneratorInterface):
         abs_value = numpy.abs(value)
         sign_value = numpy.sign(value)
         if abs_value < self._alpha:
-            relative_index = int(numpy.round(self._halfM * abs_value / self._alpha))
-            index = numpy.minimum(self._halfM - relative_index, self._halfM - 1)
+            relative_index = int(self._halfM * abs_value / self._alpha)
+            # index = numpy.minimum(self._halfM - relative_index, self._halfM - 1)
+            index = self._halfM - relative_index - 1
+            # print(index)
             read = sign_value * self._table[index]
-            # print(str(value) + " " + str(relative_index) + " " + str(index) + "->" + str(read))
             return read
         else:
             return 0.0
@@ -78,9 +79,9 @@ class BLSawtooth(GeneratorInterface):
     def ProcessSample(self):
         self._ProcessParameters()
         current = self._sawtooth_gen.ProcessSample()
-        A = current
+        A = IncrementAndWrap(current, self._phi)
         C = self._read_table(A)
-        B = IncrementAndWrap(A, self._N)
+        B = IncrementAndWrap(A, 1.0)
         out = B + C
 
         self.debug_A = A
@@ -94,7 +95,7 @@ class BLSawtooth(GeneratorInterface):
 
     def _ProcessParameters(self):
         if self._update:
-            self._alpha = self._frequency * 4.0 * self._N / self._sampling_rate
+            self._alpha = self._frequency * 4.0 / self._sampling_rate
             print(self._alpha)
             self._update = False
 

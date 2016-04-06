@@ -47,22 +47,17 @@ class BLTriangle(GeneratorInterface):
             self._post_filter = BLPostFilter()
 
     def SetPhase(self, phase):
-        pass
+        self._sawtooth_gen.SetPhase(phase)
+        self._phi = phase
+        if hasattr(self, '_post_filter'):
+            self._post_filter.set_last(0.0)
 
     def SetFrequency(self, frequency):
         self._sawtooth_gen.SetFrequency(frequency)
         self._frequency = frequency
 
-    def SetPulseWidth(self, pulse_width):
-        phase1 = 0.0
-        self._gen1.SetPhase(phase1)
-        offset = pulse_width * 1.0
-        self._gen2.SetPhase(phase1 + offset)
-        self._update = True
-
     def _read_table(self, value):
         abs_value = numpy.abs(value)
-        sign_value = numpy.sign(value)
         if abs_value < self._alpha:
             relative_index = int(numpy.round(self._halfM * abs_value / self._alpha))
             index = numpy.minimum(self._halfM - relative_index, self._halfM - 1)
