@@ -33,10 +33,10 @@ namespace soundtailor {
 /// obviously the instance has to be known at compile time
 template <typename GeneratorType>
 void ProcessBlock(BlockOut out,
-                  unsigned int block_size,
+                  std::size_t block_size,
                   GeneratorType&& instance) {
   float* SOUNDTAILOR_RESTRICT out_write(out);
-  for (unsigned int i(0); i < block_size; i += SampleSize) {
+  for (std::size_t i(0); i < block_size; i += SampleSize) {
     VectorMath::Store(out_write, instance());
     out_write += SampleSize;
   }
@@ -51,11 +51,11 @@ void ProcessBlock(BlockOut out,
 template <typename FilterType>
 void ProcessBlock(BlockIn in,
                   BlockOut out,
-                  unsigned int block_size,
+                  std::size_t block_size,
                   FilterType&& filter_instance) {
   const float* SOUNDTAILOR_RESTRICT in_ptr(in);
   float* SOUNDTAILOR_RESTRICT out_write(out);
-  for (unsigned int i(0); i < block_size; i += SampleSize) {
+  for (std::size_t i(0); i < block_size; i += SampleSize) {
     const Sample kInput(VectorMath::Fill(in_ptr));
     VectorMath::Store(out_write, filter_instance(kInput));
     in_ptr += SampleSize;
