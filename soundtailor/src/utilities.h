@@ -35,7 +35,7 @@ template <typename GeneratorType>
 void ProcessBlock(BlockOut out,
                   unsigned int block_size,
                   GeneratorType&& instance) {
-  float* RESTRICT out_write(out);
+  float* SOUNDTAILOR_RESTRICT out_write(out);
   for (unsigned int i(0); i < block_size; i += SampleSize) {
     VectorMath::Store(out_write, instance());
     out_write += SampleSize;
@@ -53,8 +53,8 @@ void ProcessBlock(BlockIn in,
                   BlockOut out,
                   unsigned int block_size,
                   FilterType&& filter_instance) {
-  const float* RESTRICT in_ptr(in);
-  float* RESTRICT out_write(out);
+  const float* SOUNDTAILOR_RESTRICT in_ptr(in);
+  float* SOUNDTAILOR_RESTRICT out_write(out);
   for (unsigned int i(0); i < block_size; i += SampleSize) {
     const Sample kInput(VectorMath::Fill(in_ptr));
     VectorMath::Store(out_write, filter_instance(kInput));

@@ -41,11 +41,11 @@ class Generator : public ::testing::Test {
       kTestIterations_( 16 ),
 
       // Smaller performance test sets in debug
-#if (_BUILD_CONFIGURATION_DEBUG)
+#if (_SOUNDTAILOR_BUILD_CONFIGURATION_DEBUG)
       kPerfIterations_( 1 ),
-#else  // (_BUILD_CONFIGURATION_DEBUG)
+#else  // (_SOUNDTAILOR_BUILD_CONFIGURATION_DEBUG)
       kPerfIterations_( 256 * 2 ),
-#endif  // (_BUILD_CONFIGURATION_DEBUG)
+#endif  // (_SOUNDTAILOR_BUILD_CONFIGURATION_DEBUG)
 
     kSignalDataPeriodsCount_(8.0f),
     kDataTestSetSize_(32768),

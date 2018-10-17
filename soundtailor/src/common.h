@@ -40,16 +40,17 @@ template<typename Type> void IGNORE(const Type&) {}
 
 /// @brief Assume that the following condition is always true
 /// (on some compilers, allows optimization)
-#if(_COMPILER_MSVC)
+#if(_SOUNDTAILOR_COMPILER_MSVC)
   static inline void ASSUME(const bool condition) {__assume(condition);}
-#elif(_COMPILER_GCC)
+#elif(_SOUNDTAILOR_COMPILER_GCC)
   static inline void ASSUME(const bool condition) {if (!(condition)) __builtin_unreachable();}
 #else
+  #error Unknown compiler!
   #define ASSUME(_condition_)
-#endif  // _COMPILER_ ?
+#endif  // _SOUNDTAILOR_COMPILER_ ?
 
 /// @brief Asserts condition == true
-#if(_BUILD_CONFIGURATION_DEBUG)
+#if(_SOUNDTAILOR_BUILD_CONFIGURATION_DEBUG)
   #define SOUNDTAILOR_ASSERT(_condition_) (assert((_condition_)))
 #else
   // Maps to "assume" in release configuration for better optimization
@@ -57,15 +58,15 @@ template<typename Type> void IGNORE(const Type&) {}
 #endif
 
 /// @brief Indicates that the decorated reference is not aliased
-#ifndef RESTRICT
-  #if(_COMPILER_MSVC)
-    #define RESTRICT __restrict
-  #elif(_COMPILER_GCC)
-    #define RESTRICT __restrict__
+#ifndef SOUNDTAILOR_RESTRICT
+  #if(_SOUNDTAILOR_COMPILER_MSVC)
+    #define SOUNDTAILOR_RESTRICT __restrict
+  #elif(_SOUNDTAILOR_COMPILER_GCC)
+    #define SOUNDTAILOR_RESTRICT __restrict__
   #else
-    #define RESTRICT
-  #endif  // _COMPILER_ ?
-#endif  // RESTRICT ?
+    #define SOUNDTAILOR_RESTRICT
+  #endif  // _SOUNDTAILOR_COMPILER_ ?
+#endif  // SOUNDTAILOR_RESTRICT ?
 
 /// @brief "Sample" type - actually, this is the data computed at each "tick";
 /// If using vectorization it will be longer than 1 audio sample

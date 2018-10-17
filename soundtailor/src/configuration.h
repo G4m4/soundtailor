@@ -27,9 +27,9 @@
 
 /// @brief Compiler detection
 #if(defined(__GNUC__))
-  #define _COMPILER_GCC 1
+  #define _SOUNDTAILOR_COMPILER_GCC 1
 #elif(defined(_MSC_VER))
-  #define _COMPILER_MSVC 1
+  #define _SOUNDTAILOR_COMPILER_MSVC 1
 #else
   #error "Compiler could not be detected"
 #endif
@@ -38,19 +38,19 @@
 /// Since there are no easy cross-platform way to do this,
 /// we assume that "no asserts" means release
 #if(defined(_NDEBUG) || defined(NDEBUG))
-  #define _BUILD_CONFIGURATION_DEBUG 0
+  #define _SOUNDTAILOR_BUILD_CONFIGURATION_DEBUG 0
 #else  // defined(NDEBUG) ?
-  #define _BUILD_CONFIGURATION_DEBUG 1
+  #define _SOUNDTAILOR_BUILD_CONFIGURATION_DEBUG 1
 #endif  // defined(NDEBUG) ?
 
 /// @brief Architecture detection - compiler specific preprocessor macros
-#if _COMPILER_MSVC
+#if _SOUNDTAILOR__COMPILER_MSVC
   #if defined(_M_IX86)
-    #define _ARCH_X86 1
+    #define _SOUNDTAILOR_ARCH_X86 1
   #endif
-#elif _COMPILER_GCC
+#elif _SOUNDTAILOR_COMPILER_GCC
   #if (defined(__i386__))
-    #define _ARCH_X86 1
+    #define _SOUNDTAILOR_ARCH_X86 1
   #endif
 #endif
 
