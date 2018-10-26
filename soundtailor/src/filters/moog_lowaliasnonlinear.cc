@@ -118,11 +118,20 @@ void MoogLowAliasNonLinear::SetParameters(const float frequency,
 }
 
 float MoogLowAliasNonLinear::Saturate(float sample) {
-  return Math::Min(Math::Max(sample, -1.0f), 1.0f);
+  constexpr Sample lowerBound = { -1.0f, -1.0f, -1.0f, -1.0f };
+  constexpr Sample upperBound = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+  const Sample vecSample = VectorMath::Fill(sample);
+  const Sample result = VectorMath::Min(VectorMath::Max(vecSample, lowerBound), upperBound);
+  return VectorMath::GetFirst(result);
 }
 
 float MoogLowAliasNonLinear::ApplyNonLinearity(float sample) {
-  if (1.0 <= Math::Abs(sample)) {
+  constexpr Sample threshold = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+  Sample vecSample = VectorMath::Fill(sample);
+  // TODO @gm: collapse predicate to mask
+  if (VectorMath::GetFirst(VectorMath::LessEqual(threshold, VectorMath::Abs(vecSample))) != 0.0f) {
     const float kFactor(2.0f / 3.0f);
     return kFactor * Saturate(sample);
   } else {

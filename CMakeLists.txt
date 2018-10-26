@@ -267,4 +267,12 @@ if (SOUNDTAILOR_HAS_GTEST)
   add_compiler_flags(gtest " -w")
 endif (SOUNDTAILOR_HAS_GTEST)
 
+set(VECMATH_DIR
+  ${CMAKE_CURRENT_SOURCE_DIR}/externals/vecmath
+)
+add_subdirectory(${VECMATH_DIR})
+set(VECMATH_INCLUDE_DIRS
+  ${VECMATH_DIR}
+)
+
 add_subdirectory(soundtailor)

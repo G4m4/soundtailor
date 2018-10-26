@@ -18,6 +18,8 @@
 /// You should have received a copy of the GNU General Public License
 /// along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <algorithm> // std::max
+
 #include "soundtailor/tests/filters/tests_filters_fixture.h"
 
 #include "soundtailor/src/filters/chamberlin.h"
@@ -201,7 +203,7 @@ TYPED_TEST(FilterPassThrough, Passthrough) {
   float sum(0.0f);
   unsigned int input_idx(0);
   unsigned int output_idx(this->kDelay_);
-  while (Math::Max(input_idx, output_idx) < this->kDataTestSetSize_) {
+  while (std::max(input_idx, output_idx) < this->kDataTestSetSize_) {
     // scalar codepath as we don't want to deal with alignment
     sum += this->kInverseFilterGain_ * this->input_data_[input_idx] - this->output_data_[output_idx];
     input_idx += 1;

@@ -248,7 +248,7 @@ TYPED_TEST(Modulator, Click) {
     generator.TriggerOn();
     unsigned int i(1);
     // The first sample is always null!
-    IGNORE(generator());
+    soundtailor::IGNORE(generator());
     while (i <= this->kSustain_) {
       const Sample sample(generator());
       // A (really tiny) epsilon is required here for imprecisions
@@ -260,7 +260,7 @@ TYPED_TEST(Modulator, Click) {
     }
     generator.TriggerOff();
     // This sample left is due to the release
-    IGNORE(generator());
+    soundtailor::IGNORE(generator());
     while (i <= this->kSustain_ + this->kTail_) {
       const float kEpsilon(1e-6f);
       const bool is_null(soundtailor::VectorMath::IsNear(

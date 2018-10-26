@@ -4,6 +4,7 @@
 include_directories(
   SYSTEM
   ${GTEST_INCLUDE_DIRS}
+  ${VECMATH_INCLUDE_DIRS}
 )
 
 include_directories(

@@ -19,7 +19,6 @@
 /// along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "soundtailor/src/generators/sawtooth_blit.h"
-#include "soundtailor/src/maths.h"
 
 namespace soundtailor {
 namespace generators {
@@ -96,7 +95,7 @@ Sample SawtoothBLIT::ReadTable(SampleRead value) const {
                                                VectorMath::Add(relative_index, VectorMath::Fill(1))));
 
   // Values outside [-alpha ; alpha] would get out of bounds results, clipping
-  const IntVec index(VectorMath::TruncToInt(VectorMath::Clamp(unbounded_index, kZero, kHalfM)));
+  const SampleInt index(VectorMath::TruncToInt(VectorMath::Clamp(unbounded_index, kZero, kHalfM)));
   alignas(16) float tmp_v[4];
   const float* kTable(GetSegment());
   tmp_v[0] = kTable[VectorMath::GetByIndex<0>(index)];

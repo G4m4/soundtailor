@@ -54,13 +54,4 @@
   #endif
 #endif
 
-/// @brief SIMD enabling, based on platform
-#if defined(_DISABLE_SIMD)
-  #define _USE_SSE 0
-#else
-  #if (_ARCH_X86)
-    #define _USE_SSE 1
-  #endif
-#endif
-
 #endif  // SOUNDTAILOR_SRC_CONFIGURATION_H_

@@ -1,3 +1,6 @@
 [submodule "externals/gtest"]
 	path = externals/gtest
 	url = https://github.com/google/googletest/
+[submodule "externals/vecmath"]
+	path = externals/vecmath
+	url = https://github.com/G4m4/vecmath.git

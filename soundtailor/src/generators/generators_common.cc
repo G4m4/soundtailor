@@ -19,7 +19,6 @@
 /// along with SoundTailor.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "soundtailor/src/generators/generators_common.h"
-#include "soundtailor/src/maths.h"
 
 namespace soundtailor {
 namespace generators {

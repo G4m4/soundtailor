@@ -22,6 +22,7 @@
 #define SOUNDTAILOR_SRC_GENERATORS_GENERATORS_COMMON_H_
 
 #include "soundtailor/src/common.h"
+#include "soundtailor/src/maths.h"
 
 namespace soundtailor {
 namespace generators {

@@ -22,43 +22,34 @@
 #define SOUNDTAILOR_SRC_MATHS_H_
 
 #include <cmath>
+#include <cstddef> // size_t
 // std::min, std::max
 #include <algorithm>
 
+#include "vecmath/inc/maths.h"
+
 #include "soundtailor/src/common.h"
-
-#if _USE_SSE
-#include "platform/vectormaths_sse2.h"
-#else  // _USE_SSE
-#include "platform/vectormaths_std.h"
-#endif  // _USE_SSE
-
-#include "platform/maths_std.h"
 
 namespace soundtailor {
 
 /// @brief Standard value for Pi
 const double Pi = 3.14159265358979;
 
-// Standard math functions are wrapped here
-struct Math : PlatformMath {
-  template <typename T>
-  static inline T Min(const T A, const T B) {
-    return A > B ? B : A;
-  }
+typedef vecmath::PlatformVectorMath::FloatVec Sample;
+typedef vecmath::PlatformVectorMath::IntVec SampleInt;
+typedef vecmath::PlatformVectorMath::FloatVecRead SampleRead;
+/// @brief "Sample" type size in bytes
+static const unsigned int SampleSizeBytes(sizeof(Sample));
+/// @brief "Sample" type size compared to audio samples
+static const unsigned int SampleSize(sizeof(Sample) / sizeof(float));
 
-  template <typename T>
-  static inline T Max(const T A, const T B) {
-    return A > B ? A : B;
-  }
+/// @brief Type for block input parameter
+typedef const float* SOUNDTAILOR_RESTRICT const BlockIn;
 
-  template <typename T>
-  static inline T Clamp(const T value, const T min, const T max) {
-    return Max(Min(value, max), min);
-  }
-};
+/// @brief Type for block output parameter
+typedef float* SOUNDTAILOR_RESTRICT const BlockOut;
 
-struct VectorMath : PlatformVectorMath {
+struct VectorMath : vecmath::PlatformVectorMath {
 
   /// @brief Fill a whole Sample with the given (scalar) generator
   ///
@@ -84,7 +75,7 @@ struct VectorMath : PlatformVectorMath {
   /// @param[in]  base    Base value to fill the first element of the Sample with
   /// @param[in]  increment    Value to add at each Sample element
   static inline Sample FillIncremental(const float base,
-                                const float increment) {
+                                       const float increment) {
     return Fill(base,
                 base + increment,
                 base + increment * 2.0f,
@@ -143,12 +134,12 @@ struct VectorMath : PlatformVectorMath {
   }
 
   static inline bool Equal(float threshold, SampleRead input) {
-    const Sample test_result(PlatformVectorMath::Equal(Fill(threshold), input));
+    const Sample test_result(vecmath::PlatformVectorMath::Equal(Fill(threshold), input));
     return IsMaskFull(test_result);
   }
 
   static inline bool Equal(SampleRead threshold, SampleRead input) {
-    const Sample test_result(PlatformVectorMath::Equal(threshold, input));
+    const Sample test_result(vecmath::PlatformVectorMath::Equal(threshold, input));
     return IsMaskFull(test_result);
   }
 

@@ -25,14 +25,6 @@
 
 #include "soundtailor/src/configuration.h"
 
-#if (_USE_SSE)
-extern "C" {
-  // @todo(gm) move that include
-#include <emmintrin.h>
-#include <mmintrin.h>
-}
-#endif  // (_USE_SSE)
-
 namespace soundtailor {
 
 /// @brief Ignore unused variables
@@ -67,32 +59,6 @@ template<typename Type> void IGNORE(const Type&) {}
     #define SOUNDTAILOR_RESTRICT
   #endif  // _SOUNDTAILOR_COMPILER_ ?
 #endif  // SOUNDTAILOR_RESTRICT ?
-
-/// @brief "Sample" type - actually, this is the data computed at each "tick";
-/// If using vectorization it will be longer than 1 audio sample
-#if (_USE_SSE)
-  typedef __m128 Sample;
-  typedef __m128i IntVec;
-#else
-  struct Sample { float data_[4]; };
-  struct IntVec { int data_[4]; };
-#endif  // (_USE_SSE)
-
-/// @brief Type for Sample parameter "read only":
-/// It should be passed by value since it allows to keep it into a register,
-/// instead of passing its address and loading it.
-typedef const Sample SampleRead;
-
-/// @brief Type for block input parameter
-typedef const float* RESTRICT const BlockIn;
-
-/// @brief Type for block output parameter
-typedef float* RESTRICT const BlockOut;
-
-/// @brief "Sample" type size in bytes
-static const unsigned int SampleSizeBytes(sizeof(Sample));
-/// @brief "Sample" type size compared to audio samples
-static const unsigned int SampleSize(sizeof(Sample) / sizeof(float));
 
 }  // namespace soundtailor
 
