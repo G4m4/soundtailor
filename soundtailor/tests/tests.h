@@ -71,4 +71,9 @@ namespace internal
 }
 }
 
+/// @brief: Basic helper
+inline unsigned GetMultipleOf4(const unsigned value) {
+  return value - (value % 4);
+}
+
 #endif  // SOUNDTAILOR_TESTS_TESTS_H_
