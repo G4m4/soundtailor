@@ -78,11 +78,11 @@ TYPED_TEST(Generator, Mean) {
 template<class GeneratorType>
 float GetExpectedPower(void) {
   return 1.0f / 3.0f;
-};
+}
 template<>
 float GetExpectedPower<SquareBLIT>(void)  {
   return 1.0f;
-};
+}
 
 /// @brief Generates a signal, check for signal power
 TYPED_TEST(Generator, Power) {

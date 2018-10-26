@@ -76,7 +76,7 @@ const float* SawtoothBLIT::GetSegment() {
   SOUNDTAILOR_ASSERT(sizeof(kSegment) / sizeof(float) == 5400);
 
   return &kSegment[0];
-};
+}
 
 Sample SawtoothBLIT::ReadTable(SampleRead value) const {
   const Sample abs_value(VectorMath::Abs(value));
