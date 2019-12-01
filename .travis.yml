@@ -29,6 +29,7 @@ matrix:
             - clang-7
       env:
         - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
+    - os: osx
 before_install:
     - eval "${MATRIX_EVAL}"
 install:
