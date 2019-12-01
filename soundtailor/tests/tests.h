@@ -25,6 +25,7 @@
 #include <algorithm>
 // std::bind
 #include <functional>
+#include <iostream>
 #include <random>
 
 #include "gtest/gtest.h"
@@ -53,22 +54,6 @@ using soundtailor::ZeroCrossing;
 static std::uniform_real_distribution<float> kNormDistribution(-1.0f, 1.0f);
 static std::uniform_real_distribution<float> kNormPosDistribution(0.0f, 1.0f);
 static std::bernoulli_distribution kBoolDistribution;
-
-/// @brief Massive hack to print something in the standard output. Not great.
-// @todo(gm) Find out something better in GTest (listener?)
-namespace testing {
-namespace internal
-{
-  enum GTestColor {
-    COLOR_DEFAULT,
-    COLOR_RED,
-    COLOR_GREEN,
-    COLOR_YELLOW
-  };
-
-  extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
-}
-}
 
 /// @brief: Basic helper
 inline unsigned GetMultipleOf4(const unsigned value) {
