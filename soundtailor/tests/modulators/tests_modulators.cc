@@ -30,8 +30,8 @@ using soundtailor::generators::Differentiator;
 /// @brief All tested types
 typedef ::testing::Types<Adsd> ModulatorTypes;
 
-TYPED_TEST_CASE(Modulator, ModulatorTypes);
-TYPED_TEST_CASE(ModulatorData, ModulatorTypes);
+TYPED_TEST_SUITE(Modulator, ModulatorTypes);
+TYPED_TEST_SUITE(ModulatorData, ModulatorTypes);
 
 /// @brief Generates an envelop, check for its range (must be >= 0)
 TYPED_TEST(Modulator, Range) {

@@ -72,9 +72,9 @@ typedef ::testing::Types<Chamberlin,
                          Oversampler<SecondOrderRaw>,
                          SecondOrderRaw> PassthroughFilterTypes;
 
-TYPED_TEST_CASE(Filter, FilterTypes);
-TYPED_TEST_CASE(FilterData, FilterTypes);
-TYPED_TEST_CASE(FilterPassThrough, PassthroughFilterTypes);
+TYPED_TEST_SUITE(Filter, FilterTypes);
+TYPED_TEST_SUITE(FilterData, FilterTypes);
+TYPED_TEST_SUITE(FilterPassThrough, PassthroughFilterTypes);
 
 /// @brief Filters a random signal, check for mean lower than the one
 /// of the input signal (no DC offset introduced)

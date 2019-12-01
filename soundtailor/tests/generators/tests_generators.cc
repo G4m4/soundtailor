@@ -45,9 +45,9 @@ typedef ::testing::Types<
     SawtoothDPW,
     TriangleDPW> GeneratorWithZeroTypes;
 
-TYPED_TEST_CASE(Generator, GeneratorTypes);
-TYPED_TEST_CASE(GeneratorWithZero, GeneratorWithZeroTypes);
-TYPED_TEST_CASE(GeneratorData, GeneratorTypes);
+TYPED_TEST_SUITE(Generator, GeneratorTypes);
+TYPED_TEST_SUITE(GeneratorWithZero, GeneratorWithZeroTypes);
+TYPED_TEST_SUITE(GeneratorData, GeneratorTypes);
 
 /// @brief Generates a signal, check for null mean (no DC offset)
 TYPED_TEST(Generator, Mean) {
